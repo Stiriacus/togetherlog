@@ -13,39 +13,39 @@ Supabase-based backend for TogetherLog, using PostgreSQL, Auth, Storage, and Edg
 
 ```
 backend/
-├── edge-functions/
-│   ├── api/           # REST API endpoints
-│   │   ├── logs/      # Log CRUD operations
-│   │   └── entries/   # Entry CRUD operations
-│   └── workers/       # Async background workers
-│       ├── process-photo/      # EXIF extraction, thumbnails
-│       ├── compute-colors/     # Dominant color analysis
-│       ├── reverse-geocode/    # GPS to location name
-│       └── compute-smart-page/ # Smart Page engine
-└── sql/
-    └── migrations/    # Database schema migrations
+└── supabase/
+    ├── functions/           # Supabase Edge Functions (TypeScript/Deno)
+    │   ├── _shared/         # Shared utilities (CORS, auth, validation)
+    │   ├── api-logs/        # REST API: Logs CRUD
+    │   ├── api-entries/     # REST API: Entries CRUD
+    │   ├── reverse-geocode/ # Worker: GPS → location names
+    │   ├── process-photo/   # Worker: EXIF extraction, thumbnails
+    │   ├── compute-colors/  # Worker: Dominant color analysis
+    │   └── compute-smart-page/ # Worker: Smart Page engine
+    └── migrations/          # Database schema migrations
 ```
 
 ## Core Responsibilities
 
-### REST API (`/edge-functions/api`)
-- User authentication
-- Log management (CRUD)
-- Entry management (CRUD)
-- Photo upload handling
+### REST API Functions (`/supabase/functions/api-*`)
+- **api-logs**: Log management (CRUD)
+- **api-entries**: Entry management (CRUD with photos, tags, location)
+- User authentication via Supabase Auth
+- Photo upload handling via Supabase Storage
 
-### Workers (`/edge-functions/workers`)
+### Worker Functions (`/supabase/functions/`)
+- **reverse-geocode**: Convert GPS coordinates to human-readable locations (OpenStreetMap/Nominatim)
 - **process-photo**: Extract EXIF metadata, generate thumbnails
 - **compute-colors**: Extract dominant colors from images
-- **reverse-geocode**: Convert GPS coordinates to human-readable locations (OpenStreetMap/Nominatim)
 - **compute-smart-page**: Run deterministic Smart Page engine
-  - Select page layout type
+  - Select page layout type based on photo count
   - Choose color theme (Emotion-Color-Engine V1)
-  - Generate sprinkles placeholders
+  - Generate sprinkles (decorative icons)
 
-### Database (`/sql/migrations`)
-- Schema definitions
+### Database (`/supabase/migrations/`)
+- Schema definitions (users, logs, entries, photos, tags)
 - Row Level Security (RLS) policies
+- Optimized views (entries_with_photos_and_tags)
 - Indexes and constraints
 
 ## Development
