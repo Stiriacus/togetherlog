@@ -45,6 +45,7 @@ GROUP BY e.id;
 -- ----------------------------------------------------------------------------
 -- View: entries_with_photos_and_tags
 -- Purpose: Complete entry view with photos and tags
+-- Note: Uses subqueries to avoid Cartesian product and improve performance
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW public.entries_with_photos_and_tags AS
 SELECT
@@ -62,36 +63,50 @@ SELECT
     e.color_theme,
     e.sprinkles,
     e.is_processed,
-    COALESCE(
+
+    -- Attach Photos (aggregated in subquery to prevent duplicates)
+    COALESCE(p_agg.photos_json, '[]'::json) AS photos,
+
+    -- Attach Tags (aggregated in subquery to prevent duplicates)
+    COALESCE(t_agg.tags_json, '[]'::json) AS tags
+
+FROM public.entries e
+
+-- Join Photos Subquery
+LEFT JOIN (
+    SELECT
+        entry_id,
         json_agg(
-            DISTINCT jsonb_build_object(
-                'id', p.id,
-                'url', p.url,
-                'thumbnail_url', p.thumbnail_url,
-                'display_order', p.display_order,
-                'width', p.width,
-                'height', p.height,
-                'dominant_colors', p.dominant_colors
-            )
-        ) FILTER (WHERE p.id IS NOT NULL) ORDER BY p.display_order,
-        '[]'::json
-    ) AS photos,
-    COALESCE(
+            jsonb_build_object(
+                'id', id,
+                'url', url,
+                'thumbnail_url', thumbnail_url,
+                'display_order', display_order,
+                'width', width,
+                'height', height,
+                'dominant_colors', dominant_colors
+            ) ORDER BY display_order ASC
+        ) AS photos_json
+    FROM public.photos
+    GROUP BY entry_id
+) p_agg ON e.id = p_agg.entry_id
+
+-- Join Tags Subquery
+LEFT JOIN (
+    SELECT
+        et.entry_id,
         json_agg(
-            DISTINCT jsonb_build_object(
+            jsonb_build_object(
                 'id', t.id,
                 'name', t.name,
                 'category', t.category,
                 'icon', t.icon
-            )
-        ) FILTER (WHERE t.id IS NOT NULL),
-        '[]'::json
-    ) AS tags
-FROM public.entries e
-LEFT JOIN public.photos p ON p.entry_id = e.id
-LEFT JOIN public.entry_tags et ON et.entry_id = e.id
-LEFT JOIN public.tags t ON t.id = et.tag_id
-GROUP BY e.id;
+            ) ORDER BY t.name ASC
+        ) AS tags_json
+    FROM public.entry_tags et
+    JOIN public.tags t ON et.tag_id = t.id
+    GROUP BY et.entry_id
+) t_agg ON e.id = t_agg.entry_id;
 
 -- ----------------------------------------------------------------------------
 -- View: logs_with_entry_count
