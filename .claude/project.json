@@ -1,0 +1,19 @@
+{
+  "name": "TogetherLog",
+  "description_file": ".claude/startup.md",
+  "context_files": [
+    "README.md",
+    "CONTEXT.md",
+    "docs/CLAUDE_STARTUP_PROMPT.md",
+    "docs/CLAUDE_CODE_CONTEXT.md",
+    "docs/v1Spez.md",
+    "docs/architecture.md",
+    "docs/v2optional.md",
+    "docs/MILESTONES.md"
+  ],
+  "settings": {
+    "default_model": "claude-4.5-sonnet",
+    "load_context_on_start": true,
+    "scan_repo_on_start": true
+  }
+}

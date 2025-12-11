@@ -1,7 +1,9 @@
 # TogetherLog — Future Feature Specifications (Version 2+ Options)
 
 This document archives planned optional and advanced features.  
-They are not part of the MVP and will be implemented in later versions.
+They are NOT part of the MVP and will be implemented in LATER versions.
+SO THERE IS NO NEED TO PREVIEW AND PREFACE ANYTHING IN THIS FILE. 
+THIS IS PURELY INFORMATIONAL AND FOR REMINDERS SAKE
 
 ## 1. Map View (Open Source Based)
 - Interactive world/region map using OpenStreetMap + Leaflet.
