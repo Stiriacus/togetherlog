@@ -4,7 +4,7 @@ This file provides a comprehensive overview of the TogetherLog project for AI as
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 **TogetherLog** is a beautiful, interactive flipbook application for preserving shared memories. Users can create logs (memory books), add entries with photos and tags, and view them in a flipbook format with automatic page design.
 
@@ -16,7 +16,7 @@ This file provides a comprehensive overview of the TogetherLog project for AI as
 
 ---
 
-## 📚 Essential Documentation
+## Essential Documentation
 
 Before working on this project, read these files in order:
 
@@ -75,7 +75,7 @@ Before working on this project, read these files in order:
 
 ---
 
-## 🏗️ Architecture Principles (CRITICAL)
+## Architecture Principles (CRITICAL)
 
 These principles MUST be followed at all times:
 
@@ -118,14 +118,16 @@ Before committing any milestone:
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 TogetherLog/
 ├── docs/                           # All documentation
 │   ├── v1Spez.md                   # Product specification (READ FIRST)
 │   ├── architecture.md             # Technical architecture
-│   └── v2optional.md               # Future features (DO NOT IMPLEMENT)
+│   ├── v2optional.md               # Future features (DO NOT IMPLEMENT)
+│   ├── CONTEXT.md                  # This file
+│   └── MILESTONES.md               # Development roadmap and tracking
 │
 ├── backend/                        # Supabase backend
 │   └── supabase/
@@ -139,7 +141,7 @@ TogetherLog/
 │       │   ├── reverse-geocode/    # Worker: GPS → location names
 │       │   ├── process-photo/      # Worker: Photo processing
 │       │   ├── compute-colors/     # Worker: Color extraction
-│       │   └── compute-smart-page/ # Worker: Smart Page engine ⭐
+│       │   └── compute-smart-page/ # Worker: Smart Page engine
 │       └── config.toml             # Supabase configuration
 │
 ├── app/                            # Flutter application
@@ -150,19 +152,18 @@ TogetherLog/
 │       │   ├── api/                # Supabase client, API clients
 │       │   └── models/             # Data models (User, Log, Entry, Photo, Tag)
 │       └── features/
-│           ├── auth/               # ✅ Authentication (COMPLETED)
-│           ├── logs/               # ⏳ Logs list/CRUD (MILESTONE 9)
-│           ├── entries/            # ⏳ Entries CRUD (MILESTONE 10)
-│           └── flipbook/           # ⏳ Flipbook viewer (MILESTONE 11)
+│           ├── auth/               # Authentication (COMPLETED)
+│           ├── logs/               # Logs list/CRUD (MILESTONE 9)
+│           ├── entries/            # Entries CRUD (MILESTONE 10)
+│           └── flipbook/           # Flipbook viewer (MILESTONE 11)
 │
-├── MILESTONES.md                   # Development roadmap and tracking
-├── CONTEXT.md                      # This file
+
 └── README.md                       # Project overview
 ```
 
 ---
 
-## 🎨 Smart Pages Engine (Core Feature)
+## Smart Pages Engine (Core Feature)
 
 The Smart Pages Engine is the heart of TogetherLog. It automatically designs beautiful memory pages.
 
@@ -209,26 +210,26 @@ Based on tags (max 3 decorative icons):
 
 ---
 
-## ✅ Completed Work (Milestones 0-8)
+## Completed Work (Milestones 0-8)
 
 ### Backend (100% Complete for V1)
-- ✅ PostgreSQL schema with RLS policies
-- ✅ Optimized database views (subquery aggregation)
-- ✅ REST API for Logs CRUD (`api-logs/`)
-- ✅ REST API for Entries CRUD (`api-entries/`)
-- ✅ Worker: Reverse geocoding with Nominatim (`reverse-geocode/`)
-- ✅ Worker: Photo processing (`process-photo/`)
-- ✅ Worker: Color extraction (`compute-colors/`)
-- ✅ Worker: Smart Pages Engine (`compute-smart-page/`) ⭐
-- ✅ All Edge Functions deployed to Supabase
+- PostgreSQL schema with RLS policies
+- Optimized database views (subquery aggregation)
+- REST API for Logs CRUD (`api-logs/`)
+- REST API for Entries CRUD (`api-entries/`)
+- Worker: Reverse geocoding with Nominatim (`reverse-geocode/`)
+- Worker: Photo processing (`process-photo/`)
+- Worker: Color extraction (`compute-colors/`)
+- Worker: Smart Pages Engine (`compute-smart-page/`)
+- All Edge Functions deployed to Supabase
 
 ### Flutter Frontend (Auth Complete)
-- ✅ App initialization and dependencies
-- ✅ Supabase client integration
-- ✅ Auth UI (login, signup with email/password)
-- ✅ Riverpod state management for auth
-- ✅ go_router with auth-based redirects
-- ✅ Clean architecture foundation
+- App initialization and dependencies
+- Supabase client integration
+- Auth UI (login, signup with email/password)
+- Riverpod state management for auth
+- go_router with auth-based redirects
+- Clean architecture foundation
 
 ### Current State
 - **8/12 milestones completed (66.7%)**
@@ -238,7 +239,7 @@ Based on tags (max 3 decorative icons):
 
 ---
 
-## ⏳ Remaining Work (Milestones 9-12)
+## Remaining Work (Milestones 9-12)
 
 ### MILESTONE 9: Flutter Logs Feature
 **Status**: Not started
@@ -302,7 +303,7 @@ Based on tags (max 3 decorative icons):
 
 ---
 
-## 🛠️ Development Workflow
+## Development Workflow
 
 ### Standard Workflow for Every Milestone
 ```
@@ -341,7 +342,7 @@ File list:
 
 ---
 
-## 🔑 Key Technologies
+## Key Technologies
 
 ### Backend
 - **Supabase**: Managed PostgreSQL + Auth + Storage + Edge Functions
@@ -359,31 +360,31 @@ File list:
 
 ---
 
-## ⚠️ Common Pitfalls to Avoid
+## Common Pitfalls to Avoid
 
 ### 1. Smart Page Logic in Flutter
-❌ **WRONG**: Computing layout types or color themes in Flutter
-✅ **CORRECT**: Fetching pre-computed data from backend and rendering it
+  **WRONG**: Computing layout types or color themes in Flutter
+  **CORRECT**: Fetching pre-computed data from backend and rendering it
 
 ### 2. Feature Drift
-❌ **WRONG**: Adding "helpful" features not in `v1Spez.md`
-✅ **CORRECT**: Only implementing specified features
+  **WRONG**: Adding "helpful" features not in `v1Spez.md`
+  **CORRECT**: Only implementing specified features
 
 ### 3. Over-Engineering
-❌ **WRONG**: Creating abstractions "for future flexibility"
-✅ **CORRECT**: Simple, direct implementations
+  **WRONG**: Creating abstractions "for future flexibility"
+  **CORRECT**: Simple, direct implementations
 
 ### 4. Ignoring RLS
-❌ **WRONG**: Assuming backend validates ownership
-✅ **CORRECT**: RLS policies enforce user ownership at DB level
+  **WRONG**: Assuming backend validates ownership
+  **CORRECT**: RLS policies enforce user ownership at DB level
 
 ### 5. Forgetting to Backtest
-❌ **WRONG**: Committing without verification
-✅ **CORRECT**: Always verify against requirements before committing
+  **WRONG**: Committing without verification
+  **CORRECT**: Always verify against requirements before committing
 
 ---
 
-## 📊 Database Schema Quick Reference
+## Database Schema Quick Reference
 
 ### Core Tables
 - **users** (managed by Supabase Auth)
@@ -404,7 +405,7 @@ File list:
 
 ---
 
-## 🌐 Deployed Edge Functions
+## Deployed Edge Functions
 
 **Project ID**: `ikspskghylahtexiqepl`
 
@@ -418,15 +419,15 @@ https://ikspskghylahtexiqepl.supabase.co/functions/v1/compute-colors
 https://ikspskghylahtexiqepl.supabase.co/functions/v1/compute-smart-page
 ```
 
-**Status**: ✅ All deployed and operational
+**Status**:   All deployed and operational
 
 ---
 
-## 🚀 Quick Start for New AI Assistant
+## Quick Start for New AI Assistant
 
 If you're an AI assistant starting a new session on this project:
 
-1. **Read this file first** (you're doing it! ✅)
+1. **Read this file first** (you're doing it!)
 2. **Read** [`docs/v1Spez.md`](docs/v1Spez.md) - Product requirements
 3. **Read** [`docs/architecture.md`](docs/architecture.md) - Technical architecture
 4. **Read** [`docs/MILESTONES.md`](MILESTONES.md) - Development roadmap
@@ -436,7 +437,7 @@ If you're an AI assistant starting a new session on this project:
 
 ---
 
-## 📞 Important Notes
+## Important Notes
 
 ### Environment Variables
 - Supabase credentials should NEVER be committed
@@ -457,33 +458,33 @@ If you're an AI assistant starting a new session on this project:
 
 ---
 
-## 📈 Progress Tracking
+## Progress Tracking
 
 **Current Status**: 8/12 milestones completed (66.7%)
 
 ```
-[████████████████████████████░░░░░░░░░░░░] 66.7%
+66.7% / 100%
 
-✅ MILESTONE 0: Project Foundation
-✅ MILESTONE 1: Flutter App Init
-✅ MILESTONE 2: Backend Structure
-✅ MILESTONE 3: Database Schema
-✅ MILESTONE 4: Logs REST API
-✅ MILESTONE 5: Entries REST API
-✅ MILESTONE 6: Worker Functions
-✅ MILESTONE 7: Smart Pages Engine
-✅ MILESTONE 8: Flutter Auth UI
-⏳ MILESTONE 9: Flutter Logs Feature    ← YOU ARE HERE
-⏳ MILESTONE 10: Flutter Entries Feature
-⏳ MILESTONE 11: Flipbook Viewer
-⏳ MILESTONE 12: Integration Testing
+  MILESTONE 0: Project Foundation
+  MILESTONE 1: Flutter App Init
+  MILESTONE 2: Backend Structure
+  MILESTONE 3: Database Schema
+  MILESTONE 4: Logs REST API
+  MILESTONE 5: Entries REST API
+  MILESTONE 6: Worker Functions
+  MILESTONE 7: Smart Pages Engine
+  MILESTONE 8: Flutter Auth UI
+ MILESTONE 9: Flutter Logs Feature    ← YOU ARE HERE
+ MILESTONE 10: Flutter Entries Feature
+ MILESTONE 11: Flipbook Viewer
+ MILESTONE 12: Integration Testing
 ```
 
 **Next Action**: Implement MILESTONE 9 (Flutter Logs Feature)
 
 ---
 
-## 🎓 Learning Resources
+## Learning Resources
 
 If you need to understand specific concepts:
 
@@ -495,7 +496,7 @@ If you need to understand specific concepts:
 
 ---
 
-## ✅ Checklist Before Every Commit
+##   Checklist Before Every Commit
 
 - [ ] Read requirements in `v1Spez.md` for this milestone
 - [ ] Verified architecture compliance (backend authoritative, frontend lean)
@@ -513,4 +514,4 @@ If you need to understand specific concepts:
 
 **Last Updated**: After MILESTONE 8 completion and Edge Functions deployment
 **Next Milestone**: MILESTONE 9 (Flutter Logs Feature)
-**Project Status**: Backend complete ✅, Auth complete ✅, Ready for feature development
+**Project Status**: Backend complete, Auth complete, Ready for feature development
