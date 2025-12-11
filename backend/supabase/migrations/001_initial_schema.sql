@@ -6,11 +6,9 @@
 -- EXTENSIONS
 -- ============================================================================
 
--- Enable UUID generation
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Enable pgcrypto for additional crypto functions
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- Note: gen_random_uuid() is built into PostgreSQL 13+, no extension needed
+-- Enable pgcrypto for additional crypto functions (if needed in future)
+-- CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ============================================================================
 -- TABLES
@@ -20,7 +18,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- LOGS (Memory Books)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     type TEXT NOT NULL DEFAULT 'Couple', -- Couple, Friends, Family
@@ -39,7 +37,7 @@ CREATE INDEX IF NOT EXISTS idx_logs_created_at ON public.logs(created_at DESC);
 -- TAGS (Predefined Categories)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.tags (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL UNIQUE,
     category TEXT NOT NULL, -- activity, event, emotion
     icon TEXT, -- Icon identifier for future use
@@ -55,7 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_tags_category ON public.tags(category);
 -- ENTRIES (Individual Memories)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.entries (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     log_id UUID NOT NULL REFERENCES public.logs(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -95,7 +93,7 @@ CREATE INDEX IF NOT EXISTS idx_entries_is_processed ON public.entries(is_process
 -- PHOTOS
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.photos (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     entry_id UUID NOT NULL REFERENCES public.entries(id) ON DELETE CASCADE,
 
     -- Storage paths (Supabase Storage)
