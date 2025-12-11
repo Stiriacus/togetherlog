@@ -2,9 +2,9 @@
 // Handles CRUD operations for logs (memory books)
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
-import { corsHeaders, errorResponse, successResponse } from '../../_shared/cors.ts'
-import { getAuthContext } from '../../_shared/auth.ts'
-import { validateString, validateEnum, validateUUID, ValidationException } from '../../_shared/validation.ts'
+import { corsHeaders, errorResponse, successResponse } from '../_shared/cors.ts'
+import { getAuthContext } from '../_shared/auth.ts'
+import { validateString, validateEnum, validateUUID, ValidationException } from '../_shared/validation.ts'
 
 const LOG_TYPES = ['Couple', 'Friends', 'Family', 'Solo', 'Other'] as const
 type LogType = typeof LOG_TYPES[number]

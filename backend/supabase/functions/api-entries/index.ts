@@ -2,9 +2,9 @@
 // Handles CRUD operations for entries (memories) with photos and tags
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
-import { corsHeaders, errorResponse, successResponse } from '../../_shared/cors.ts'
-import { getAuthContext } from '../../_shared/auth.ts'
-import { validateString, validateUUID, ValidationException } from '../../_shared/validation.ts'
+import { corsHeaders, errorResponse, successResponse } from '../_shared/cors.ts'
+import { getAuthContext } from '../_shared/auth.ts'
+import { validateString, validateUUID, ValidationException } from '../_shared/validation.ts'
 
 interface CreateEntryRequest {
   event_date: string
