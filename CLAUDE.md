@@ -91,6 +91,19 @@ flutter clean && flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
+### Platform Testing Constraints
+
+**CRITICAL: Claude Code must ONLY test and run the Web version of the Flutter app.**
+
+- **✅ USE**: `flutter run -d chrome`
+- **❌ DO NOT** test Windows builds
+- **❌ DO NOT** test macOS builds
+- **❌ DO NOT** test Linux builds
+- **❌ DO NOT** test Web Server unless specifically instructed
+- **❌ DO NOT** test Android builds
+
+**Web (Chrome) is the ONLY supported and required platform for V1 testing.**
+
 ### Backend (Supabase)
 
 ```bash
