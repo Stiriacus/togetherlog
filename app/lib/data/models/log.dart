@@ -1,12 +1,5 @@
-/// Log data model - to be implemented in MILESTONE 9
+/// Log data model
 class Log {
-  final String id;
-  final String userId;
-  final String name;
-  final String type; // e.g., 'Couple', 'Friends', 'Family'
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
   const Log({
     required this.id,
     required this.userId,
@@ -26,6 +19,13 @@ class Log {
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
+
+  final String id;
+  final String userId;
+  final String name;
+  final String type; // e.g., 'Couple', 'Friends', 'Family'
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   Map<String, dynamic> toJson() {
     return {
