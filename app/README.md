@@ -43,8 +43,17 @@ lib/
    ```
 
 2. Configure Supabase:
-   - Copy `.env.example` to `.env`
-   - Add your Supabase URL and anon key
+
+   **Option A: Environment Variables (Recommended)**
+   ```bash
+   flutter run --dart-define=SUPABASE_URL=https://your-project.supabase.co \
+               --dart-define=SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+   **Option B: Update main.dart**
+   Edit `lib/main.dart` and replace the placeholder values with your actual Supabase credentials.
+
+   **⚠️ Warning**: Never commit actual credentials to version control!
 
 3. Run the app:
    ```bash
@@ -55,12 +64,30 @@ lib/
    flutter run -d <device-id>
    ```
 
-## Development
+## Development Status
+
+### Completed Milestones
+
+- ✅ **MILESTONE 8**: Authentication UI and state management
+  - Email/password login and signup with Supabase Auth
+  - Riverpod providers for auth state
+  - go_router with auth-based redirects
+  - Clean architecture (data/features/core separation)
+
+### Pending Milestones
+
+- ⏳ **MILESTONE 9**: Logs feature (list, create, edit)
+- ⏳ **MILESTONE 10**: Entries feature (create, upload, edit)
+- ⏳ **MILESTONE 11**: Flipbook viewer with 3D page-turn animation
+- ⏳ **MILESTONE 12**: Integration testing and final validation
+
+## Development Principles
 
 - Follow clean architecture principles
 - Keep UI logic separate from business logic
 - Use Riverpod providers for state management
 - All Smart Page logic is handled by the backend
+- Backend authoritative - client only renders
 
 ## Building
 
