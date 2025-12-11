@@ -38,7 +38,7 @@ Before working on this project, read these files in order:
 - Backend authoritative principles
 
 ### 3. Development Roadmap
-**File**: [`MILESTONES.md`](MILESTONES.md)
+**File**: [`docs/MILESTONES.md`](MILESTONES.md)
 - Detailed milestone tracking (0-12)
 - Implementation steps for each milestone
 - Backtest requirements
@@ -429,7 +429,7 @@ If you're an AI assistant starting a new session on this project:
 1. **Read this file first** (you're doing it! ✅)
 2. **Read** [`docs/v1Spez.md`](docs/v1Spez.md) - Product requirements
 3. **Read** [`docs/architecture.md`](docs/architecture.md) - Technical architecture
-4. **Read** [`MILESTONES.md`](MILESTONES.md) - Development roadmap
+4. **Read** [`docs/MILESTONES.md`](MILESTONES.md) - Development roadmap
 5. **Check** current milestone status (currently between MILESTONE 8 and 9)
 6. **Review** the next milestone's implementation steps in MILESTONES.md
 7. **Follow** the standard workflow: READ → ANALYZE → PLAN → CODE → BACKTEST → FIX → COMMIT → PUSH
