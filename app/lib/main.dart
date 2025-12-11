@@ -10,16 +10,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Supabase
-  // TODO: Replace with your actual Supabase URL and anon key
-  // These should be configured in a .env file or environment variables
+  // Uses environment variables or hardcoded defaults for testing
   await Supabase.initialize(
     url: const String.fromEnvironment(
       'SUPABASE_URL',
-      defaultValue: 'YOUR_SUPABASE_URL',
+      defaultValue: 'https://ikspskghylahtexiqepl.supabase.co',
     ),
     anonKey: const String.fromEnvironment(
       'SUPABASE_ANON_KEY',
-      defaultValue: 'YOUR_SUPABASE_ANON_KEY',
+      defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrc3Bza2doeWxhaHRleGlxZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0MDEyODQsImV4cCI6MjA4MDk3NzI4NH0.P8TGolwflKq25N87bxGVS2_gzIbRT9f8076zqMK0-fg',
     ),
   );
 

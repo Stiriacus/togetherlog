@@ -1,12 +1,12 @@
 // TogetherLog - App Router Configuration
 // Handles navigation and auth-based redirects using go_router
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/auth_screen.dart';
 import '../../features/auth/providers/auth_providers.dart';
 import '../../features/logs/logs_screen.dart';
+import '../../features/entries/entries_screen.dart';
 
 /// Router provider for the app
 final routerProvider = Provider<GoRouter>((ref) {
@@ -53,7 +53,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const LogsScreen(),
       ),
 
-      // Entry routes will be added in MILESTONE 10
+      // Entries route (placeholder for MILESTONE 10)
+      GoRoute(
+        path: '/logs/:logId/entries',
+        name: 'entries',
+        builder: (context, state) {
+          final logId = state.pathParameters['logId']!;
+          return EntriesScreen(logId: logId);
+        },
+      ),
+
       // Flipbook routes will be added in MILESTONE 11
     ],
   );
