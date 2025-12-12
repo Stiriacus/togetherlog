@@ -79,6 +79,7 @@ LEFT JOIN (
         json_agg(
             jsonb_build_object(
                 'id', id,
+                'entry_id', entry_id,
                 'url', url,
                 'thumbnail_url', thumbnail_url,
                 'display_order', display_order,

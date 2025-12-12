@@ -4,6 +4,7 @@
 import 'dart:typed_data';
 import '../../../data/api/entries_api_client.dart';
 import '../../../data/api/storage_api_client.dart';
+import '../../../data/api/supabase_client.dart';
 import '../../../data/models/entry.dart';
 import '../../../data/models/tag.dart';
 
@@ -95,21 +96,26 @@ class EntriesRepository {
         photoFileNames != null &&
         photoBytes.isNotEmpty) {
       try {
+        // Step 1: Upload photos to Storage
         final photoPaths = await _storageApiClient.uploadPhotos(
           filesBytes: photoBytes,
           fileNames: photoFileNames,
           entryId: entry.id,
         );
 
-        // Update entry with photo paths
-        final updateData = <String, dynamic>{
-          'photo_ids': photoPaths,
-        };
-
-        final updatedEntryJson = await _entriesApiClient.updateEntry(
-          entry.id,
-          updateData,
+        // Step 2: Create photo records in database and get photo IDs
+        final photoIds = await _createPhotoRecords(
+          entryId: entry.id,
+          storagePaths: photoPaths,
         );
+
+        // Step 2.5: Update Smart Page layout based on photo count
+        await _updateSmartPageLayout(entry.id, photoIds.length);
+
+        // Step 3: Fetch the updated entry with photos
+        // Note: Photos are already linked via entry_id foreign key,
+        // no need to update the entry itself
+        final updatedEntryJson = await _entriesApiClient.fetchEntry(entry.id);
 
         return Entry.fromJson(updatedEntryJson);
       } catch (e) {
@@ -214,5 +220,73 @@ class EntriesRepository {
     );
 
     return Entry.fromJson(updatedEntryJson);
+  }
+
+  /// Create photo records in the database
+  /// Returns list of photo IDs (UUIDs)
+  Future<List<String>> _createPhotoRecords({
+    required String entryId,
+    required List<String> storagePaths,
+  }) async {
+    final photoIds = <String>[];
+
+    for (var i = 0; i < storagePaths.length; i++) {
+      final storagePath = storagePaths[i];
+
+      // Validate storage path
+      if (storagePath.isEmpty) {
+        throw Exception('Storage path is empty for photo at index $i');
+      }
+
+      // Generate authenticated URLs for the photo
+      final url = await _storageApiClient.getPhotoUrl(storagePath);
+
+      // Validate URL
+      if (url.isEmpty) {
+        throw Exception('Generated URL is empty for storage path: $storagePath');
+      }
+
+      // For V1, use same URL for thumbnail (proper thumbnail generation is Milestone 6 enhancement)
+      final thumbnailUrl = url;
+
+      // Insert photo record into database
+      try {
+        final response = await supabase.from('photos').insert({
+          'entry_id': entryId,
+          'storage_path': storagePath,
+          'url': url,
+          'thumbnail_url': thumbnailUrl,
+          'display_order': i,
+        }).select().single();
+
+        final photoId = response['id'] as String;
+        photoIds.add(photoId);
+      } catch (e) {
+        throw Exception('Failed to insert photo record (path: $storagePath): $e');
+      }
+    }
+
+    return photoIds;
+  }
+
+  /// Update Smart Page layout type based on photo count
+  /// Implements basic Smart Pages Engine Rule 1: Layout Type Selection
+  Future<void> _updateSmartPageLayout(String entryId, int photoCount) async {
+    // RULE 1: Layout Type Selection based on photo count
+    String layoutType;
+    if (photoCount == 0 || photoCount == 1) {
+      layoutType = 'single_full';
+    } else if (photoCount >= 2 && photoCount <= 4) {
+      layoutType = 'grid_2x2';
+    } else {
+      // 5-6 photos
+      layoutType = 'grid_3x2';
+    }
+
+    // Update entry with computed layout
+    await supabase.from('entries').update({
+      'page_layout_type': layoutType,
+      'is_processed': true,
+    }).eq('id', entryId);
   }
 }

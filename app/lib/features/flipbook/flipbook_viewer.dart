@@ -117,6 +117,49 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
   }
 
   Widget _buildFlipbook(List entries) {
+    // Build page widgets
+    final pages = entries
+        .map((entry) => SmartPageRenderer(entry: entry))
+        .toList();
+
+    // Add last page
+    pages.add(
+      SmartPageRenderer.customPage(
+        child: Container(
+          color: Colors.grey.shade800,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 64,
+                  color: Colors.grey.shade400,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'The End',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'You\'ve reached the end of this log',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
     return Stack(
       children: [
         // Page flip widget
@@ -126,41 +169,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
             child: PageFlipWidget(
               key: _pageFlipKey,
               backgroundColor: Colors.grey.shade900,
-              lastPage: Container(
-                color: Colors.grey.shade800,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline,
-                        size: 64,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'The End',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey.shade400,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'You\'ve reached the end of this log',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              children: entries
-                  .map((entry) => SmartPageRenderer(entry: entry))
-                  .toList(),
+              children: pages,
             ),
           ),
         ),

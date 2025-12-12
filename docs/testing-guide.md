@@ -135,7 +135,7 @@ After deploying changes:
 
 **Preconditions**: None (new user)
 
-#### Test Case 4.1.1: Sign Up with Email/Password
+#### Test Case 4.1.1: Sign Up with Email/Password - Tested - WORKS as expected
 
 **Steps**:
 1. Open Flutter Web app in browser: `http://localhost:PORT` (or deployed URL)
@@ -157,7 +157,7 @@ After deploying changes:
 - Open Supabase Dashboard → Authentication → Users
 - Verify new user `tester-001@example.com` exists
 
-#### Test Case 4.1.2: Login with Email/Password
+#### Test Case 4.1.2: Login with Email/Password - Tested - WORKS as expected
 
 **Steps**:
 1. If logged in, sign out first
@@ -172,7 +172,7 @@ After deploying changes:
 - Upon success, user is redirected to `/logs`
 - Dashboard loads with user's logs (if any)
 
-#### Test Case 4.1.3: Login with Invalid Credentials
+#### Test Case 4.1.3: Login with Invalid Credentials - Tested - WORKS as expected
 
 **Steps**:
 1. On Login tab, enter:
@@ -185,7 +185,7 @@ After deploying changes:
 - User remains on Auth screen
 - No redirect occurs
 
-#### Test Case 4.1.4: Sign Out
+#### Test Case 4.1.4: Sign Out - Tested - WORKS as expected
 
 **Steps**:
 1. While logged in, locate the "Sign Out" button (typically in app bar or user menu)
@@ -196,7 +196,7 @@ After deploying changes:
 - User is redirected to `/auth` (login screen)
 - Session is cleared (refresh page should still show login screen)
 
-#### Test Case 4.1.5: Session Persistence
+#### Test Case 4.1.5: Session Persistence - Tested - WORKS as expected
 
 **Steps**:
 1. Log in as `tester-001@example.com`

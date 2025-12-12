@@ -31,16 +31,21 @@ serve(async (req: Request) => {
 
     const url = new URL(req.url)
     const pathParts = url.pathname.split('/').filter(Boolean)
-    const logId = pathParts[pathParts.length - 1] // Last part might be log ID
+    // Example paths:
+    // /functions/v1/api-logs -> list all (lastPart = 'api-logs')
+    // /functions/v1/api-logs/:id -> get specific (lastPart = UUID)
+    const lastPart = pathParts[pathParts.length - 1]
+    const isListRequest = lastPart === 'api-logs'
+    const logId = isListRequest ? null : lastPart
 
     // Route handler
     switch (req.method) {
       case 'GET':
-        if (logId && logId !== 'logs') {
-          // GET /logs/:id - Get specific log
+        if (logId) {
+          // GET /api-logs/:id - Get specific log
           return await getLog(supabase, user.id, logId)
         } else {
-          // GET /logs - List all logs
+          // GET /api-logs - List all logs
           return await listLogs(supabase, user.id)
         }
 
@@ -49,15 +54,15 @@ serve(async (req: Request) => {
         return await createLog(supabase, user.id, req)
 
       case 'PATCH':
-        // PATCH /logs/:id - Update log
-        if (!logId || logId === 'logs') {
+        // PATCH /api-logs/:id - Update log
+        if (!logId || logId === 'api-logs') {
           return errorResponse('Log ID is required for update', 400)
         }
         return await updateLog(supabase, user.id, logId, req)
 
       case 'DELETE':
-        // DELETE /logs/:id - Delete log
-        if (!logId || logId === 'logs') {
+        // DELETE /api-logs/:id - Delete log
+        if (!logId || logId === 'api-logs') {
           return errorResponse('Log ID is required for delete', 400)
         }
         return await deleteLog(supabase, user.id, logId)
@@ -72,11 +77,14 @@ serve(async (req: Request) => {
       return errorResponse(error.message, 400)
     }
 
-    if (error.message === 'Missing authorization header' || error.message === 'Invalid or expired token') {
-      return errorResponse(error.message, 401)
+    if (error instanceof Error) {
+      if (error.message === 'Missing authorization header' || error.message === 'Invalid or expired token') {
+        return errorResponse(error.message, 401)
+      }
+      return errorResponse(error.message, 500)
     }
 
-    return errorResponse(error.message || 'Internal server error', 500)
+    return errorResponse('Internal server error', 500)
   }
 })
 

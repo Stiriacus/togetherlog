@@ -16,14 +16,32 @@ class SmartPageRenderer extends StatelessWidget {
   const SmartPageRenderer({
     super.key,
     required this.entry,
-  });
+  }) : customChild = null;
 
-  final Entry entry;
+  /// Custom page constructor for non-entry pages (e.g., "The End" page)
+  const SmartPageRenderer.customPage({
+    super.key,
+    required Widget child,
+  })  : entry = null,
+        customChild = child;
+
+  final Entry? entry;
+  final Widget? customChild;
 
   @override
   Widget build(BuildContext context) {
+    // If custom child is provided, render it directly
+    if (customChild != null) {
+      return customChild!;
+    }
+
+    // Render entry-based page
+    if (entry == null) {
+      return Container(); // Fallback for invalid state
+    }
+
     // Get color scheme from backend-computed theme
-    final colorScheme = SmartPageTheme.getColorScheme(entry.colorTheme);
+    final colorScheme = SmartPageTheme.getColorScheme(entry!.colorTheme);
 
     // Select layout widget based on backend-computed layout type
     final layoutWidget = _getLayoutWidget(colorScheme);
@@ -35,7 +53,7 @@ class SmartPageRenderer extends StatelessWidget {
 
         // Sprinkles overlay (decorative icons)
         SprinklesOverlay(
-          sprinkles: entry.sprinkles,
+          sprinkles: entry!.sprinkles,
           colorScheme: colorScheme,
         ),
       ],
@@ -45,26 +63,26 @@ class SmartPageRenderer extends StatelessWidget {
   /// Select appropriate layout widget based on pageLayoutType
   /// Layout type is computed by backend Smart Pages Engine
   Widget _getLayoutWidget(ColorScheme colorScheme) {
-    switch (entry.pageLayoutType) {
+    switch (entry!.pageLayoutType) {
       case 'single_full':
         return SingleFullLayout(
-          entry: entry,
+          entry: entry!,
           colorScheme: colorScheme,
         );
       case 'grid_2x2':
         return Grid2x2Layout(
-          entry: entry,
+          entry: entry!,
           colorScheme: colorScheme,
         );
       case 'grid_3x2':
         return Grid3x2Layout(
-          entry: entry,
+          entry: entry!,
           colorScheme: colorScheme,
         );
       default:
         // Fallback to single_full if layout type is null or unknown
         return SingleFullLayout(
-          entry: entry,
+          entry: entry!,
           colorScheme: colorScheme,
         );
     }

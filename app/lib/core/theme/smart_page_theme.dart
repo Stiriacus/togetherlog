@@ -30,73 +30,73 @@ class SmartPageTheme {
   }
 
   /// Warm Red Theme - Romantic, In Love, Anniversary
-  static final ColorScheme _warmRedTheme = ColorScheme.light(
-    primary: const Color(0xFFD32F2F), // Deep red
-    secondary: const Color(0xFFFF6B6B), // Warm coral red
-    surface: const Color(0xFFFFF0F0), // Soft pink background
+  static const ColorScheme _warmRedTheme = ColorScheme.light(
+    primary: Color(0xFFD32F2F), // Deep red
+    secondary: Color(0xFFFF6B6B), // Warm coral red
+    surface: Color(0xFFFFF0F0), // Soft pink background
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: const Color(0xFF5D1010), // Dark red text
+    onSurface: Color(0xFF5D1010), // Dark red text
   );
 
   /// Earth Green Theme - Nature & Hiking, Adventure
-  static final ColorScheme _earthGreenTheme = ColorScheme.light(
-    primary: const Color(0xFF2E7D32), // Forest green
-    secondary: const Color(0xFF66BB6A), // Light green
-    surface: const Color(0xFFF1F8E9), // Very light green
+  static const ColorScheme _earthGreenTheme = ColorScheme.light(
+    primary: Color(0xFF2E7D32), // Forest green
+    secondary: Color(0xFF66BB6A), // Light green
+    surface: Color(0xFFF1F8E9), // Very light green
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: const Color(0xFF1B5E20), // Dark green text
+    onSurface: Color(0xFF1B5E20), // Dark green text
   );
 
   /// Ocean Blue Theme - Lake, Beach
-  static final ColorScheme _oceanBlueTheme = ColorScheme.light(
-    primary: const Color(0xFF0277BD), // Ocean blue
-    secondary: const Color(0xFF4FC3F7), // Sky blue
-    surface: const Color(0xFFE1F5FE), // Very light blue
+  static const ColorScheme _oceanBlueTheme = ColorScheme.light(
+    primary: Color(0xFF0277BD), // Ocean blue
+    secondary: Color(0xFF4FC3F7), // Sky blue
+    surface: Color(0xFFE1F5FE), // Very light blue
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: const Color(0xFF01579B), // Dark blue text
+    onSurface: Color(0xFF01579B), // Dark blue text
   );
 
   /// Deep Purple Theme - Nightlife
-  static final ColorScheme _deepPurpleTheme = ColorScheme.light(
-    primary: const Color(0xFF512DA8), // Deep purple
-    secondary: const Color(0xFF7E57C2), // Medium purple
-    surface: const Color(0xFFEDE7F6), // Very light purple
+  static const ColorScheme _deepPurpleTheme = ColorScheme.light(
+    primary: Color(0xFF512DA8), // Deep purple
+    secondary: Color(0xFF7E57C2), // Medium purple
+    surface: Color(0xFFEDE7F6), // Very light purple
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: const Color(0xFF311B92), // Dark purple text
+    onSurface: Color(0xFF311B92), // Dark purple text
   );
 
   /// Warm Earth Theme - Food, Home
-  static final ColorScheme _warmEarthTheme = ColorScheme.light(
-    primary: const Color(0xFF8D6E63), // Warm brown
-    secondary: const Color(0xFFBCAAA4), // Light brown
-    surface: const Color(0xFFEFEBE9), // Cream
+  static const ColorScheme _warmEarthTheme = ColorScheme.light(
+    primary: Color(0xFF8D6E63), // Warm brown
+    secondary: Color(0xFFBCAAA4), // Light brown
+    surface: Color(0xFFEFEBE9), // Cream
     onPrimary: Colors.white,
-    onSecondary: const Color(0xFF3E2723),
-    onSurface: const Color(0xFF3E2723), // Dark brown text
+    onSecondary: Color(0xFF3E2723),
+    onSurface: Color(0xFF3E2723), // Dark brown text
   );
 
   /// Soft Rose Theme - Travel
-  static final ColorScheme _softRoseTheme = ColorScheme.light(
-    primary: const Color(0xFFC2185B), // Rose
-    secondary: const Color(0xFFF06292), // Light pink
-    surface: const Color(0xFFFCE4EC), // Very light pink
+  static const ColorScheme _softRoseTheme = ColorScheme.light(
+    primary: Color(0xFFC2185B), // Rose
+    secondary: Color(0xFFF06292), // Light pink
+    surface: Color(0xFFFCE4EC), // Very light pink
     onPrimary: Colors.white,
     onSecondary: Colors.white,
-    onSurface: const Color(0xFF880E4F), // Dark rose text
+    onSurface: Color(0xFF880E4F), // Dark rose text
   );
 
   /// Neutral Theme - Default fallback
-  static final ColorScheme _neutralTheme = ColorScheme.light(
-    primary: const Color(0xFF616161), // Medium gray
-    secondary: const Color(0xFF9E9E9E), // Light gray
-    surface: const Color(0xFFF5F5F5), // Very light gray
+  static const ColorScheme _neutralTheme = ColorScheme.light(
+    primary: Color(0xFF616161), // Medium gray
+    secondary: Color(0xFF9E9E9E), // Light gray
+    surface: Color(0xFFF5F5F5), // Very light gray
     onPrimary: Colors.white,
     onSecondary: Colors.black87,
-    onSurface: const Color(0xFF212121), // Dark gray text
+    onSurface: Color(0xFF212121), // Dark gray text
   );
 
   /// Get text style for highlight text based on theme

@@ -177,8 +177,8 @@ class EntryDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                 ],
 
-                // Tags (placeholder - would need to fetch tag details)
-                if (entry.tagIds.isNotEmpty) ...[
+                // Tags
+                if (entry.tags.isNotEmpty) ...[
                   const Text(
                     'Tags',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -187,9 +187,9 @@ class EntryDetailScreen extends ConsumerWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: entry.tagIds.map((tagId) {
+                    children: entry.tags.map((tag) {
                       return Chip(
-                        label: Text(tagId.substring(0, 8)), // Simplified
+                        label: Text(tag.name),
                       );
                     }).toList(),
                   ),

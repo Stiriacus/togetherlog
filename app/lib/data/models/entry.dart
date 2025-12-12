@@ -10,6 +10,7 @@ class Entry {
     required this.highlightText,
     required this.photos,
     required this.tagIds,
+    this.tags = const [],
     this.location,
     this.pageLayoutType,
     this.colorTheme,
@@ -18,6 +19,20 @@ class Entry {
   });
 
   factory Entry.fromJson(Map<String, dynamic> json) {
+    // Parse tags - backend can return either 'tag_ids' or 'tags' (full objects)
+    List<String> tagIds = [];
+    List<EntryTag> tags = [];
+
+    if (json['tag_ids'] != null) {
+      // Direct tag_ids array
+      tagIds = (json['tag_ids'] as List<dynamic>).cast<String>();
+    } else if (json['tags'] != null) {
+      // Full tag objects from view
+      final tagsList = json['tags'] as List<dynamic>;
+      tags = tagsList.map((tag) => EntryTag.fromJson(tag as Map<String, dynamic>)).toList();
+      tagIds = tags.map((tag) => tag.id).toList();
+    }
+
     return Entry(
       id: json['id'] as String,
       logId: json['log_id'] as String,
@@ -29,7 +44,8 @@ class Entry {
               ?.map((e) => Photo.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      tagIds: (json['tag_ids'] as List<dynamic>?)?.cast<String>() ?? [],
+      tagIds: tagIds,
+      tags: tags,
       location: json['location'] != null
           ? Location.fromJson(json['location'] as Map<String, dynamic>)
           : null,
@@ -48,6 +64,7 @@ class Entry {
   final String highlightText;
   final List<Photo> photos;
   final List<String> tagIds;
+  final List<EntryTag> tags; // Full tag objects with names
   final Location? location;
   final String? pageLayoutType; // Set by backend Smart Page engine
   final String? colorTheme; // Set by backend Smart Page engine
@@ -87,9 +104,9 @@ class Photo {
   factory Photo.fromJson(Map<String, dynamic> json) {
     return Photo(
       id: json['id'] as String,
-      entryId: json['entry_id'] as String,
-      url: json['url'] as String,
-      thumbnailUrl: json['thumbnail_url'] as String,
+      entryId: json['entry_id'] as String? ?? '', // Backend view might not include entry_id
+      url: json['url'] as String? ?? '',
+      thumbnailUrl: json['thumbnail_url'] as String? ?? '',
       displayOrder: json['display_order'] as int?,
       dominantColors: (json['dominant_colors'] as List<dynamic>?)?.cast<String>(),
       metadata: json['metadata'] as Map<String, dynamic>?,
@@ -97,7 +114,7 @@ class Photo {
   }
 
   final String id;
-  final String entryId;
+  final String entryId; // Can be empty if from view that doesn't include it
   final String url;
   final String thumbnailUrl;
   final int? displayOrder;
@@ -145,6 +162,38 @@ class Location {
       if (lng != null) 'lng': lng,
       'display_name': displayName,
       'is_user_overridden': isUserOverridden,
+    };
+  }
+}
+
+class EntryTag {
+  const EntryTag({
+    required this.id,
+    required this.name,
+    this.category,
+    this.icon,
+  });
+
+  factory EntryTag.fromJson(Map<String, dynamic> json) {
+    return EntryTag(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      category: json['category'] as String?,
+      icon: json['icon'] as String?,
+    );
+  }
+
+  final String id;
+  final String name;
+  final String? category;
+  final String? icon;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      if (category != null) 'category': category,
+      if (icon != null) 'icon': icon,
     };
   }
 }

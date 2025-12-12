@@ -24,9 +24,12 @@ class StorageApiClient {
         throw Exception('User not authenticated');
       }
 
+      // Sanitize filename: remove special characters, keep only alphanumeric, dots, dashes, underscores
+      final sanitizedFileName = fileName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+
       // Generate unique file path
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final filePath = '$userId/$entryId/${timestamp}_$fileName';
+      final filePath = '$userId/$entryId/${timestamp}_$sanitizedFileName';
 
       // Upload to 'photos' bucket
       await supabase.storage.from('photos').uploadBinary(
@@ -44,21 +47,30 @@ class StorageApiClient {
     }
   }
 
-  /// Get public URL for a photo
+  /// Get authenticated URL for a photo
   /// Bucket: 'photos'
-  String getPhotoUrl(String path) {
+  /// For private buckets with RLS, we need to create a signed URL
+  Future<String> getPhotoUrl(String path) async {
     try {
-      return supabase.storage.from('photos').getPublicUrl(path);
+      // For private buckets, create a signed URL valid for 1 year
+      final signedUrl = await supabase.storage
+          .from('photos')
+          .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+      return signedUrl;
     } catch (e) {
       throw Exception('Failed to get photo URL: $e');
     }
   }
 
-  /// Get public URL for a thumbnail
+  /// Get authenticated URL for a thumbnail
   /// Bucket: 'thumbnails'
-  String getThumbnailUrl(String path) {
+  Future<String> getThumbnailUrl(String path) async {
     try {
-      return supabase.storage.from('thumbnails').getPublicUrl(path);
+      // For private buckets, create a signed URL valid for 1 year
+      final signedUrl = await supabase.storage
+          .from('thumbnails')
+          .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+      return signedUrl;
     } catch (e) {
       throw Exception('Failed to get thumbnail URL: $e');
     }

@@ -95,11 +95,14 @@ serve(async (req: Request) => {
       return errorResponse(error.message, 400)
     }
 
-    if (error.message === 'Missing authorization header' || error.message === 'Invalid or expired token') {
-      return errorResponse(error.message, 401)
+    if (error instanceof Error) {
+      if (error.message === 'Missing authorization header' || error.message === 'Invalid or expired token') {
+        return errorResponse(error.message, 401)
+      }
+      return errorResponse(error.message, 500)
     }
 
-    return errorResponse(error.message || 'Internal server error', 500)
+    return errorResponse('Internal server error', 500)
   }
 })
 
@@ -306,7 +309,8 @@ async function createEntry(supabase: any, userId: string, logId: string, req: Re
     }
   }
 
-  // Link photos if provided
+  // Link photos if provided and compute Smart Page layout
+  let photoCount = 0
   if (body.photo_ids && body.photo_ids.length > 0) {
     const photoUpdates = body.photo_ids.map((photoId, index) => ({
       id: photoId,
@@ -322,8 +326,28 @@ async function createEntry(supabase: any, userId: string, logId: string, req: Re
 
       if (photoError) {
         console.error('Error linking photo:', photoError)
+      } else {
+        photoCount++
       }
     }
+  }
+
+  // Update Smart Page layout based on photo count (basic rule engine)
+  let layoutType = 'single_full'
+  if (photoCount >= 2 && photoCount <= 4) {
+    layoutType = 'grid_2x2'
+  } else if (photoCount >= 5) {
+    layoutType = 'grid_3x2'
+  }
+
+  if (photoCount > 0) {
+    await supabase
+      .from('entries')
+      .update({
+        page_layout_type: layoutType,
+        is_processed: true
+      })
+      .eq('id', entry.id)
   }
 
   // Fetch complete entry with photos and tags
