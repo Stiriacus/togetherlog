@@ -24,9 +24,7 @@ class AuthRepository {
       return AppUser(
         id: response.user!.id,
         email: response.user!.email ?? email,
-        createdAt: response.user!.createdAt != null
-            ? DateTime.parse(response.user!.createdAt!)
-            : null,
+        createdAt: DateTime.tryParse(response.user!.createdAt),
       );
     } on AuthException catch (e) {
       throw Exception('Sign in failed: ${e.message}');
@@ -53,9 +51,7 @@ class AuthRepository {
       return AppUser(
         id: response.user!.id,
         email: response.user!.email ?? email,
-        createdAt: response.user!.createdAt != null
-            ? DateTime.parse(response.user!.createdAt!)
-            : null,
+        createdAt: DateTime.tryParse(response.user!.createdAt),
       );
     } on AuthException catch (e) {
       throw Exception('Sign up failed: ${e.message}');
@@ -83,8 +79,7 @@ class AuthRepository {
     return AppUser(
       id: user.id,
       email: user.email ?? '',
-      createdAt:
-          user.createdAt != null ? DateTime.parse(user.createdAt!) : null,
+      createdAt: DateTime.tryParse(user.createdAt),
     );
   }
 
@@ -97,8 +92,7 @@ class AuthRepository {
       return AppUser(
         id: user.id,
         email: user.email ?? '',
-        createdAt:
-            user.createdAt != null ? DateTime.parse(user.createdAt!) : null,
+        createdAt: DateTime.tryParse(user.createdAt),
       );
     });
   }

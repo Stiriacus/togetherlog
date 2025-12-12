@@ -1,3 +1,3 @@
 Ignore this file - do not read it!
 
-Please begin work on the project based on CLAUDE.md.  Start by: 1. Reading and analyzing the repository structure 2. Applying the milestone workflow 3. Identifying the next milestone from docs/MILESTONES.md (Milestone 9) 4. Restating your understanding of the milestone 5. Producing the implementation plan before writing code  Important: - Only test Web builds for now - Do NOT test or generate commands for Windows, macOS, Linux desktop, or Android
+Please begin work on the project based on CLAUDE.md.  Start by: 1. Reading and analyzing the repository structure 2. Applying the milestone workflow 3. Identifying the next milestone from docs/MILESTONES.md 4. Restating your understanding of the milestone 5. Producing the implementation plan before writing code  Important: - Only test Web builds for now - Do NOT test or generate commands for Windows, macOS, Linux desktop, or Android

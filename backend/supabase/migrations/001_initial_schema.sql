@@ -413,11 +413,13 @@ ON CONFLICT (name) DO NOTHING;
 -- These INSERT statements are for reference and may need to be run separately
 
 -- Create photos bucket (if not exists)
+-- Private bucket with RLS policies for access control (uses signed URLs)
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('photos', 'photos', false)
 ON CONFLICT (id) DO NOTHING;
 
 -- Create thumbnails bucket (if not exists)
+-- Private bucket with RLS policies for access control (uses signed URLs)
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('thumbnails', 'thumbnails', false)
 ON CONFLICT (id) DO NOTHING;

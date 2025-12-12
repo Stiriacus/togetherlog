@@ -36,6 +36,7 @@ class LogsScreen extends ConsumerWidget {
         onLogTap: (log) => _navigateToEntries(context, log),
         onLogEdit: (log) => _showEditDialog(context, log),
         onLogDelete: (log) => _showDeleteConfirmation(context, ref, log),
+        onViewFlipbook: (log) => _navigateToFlipbook(context, log),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateDialog(context),
@@ -48,6 +49,11 @@ class LogsScreen extends ConsumerWidget {
   /// Navigate to entries screen for the selected log
   void _navigateToEntries(BuildContext context, Log log) {
     context.go('/logs/${log.id}/entries');
+  }
+
+  /// Navigate to flipbook viewer for the selected log
+  void _navigateToFlipbook(BuildContext context, Log log) {
+    context.go('/logs/${log.id}/flipbook?logName=${Uri.encodeComponent(log.name)}');
   }
 
   /// Show create log dialog

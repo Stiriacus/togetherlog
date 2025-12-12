@@ -7,6 +7,10 @@ import '../../features/auth/auth_screen.dart';
 import '../../features/auth/providers/auth_providers.dart';
 import '../../features/logs/logs_screen.dart';
 import '../../features/entries/entries_screen.dart';
+import '../../features/entries/entry_create_screen.dart';
+import '../../features/entries/entry_detail_screen.dart';
+import '../../features/entries/entry_edit_screen.dart';
+import '../../features/flipbook/flipbook_viewer.dart';
 
 /// Router provider for the app
 final routerProvider = Provider<GoRouter>((ref) {
@@ -53,7 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const LogsScreen(),
       ),
 
-      // Entries route (placeholder for MILESTONE 10)
+      // Entries routes
       GoRoute(
         path: '/logs/:logId/entries',
         name: 'entries',
@@ -63,7 +67,49 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Flipbook routes will be added in MILESTONE 11
+      // Create entry route
+      GoRoute(
+        path: '/logs/:logId/entries/create',
+        name: 'entry-create',
+        builder: (context, state) {
+          final logId = state.pathParameters['logId']!;
+          return EntryCreateScreen(logId: logId);
+        },
+      ),
+
+      // Entry detail route
+      GoRoute(
+        path: '/entries/:entryId',
+        name: 'entry-detail',
+        builder: (context, state) {
+          final entryId = state.pathParameters['entryId']!;
+          return EntryDetailScreen(entryId: entryId);
+        },
+      ),
+
+      // Entry edit route
+      GoRoute(
+        path: '/entries/:entryId/edit',
+        name: 'entry-edit',
+        builder: (context, state) {
+          final entryId = state.pathParameters['entryId']!;
+          return EntryEditScreen(entryId: entryId);
+        },
+      ),
+
+      // Flipbook route
+      GoRoute(
+        path: '/logs/:logId/flipbook',
+        name: 'flipbook',
+        builder: (context, state) {
+          final logId = state.pathParameters['logId']!;
+          final logName = state.uri.queryParameters['logName'] ?? 'Flipbook';
+          return FlipbookViewer(
+            logId: logId,
+            logName: logName,
+          );
+        },
+      ),
     ],
   );
 });

@@ -2,10 +2,6 @@
 // Represents an authenticated user
 
 class AppUser {
-  final String id;
-  final String email;
-  final DateTime? createdAt;
-
   const AppUser({
     required this.id,
     required this.email,
@@ -21,6 +17,10 @@ class AppUser {
           : null,
     );
   }
+
+  final String id;
+  final String email;
+  final DateTime? createdAt;
 
   Map<String, dynamic> toJson() {
     return {

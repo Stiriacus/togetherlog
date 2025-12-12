@@ -10,7 +10,8 @@ import 'supabase_client.dart';
 class LogsApiClient {
   LogsApiClient({
     String? baseUrl,
-  }) : _baseUrl = baseUrl ?? 'https://ikspskghylahtexiqepl.supabase.co/functions/v1' {
+  }) : _baseUrl =
+            baseUrl ?? 'https://ikspskghylahtexiqepl.supabase.co/functions/v1' {
     _dio = Dio(
       BaseOptions(
         baseUrl: _baseUrl,
@@ -47,8 +48,13 @@ class LogsApiClient {
       final response = await _dio.get('/api-logs');
 
       if (response.statusCode == 200 && response.data != null) {
-        final List<dynamic> data = response.data as List<dynamic>;
-        return data.map((json) => Log.fromJson(json as Map<String, dynamic>)).toList();
+        // Backend returns { logs: [...] }, extract the logs array
+        final Map<String, dynamic> responseData =
+            response.data as Map<String, dynamic>;
+        final List<dynamic> logs = responseData['logs'] as List<dynamic>;
+        return logs
+            .map((json) => Log.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
 
       throw Exception('Failed to fetch logs: Invalid response');
@@ -69,7 +75,12 @@ class LogsApiClient {
       final response = await _dio.get('/api-logs/$id');
 
       if (response.statusCode == 200 && response.data != null) {
-        return Log.fromJson(response.data as Map<String, dynamic>);
+        // Backend returns { log: {...} }, extract the log object
+        final Map<String, dynamic> responseData =
+            response.data as Map<String, dynamic>;
+        final Map<String, dynamic> log =
+            responseData['log'] as Map<String, dynamic>;
+        return Log.fromJson(log);
       }
 
       throw Exception('Failed to fetch log: Invalid response');
@@ -103,13 +114,19 @@ class LogsApiClient {
       );
 
       if (response.statusCode == 201 && response.data != null) {
-        return Log.fromJson(response.data as Map<String, dynamic>);
+        // Backend returns { log: {...} }, extract the log object
+        final Map<String, dynamic> responseData =
+            response.data as Map<String, dynamic>;
+        final Map<String, dynamic> log =
+            responseData['log'] as Map<String, dynamic>;
+        return Log.fromJson(log);
       }
 
       throw Exception('Failed to create log: Invalid response');
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
-        throw Exception('Invalid data: ${e.response?.data?['error'] ?? 'Bad request'}');
+        throw Exception(
+            'Invalid data: ${e.response?.data?['error'] ?? 'Bad request'}',);
       }
       if (e.response?.statusCode == 401) {
         throw Exception('Unauthorized: Please log in again');
@@ -139,7 +156,12 @@ class LogsApiClient {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        return Log.fromJson(response.data as Map<String, dynamic>);
+        // Backend returns { log: {...} }, extract the log object
+        final Map<String, dynamic> responseData =
+            response.data as Map<String, dynamic>;
+        final Map<String, dynamic> log =
+            responseData['log'] as Map<String, dynamic>;
+        return Log.fromJson(log);
       }
 
       throw Exception('Failed to update log: Invalid response');
@@ -148,7 +170,8 @@ class LogsApiClient {
         throw Exception('Log not found');
       }
       if (e.response?.statusCode == 400) {
-        throw Exception('Invalid data: ${e.response?.data?['error'] ?? 'Bad request'}');
+        throw Exception(
+            'Invalid data: ${e.response?.data?['error'] ?? 'Bad request'}',);
       }
       if (e.response?.statusCode == 401) {
         throw Exception('Unauthorized: Please log in again');
