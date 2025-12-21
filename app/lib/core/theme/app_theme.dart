@@ -193,7 +193,7 @@ class AppTheme {
       // === Cards ===
       cardTheme: CardThemeData(
         color: AppColors.antiqueWhite,
-        elevation: 0,
+        elevation: 2,
         shadowColor: AppColors.shadowBase,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.card),

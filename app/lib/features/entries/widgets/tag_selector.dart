@@ -2,6 +2,7 @@
 // Multi-select tag picker with chips UI
 
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/tag.dart';
 
 /// Tag Selector Widget
@@ -48,7 +49,7 @@ class _TagSelectorState extends State<TagSelector> {
           '${_selectedTagIds.length} tag${_selectedTagIds.length != 1 ? 's' : ''} selected',
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: AppColors.secondaryText,
           ),
         ),
 
@@ -96,7 +97,12 @@ class _TagSelectorState extends State<TagSelector> {
     final isSelected = _selectedTagIds.contains(tag.id);
 
     return FilterChip(
-      label: Text(tag.name),
+      label: Text(
+        tag.name,
+        style: TextStyle(
+          color: isSelected ? AppColors.antiqueWhite : AppColors.carbonBlack,
+        ),
+      ),
       selected: isSelected,
       onSelected: (selected) {
         setState(() {
@@ -109,8 +115,9 @@ class _TagSelectorState extends State<TagSelector> {
 
         widget.onSelectionChanged(_selectedTagIds);
       },
-      selectedColor: Theme.of(context).colorScheme.primaryContainer,
-      checkmarkColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      selectedColor: AppColors.darkWalnut,
+      backgroundColor: AppColors.softApricot,
+      checkmarkColor: AppColors.antiqueWhite,
     );
   }
 }

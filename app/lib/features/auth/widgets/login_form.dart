@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
 import '../providers/auth_providers.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
@@ -60,13 +61,13 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                border: Border.all(color: Colors.red.shade300),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.errorMuted.withValues(alpha: 0.1),
+                border: Border.all(color: AppColors.errorMuted),
+                borderRadius: BorderRadius.circular(AppRadius.button),
               ),
               child: Text(
                 _errorMessage!,
-                style: TextStyle(color: Colors.red.shade900),
+                style: const TextStyle(color: AppColors.errorMuted),
               ),
             ),
           ],
@@ -75,7 +76,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: 'Email',
-              border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.email),
             ),
             validator: (value) {
@@ -95,7 +95,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             obscureText: true,
             decoration: const InputDecoration(
               labelText: 'Password',
-              border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.lock),
             ),
             validator: (value) {
@@ -110,21 +109,18 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             enabled: !_isLoading,
           ),
           const SizedBox(height: 24),
-          ElevatedButton(
+          FilledButton(
             onPressed: _isLoading ? null : _handleLogin,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
             child: _isLoading
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.antiqueWhite,
+                    ),
                   )
-                : const Text(
-                    'Log In',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                : const Text('Log In'),
           ),
         ],
       ),

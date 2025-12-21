@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../core/theme/app_theme.dart';
 import 'providers/entries_providers.dart';
 
 /// Entry detail screen
@@ -44,13 +45,16 @@ class EntryDetailScreen extends ConsumerWidget {
                 // Event Date
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, color: Colors.grey[600]),
+                    Icon(
+                      Icons.calendar_today,
+                      color: AppColors.inactiveIcon,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       dateFormat.format(entry.eventDate),
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[700],
+                        color: AppColors.secondaryText,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -62,10 +66,7 @@ class EntryDetailScreen extends ConsumerWidget {
                 // Highlight Text
                 Text(
                   entry.highlightText,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
 
                 const SizedBox(height: 16),
@@ -78,7 +79,7 @@ class EntryDetailScreen extends ConsumerWidget {
                         entry.location!.isUserOverridden
                             ? Icons.edit_location
                             : Icons.location_on,
-                        color: Colors.grey[600],
+                        color: AppColors.inactiveIcon,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -86,7 +87,7 @@ class EntryDetailScreen extends ConsumerWidget {
                           entry.location!.displayName,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[700],
+                            color: AppColors.secondaryText,
                           ),
                         ),
                       ),
@@ -100,23 +101,26 @@ class EntryDetailScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green[200]!),
+                      color: AppColors.successMuted.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      border: Border.all(color: AppColors.successMuted),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
-                            Icon(Icons.auto_awesome, color: Colors.green[700]),
-                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.auto_awesome,
+                              color: AppColors.successMuted,
+                            ),
+                            SizedBox(width: 8),
                             Text(
                               'Smart Page Generated',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green[700],
+                                color: AppColors.successMuted,
                               ),
                             ),
                           ],
@@ -125,12 +129,12 @@ class EntryDetailScreen extends ConsumerWidget {
                         if (entry.pageLayoutType != null)
                           Text(
                             'Layout: ${entry.pageLayoutType}',
-                            style: TextStyle(color: Colors.green[900]),
+                            style: const TextStyle(color: AppColors.successMuted),
                           ),
                         if (entry.colorTheme != null)
                           Text(
                             'Theme: ${entry.colorTheme}',
-                            style: TextStyle(color: Colors.green[900]),
+                            style: const TextStyle(color: AppColors.successMuted),
                           ),
                       ],
                     ),
@@ -140,9 +144,9 @@ class EntryDetailScreen extends ConsumerWidget {
 
                 // Photos
                 if (entry.photos.isNotEmpty) ...[
-                  const Text(
+                  Text(
                     'Photos',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   GridView.builder(
@@ -158,15 +162,19 @@ class EntryDetailScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final photo = entry.photos[index];
                       return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.thumbnail),
                         child: Image.network(
                           photo.url,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: Colors.grey[300],
-                              child: const Center(
-                                child: Icon(Icons.broken_image, size: 48),
+                              color: AppColors.softApricot.withValues(alpha: 0.3),
+                              child: Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: AppIconSize.large,
+                                  color: AppColors.inactiveIcon,
+                                ),
                               ),
                             );
                           },
@@ -179,9 +187,9 @@ class EntryDetailScreen extends ConsumerWidget {
 
                 // Tags
                 if (entry.tags.isNotEmpty) ...[
-                  const Text(
+                  Text(
                     'Tags',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -203,9 +211,19 @@ class EntryDetailScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const Icon(
+                Icons.error_outline,
+                size: AppIconSize.extraLarge,
+                color: AppColors.errorMuted,
+              ),
               const SizedBox(height: 16),
-              Text('Failed to load entry: $error'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  'Failed to load entry: $error',
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ],
           ),
         ),

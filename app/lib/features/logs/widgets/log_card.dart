@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/log.dart';
 
 /// Card widget for displaying a single log
@@ -28,7 +29,6 @@ class LogCard extends StatelessWidget {
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Card(
-      elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
         onTap: onTap,
@@ -77,9 +77,7 @@ class LogCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Created ${dateFormat.format(log.createdAt)}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -106,7 +104,7 @@ class LogCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.menu_book, color: Colors.blue),
+              leading: const Icon(Icons.menu_book, color: AppColors.darkWalnut),
               title: const Text('View Flipbook'),
               onTap: () {
                 Navigator.pop(context);
@@ -122,8 +120,8 @@ class LogCard extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete', style: TextStyle(color: Colors.red)),
+              leading: const Icon(Icons.delete, color: AppColors.errorMuted),
+              title: const Text('Delete', style: TextStyle(color: AppColors.errorMuted)),
               onTap: () {
                 Navigator.pop(context);
                 onDelete();
@@ -153,13 +151,13 @@ class LogCard extends StatelessWidget {
   Color _getTypeColor(String type) {
     switch (type.toLowerCase()) {
       case 'couple':
-        return Colors.pink;
+        return AppColors.logTypeCouple;
       case 'family':
-        return Colors.blue;
+        return AppColors.logTypeFamily;
       case 'solo':
-        return Colors.purple;
+        return AppColors.oliveWood;
       default:
-        return Colors.grey;
+        return AppColors.oliveWood;
     }
   }
 }

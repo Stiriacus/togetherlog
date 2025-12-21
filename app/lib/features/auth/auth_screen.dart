@@ -2,6 +2,8 @@
 // Provides login and signup forms with tab navigation
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme/app_theme.dart';
 import 'widgets/login_form.dart';
 import 'widgets/signup_form.dart';
 
@@ -44,16 +46,17 @@ class _AuthScreenState extends State<AuthScreen>
                   // App Logo/Title
                   const Icon(
                     Icons.auto_stories,
-                    size: 80,
-                    color: Colors.deepPurple,
+                    size: AppIconSize.extraLarge,
+                    color: AppColors.darkWalnut,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'TogetherLog',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: GoogleFonts.playfairDisplay(
                       fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.carbonBlack,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -62,7 +65,7 @@ class _AuthScreenState extends State<AuthScreen>
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: AppColors.secondaryText,
                     ),
                   ),
                   const SizedBox(height: 48),
@@ -70,24 +73,18 @@ class _AuthScreenState extends State<AuthScreen>
                   // Tabs
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.softApricot.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(AppRadius.button),
                     ),
                     child: TabBar(
                       controller: _tabController,
                       indicator: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: AppColors.antiqueWhite,
+                        borderRadius: BorderRadius.circular(AppRadius.button),
+                        boxShadow: AppShadows.elevation1,
                       ),
-                      labelColor: Colors.deepPurple,
-                      unselectedLabelColor: Colors.grey.shade600,
+                      labelColor: AppColors.darkWalnut,
+                      unselectedLabelColor: AppColors.secondaryText,
                       tabs: const [
                         Tab(text: 'Log In'),
                         Tab(text: 'Sign Up'),

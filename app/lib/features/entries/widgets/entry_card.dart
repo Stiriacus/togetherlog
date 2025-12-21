@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/entry.dart';
 
 /// Entry Card Widget
@@ -31,6 +32,7 @@ class EntryCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,16 +45,20 @@ class EntryCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      color: Colors.grey[300],
-                      child: const Center(
-                        child: Icon(Icons.broken_image, size: 48),
+                      color: AppColors.softApricot.withValues(alpha: 0.3),
+                      child: Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: AppIconSize.large,
+                          color: AppColors.inactiveIcon,
+                        ),
                       ),
                     );
                   },
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Container(
-                      color: Colors.grey[200],
+                      color: AppColors.softApricot.withValues(alpha: 0.2),
                       child: Center(
                         child: CircularProgressIndicator(
                           value: loadingProgress.expectedTotalBytes != null
@@ -77,15 +83,15 @@ class EntryCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.calendar_today,
-                        size: 16,
-                        color: Colors.grey[600],
+                        size: AppIconSize.small,
+                        color: AppColors.inactiveIcon,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         dateFormat.format(entry.eventDate),
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: AppColors.secondaryText,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -97,10 +103,9 @@ class EntryCard extends StatelessWidget {
                   // Highlight text
                   Text(
                     entry.highlightText,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -113,8 +118,8 @@ class EntryCard extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.location_on,
-                          size: 16,
-                          color: Colors.grey[600],
+                          size: AppIconSize.small,
+                          color: AppColors.inactiveIcon,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -122,7 +127,7 @@ class EntryCard extends StatelessWidget {
                             entry.location!.displayName,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: AppColors.secondaryText,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -142,15 +147,15 @@ class EntryCard extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.photo_library,
-                              size: 16,
-                              color: Colors.grey[600],
+                              size: AppIconSize.small,
+                              color: AppColors.inactiveIcon,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${entry.photos.length} photo${entry.photos.length > 1 ? 's' : ''}',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: AppColors.secondaryText,
                               ),
                             ),
                           ],
@@ -166,23 +171,23 @@ class EntryCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.green[100],
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.successMuted.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(AppRadius.chip),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.auto_awesome,
                                 size: 12,
-                                color: Colors.green[700],
+                                color: AppColors.successMuted,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Text(
                                 'Smart Page',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: Colors.green[700],
+                                  color: AppColors.successMuted,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -216,7 +221,7 @@ class EntryCard extends StatelessWidget {
                         icon: const Icon(Icons.delete, size: 18),
                         label: const Text('Delete'),
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
+                          foregroundColor: AppColors.errorMuted,
                         ),
                       ),
                   ],

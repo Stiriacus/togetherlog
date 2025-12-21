@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 import 'providers/entries_providers.dart';
 import 'widgets/entry_card.dart';
 
@@ -82,20 +83,27 @@ class EntriesScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const Icon(
+                Icons.error_outline,
+                size: AppIconSize.extraLarge,
+                color: AppColors.errorMuted,
+              ),
               const SizedBox(height: 16),
               Text(
                 'Failed to load entries',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  error.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
+              const SizedBox(height: 24),
+              FilledButton.icon(
                 onPressed: () => ref.invalidate(entriesListProvider(logId)),
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
@@ -118,20 +126,22 @@ class EntriesScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.photo_library_outlined,
-            size: 80,
-            color: Colors.grey,
+            size: AppIconSize.extraLarge,
+            color: AppColors.emptyStateIcon,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No entries yet',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Create your first memory entry',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.secondaryText,
+                ),
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
@@ -181,7 +191,7 @@ class EntriesScreen extends ConsumerWidget {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.errorMuted,
             ),
             child: const Text('Delete'),
           ),
@@ -201,7 +211,6 @@ class EntriesScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Entry deleted successfully'),
-              backgroundColor: Colors.green,
             ),
           );
         }
@@ -210,7 +219,6 @@ class EntriesScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Failed to delete entry: $e'),
-              backgroundColor: Colors.red,
             ),
           );
         }

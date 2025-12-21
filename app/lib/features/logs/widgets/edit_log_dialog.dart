@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/log.dart';
 import '../providers/logs_providers.dart';
 
@@ -120,7 +121,10 @@ class _EditLogDialogState extends ConsumerState<EditLogDialog> {
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.antiqueWhite,
+                  ),
                 )
               : const Text('Save'),
         ),
@@ -167,7 +171,6 @@ class _EditLogDialogState extends ConsumerState<EditLogDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update log: $e'),
-            backgroundColor: Colors.red,
           ),
         );
       }

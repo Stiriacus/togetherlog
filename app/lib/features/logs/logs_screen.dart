@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../auth/providers/auth_providers.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/models/log.dart';
 import 'providers/logs_providers.dart';
 import 'widgets/log_list.dart';
@@ -67,7 +68,6 @@ class LogsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Log created successfully'),
-          backgroundColor: Colors.green,
         ),
       );
     }
@@ -84,7 +84,6 @@ class LogsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Log updated successfully'),
-          backgroundColor: Colors.green,
         ),
       );
     }
@@ -111,7 +110,7 @@ class LogsScreen extends ConsumerWidget {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.errorMuted,
             ),
             child: const Text('Delete'),
           ),
@@ -131,7 +130,6 @@ class LogsScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Log deleted successfully'),
-              backgroundColor: Colors.green,
             ),
           );
         }
@@ -140,7 +138,6 @@ class LogsScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Failed to delete log: $e'),
-              backgroundColor: Colors.red,
             ),
           );
         }

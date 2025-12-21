@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/log.dart';
 import '../providers/logs_providers.dart';
 import 'log_card.dart';
@@ -65,22 +66,20 @@ class LogList extends ConsumerWidget {
         children: [
           Icon(
             Icons.book_outlined,
-            size: 80,
-            color: Colors.grey.shade300,
+            size: AppIconSize.extraLarge,
+            color: AppColors.emptyStateIcon,
           ),
           const SizedBox(height: 16),
           Text(
             'No logs yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first memory book',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade500,
-            ),
+                  color: AppColors.secondaryText,
+                ),
           ),
         ],
       ),
@@ -102,28 +101,26 @@ class LogList extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
-              size: 80,
-              color: Colors.red.shade300,
+              size: AppIconSize.extraLarge,
+              color: AppColors.errorMuted,
             ),
             const SizedBox(height: 16),
             Text(
               'Failed to load logs',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
               error.toString(),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade500,
-              ),
+                    color: AppColors.secondaryText,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: () {
                 // Retry by invalidating the provider
                 ref.invalidate(logsListProvider);

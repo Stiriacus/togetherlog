@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/models/entry.dart';
 import 'providers/entries_providers.dart';
 import 'widgets/photo_picker.dart';
@@ -85,9 +86,9 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
             const SizedBox(height: 24),
 
             // Photo Picker
-            const Text(
+            Text(
               'Photos',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             PhotoPicker(
@@ -102,9 +103,9 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
             const SizedBox(height: 24),
 
             // Tags
-            const Text(
+            Text(
               'Tags',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             tagsAsync.when(
@@ -120,16 +121,16 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Text(
                 'Failed to load tags: $error',
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: AppColors.errorMuted),
               ),
             ),
 
             const SizedBox(height: 24),
 
             // Location
-            const Text(
+            Text(
               'Location',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             LocationEditor(
@@ -150,13 +151,13 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.antiqueWhite,
+                      ),
                     )
                   : const Icon(Icons.save),
               label: Text(_isCreating ? 'Creating...' : 'Create Entry'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.all(16),
-              ),
             ),
           ],
         ),
@@ -226,7 +227,6 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Entry created successfully'),
-            backgroundColor: Colors.green,
           ),
         );
 
@@ -238,7 +238,6 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to create entry: $e'),
-            backgroundColor: Colors.red,
           ),
         );
       }

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/models/entry.dart';
 import 'providers/entries_providers.dart';
 import 'widgets/tag_selector.dart';
@@ -87,20 +88,20 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue[200]!),
+                    color: AppColors.infoMuted.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
+                    border: Border.all(color: AppColors.infoMuted),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      Icon(Icons.info, color: Colors.blue[700]),
-                      const SizedBox(width: 8),
+                      Icon(Icons.info, color: AppColors.infoMuted),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Photos cannot be edited. Create a new entry to change photos.',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.blue[900],
+                            color: AppColors.infoMuted,
                           ),
                         ),
                       ),
@@ -137,9 +138,9 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                 const SizedBox(height: 24),
 
                 // Tags
-                const Text(
+                Text(
                   'Tags',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
                 tagsAsync.when(
@@ -157,16 +158,16 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                   ),
                   error: (error, stack) => Text(
                     'Failed to load tags: $error',
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(color: AppColors.errorMuted),
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
                 // Location
-                const Text(
+                Text(
                   'Location',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
                 LocationEditor(
@@ -187,13 +188,13 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.antiqueWhite,
+                          ),
                         )
                       : const Icon(Icons.save),
                   label: Text(_isUpdating ? 'Updating...' : 'Update Entry'),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.all(16),
-                  ),
                 ),
               ],
             ),
@@ -204,9 +205,19 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const Icon(
+                Icons.error_outline,
+                size: AppIconSize.extraLarge,
+                color: AppColors.errorMuted,
+              ),
               const SizedBox(height: 16),
-              Text('Failed to load entry: $error'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  'Failed to load entry: $error',
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ],
           ),
         ),
@@ -274,7 +285,6 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Entry updated successfully'),
-            backgroundColor: Colors.green,
           ),
         );
 
@@ -286,7 +296,6 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update entry: $e'),
-            backgroundColor: Colors.red,
           ),
         );
       }
