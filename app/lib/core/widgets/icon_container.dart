@@ -40,15 +40,15 @@ class IconContainer extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
-        // Slightly darker than surface per Design Tokens.md
-        color: AppColors.oliveWood.withValues(alpha: 0.15),
+        // Active state: solid Soft Apricot for clear visibility
+        color: AppColors.softApricot,
         borderRadius: BorderRadius.circular(AppRadius.rMd),
         boxShadow: AppShadows.elevation2,
       ),
       child: Icon(
         icon,
         size: size,
-        color: AppColors.carbonBlack,
+        color: AppColors.darkWalnut,
       ),
     );
   }

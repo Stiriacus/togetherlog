@@ -26,11 +26,21 @@ class LogsScreen extends ConsumerWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header zone
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.md,
+            // Header zone - structural anchor for title
+            Container(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.divider,
+                    width: 1,
+                  ),
+                ),
               ),
               child: Text(
                 'Your Logs',

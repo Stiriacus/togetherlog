@@ -62,8 +62,19 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
   Widget build(BuildContext context) {
     return Container(
       width: _isExpanded ? 240 : 72,
-      color: AppColors.antiqueWhite,
-      child: Column(
+      decoration: BoxDecoration(
+        // Grounded tool surface - slightly darker than canvas
+        color: AppColors.antiqueWhite,
+        border: Border(
+          right: BorderSide(
+            color: AppColors.oliveWood.withValues(alpha: 0.04),
+            width: 0,
+          ),
+        ),
+      ),
+      child: ColoredBox(
+        color: AppColors.oliveWood.withValues(alpha: 0.04),
+        child: Column(
         children: [
           // Toggle button
           SizedBox(
@@ -112,6 +123,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -123,6 +135,8 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
     required bool isActive,
     required VoidCallback onTap,
   }) {
+    const double iconSlotWidth = 48; // Fixed width for stable alignment
+
     return InkWell(
       onTap: onTap,
       hoverColor: AppColors.hoverOverlay,
@@ -133,23 +147,27 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
         ),
         child: Row(
           children: [
-            // Icon or icon container
-            if (isActive)
-              IconContainer(
-                icon: icon,
-                size: AppIconSize.standard,
-                isActive: true,
-              )
-            else
-              Icon(
-                icon,
-                size: AppIconSize.standard,
-                color: AppColors.inactiveIcon,
+            // Fixed-width icon slot (prevents layout shift on state change)
+            SizedBox(
+              width: iconSlotWidth,
+              child: Center(
+                child: isActive
+                    ? IconContainer(
+                        icon: icon,
+                        size: AppIconSize.standard,
+                        isActive: true,
+                      )
+                    : Icon(
+                        icon,
+                        size: AppIconSize.standard,
+                        color: AppColors.oliveWood.withValues(alpha: 0.6),
+                      ),
               ),
+            ),
 
             // Label (only in expanded state)
             if (_isExpanded) ...[
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   label,

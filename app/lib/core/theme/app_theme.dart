@@ -204,7 +204,7 @@ class AppTheme {
 
       // === Cards ===
       cardTheme: CardThemeData(
-        color: AppColors.antiqueWhite,
+        color: Colors.white, // Elevated content surface above canvas
         elevation: 2,
         shadowColor: AppColors.shadowBase,
         shape: RoundedRectangleBorder(
