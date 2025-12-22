@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_icons.dart';
 import '../../../data/models/log.dart';
 
 /// Card widget for displaying a single log
@@ -29,30 +30,30 @@ class LogCard extends StatelessWidget {
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
         onLongPress: () => _showOptionsMenu(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.rMd),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
               // Icon based on log type
               Container(
-                width: 56,
-                height: 56,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: _getTypeColor(log.type).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.oliveWood.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppRadius.rMd),
                 ),
                 child: Icon(
                   _getTypeIcon(log.type),
                   color: _getTypeColor(log.type),
-                  size: 28,
+                  size: 24,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.md),
 
               // Log details
               Expanded(
@@ -67,14 +68,14 @@ class LogCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       log.type,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: _getTypeColor(log.type),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       'Created ${dateFormat.format(log.createdAt)}',
                       style: theme.textTheme.bodySmall,
@@ -85,7 +86,7 @@ class LogCard extends StatelessWidget {
 
               // More options icon
               IconButton(
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(AppIcons.moreVert),
                 onPressed: () => _showOptionsMenu(context),
               ),
             ],
@@ -104,7 +105,7 @@ class LogCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.menu_book, color: AppColors.darkWalnut),
+              leading: const Icon(AppIcons.menuBook, color: AppColors.darkWalnut),
               title: const Text('View Flipbook'),
               onTap: () {
                 Navigator.pop(context);
@@ -112,7 +113,7 @@ class LogCard extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.edit),
+              leading: const Icon(AppIcons.edit),
               title: const Text('Edit'),
               onTap: () {
                 Navigator.pop(context);
@@ -120,7 +121,7 @@ class LogCard extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete, color: AppColors.errorMuted),
+              leading: const Icon(AppIcons.delete, color: AppColors.errorMuted),
               title: const Text('Delete', style: TextStyle(color: AppColors.errorMuted)),
               onTap: () {
                 Navigator.pop(context);
@@ -137,13 +138,13 @@ class LogCard extends StatelessWidget {
   IconData _getTypeIcon(String type) {
     switch (type.toLowerCase()) {
       case 'couple':
-        return Icons.favorite;
+        return AppIcons.favorite;
       case 'family':
-        return Icons.family_restroom;
+        return AppIcons.familyRestroom;
       case 'solo':
-        return Icons.person;
+        return AppIcons.person;
       default:
-        return Icons.book;
+        return AppIcons.book;
     }
   }
 

@@ -74,13 +74,13 @@ class _AuthScreenState extends State<AuthScreen>
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.softApricot.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(AppRadius.button),
+                      borderRadius: BorderRadius.circular(AppRadius.rSm),
                     ),
                     child: TabBar(
                       controller: _tabController,
                       indicator: BoxDecoration(
                         color: AppColors.antiqueWhite,
-                        borderRadius: BorderRadius.circular(AppRadius.button),
+                        borderRadius: BorderRadius.circular(AppRadius.rSm),
                         boxShadow: AppShadows.elevation1,
                       ),
                       labelColor: AppColors.darkWalnut,

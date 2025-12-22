@@ -71,7 +71,7 @@ class _SignupFormState extends ConsumerState<SignupForm> {
               decoration: BoxDecoration(
                 color: AppColors.successMuted.withValues(alpha: 0.1),
                 border: Border.all(color: AppColors.successMuted),
-                borderRadius: BorderRadius.circular(AppRadius.button),
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
               ),
               child: Text(
                 _successMessage!,
@@ -86,7 +86,7 @@ class _SignupFormState extends ConsumerState<SignupForm> {
               decoration: BoxDecoration(
                 color: AppColors.errorMuted.withValues(alpha: 0.1),
                 border: Border.all(color: AppColors.errorMuted),
-                borderRadius: BorderRadius.circular(AppRadius.button),
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
               ),
               child: Text(
                 _errorMessage!,

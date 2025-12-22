@@ -101,7 +101,7 @@ class _LocationEditorState extends State<LocationEditor> {
               color: _isUserOverridden
                   ? AppColors.infoMuted.withValues(alpha: 0.1)
                   : AppColors.softApricot.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(AppRadius.button),
+              borderRadius: BorderRadius.circular(AppRadius.rSm),
               border: Border.all(
                 color: _isUserOverridden
                     ? AppColors.infoMuted

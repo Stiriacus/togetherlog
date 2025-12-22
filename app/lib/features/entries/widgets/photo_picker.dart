@@ -98,7 +98,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
           // Photo thumbnail
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadius.thumbnail),
+              borderRadius: BorderRadius.circular(AppRadius.rMd),
               border: Border.all(color: AppColors.inputBorder),
               image: DecorationImage(
                 image: MemoryImage(_photoBytes[index]),

@@ -102,7 +102,7 @@ class EntryDetailScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.successMuted.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      borderRadius: BorderRadius.circular(AppRadius.rMd),
                       border: Border.all(color: AppColors.successMuted),
                     ),
                     child: Column(
@@ -162,7 +162,7 @@ class EntryDetailScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final photo = entry.photos[index];
                       return ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.thumbnail),
+                        borderRadius: BorderRadius.circular(AppRadius.rMd),
                         child: Image.network(
                           photo.url,
                           fit: BoxFit.cover,

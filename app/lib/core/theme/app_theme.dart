@@ -60,6 +60,7 @@ class AppSpacing {
   static const double md = 16;
   static const double lg = 24;
   static const double xl = 32;
+  static const double xxl = 48;
 
   // Page padding
   static const double pagePaddingMobile = 16;
@@ -67,15 +68,14 @@ class AppSpacing {
 }
 
 /// TogetherLog Border Radius
+/// Based on Design Tokens.md
 class AppRadius {
   AppRadius._();
 
-  static const double button = 8;
-  static const double input = 8;
-  static const double card = 12;
-  static const double thumbnail = 12;
-  static const double thumbnailLarge = 16;
-  static const double chip = 16;
+  static const double rSm = 6;   // Buttons, inputs, chips
+  static const double rMd = 10;  // Cards, icon containers
+  static const double rLg = 16;  // Sheets, dialogs
+  static const double rFull = 999; // Only when explicitly circular
 }
 
 /// TogetherLog Icon Sizes (V1.1)
@@ -97,6 +97,18 @@ class AppDurations {
   static const Duration pageTransition = Duration(milliseconds: 220);
   static const Duration dialogEnter = Duration(milliseconds: 240);
   static const Duration bottomSheetEnter = Duration(milliseconds: 280);
+}
+
+/// TogetherLog Elevation Tokens
+/// Based on Design Tokens.md semantic elevation levels
+class AppElevation {
+  AppElevation._();
+
+  static const double e0 = 0;  // Background (no shadow)
+  static const double e1 = 1;  // Cards
+  static const double e2 = 2;  // Icon containers
+  static const double e3 = 3;  // FAB
+  static const double e4 = 4;  // Dialogs/overlays
 }
 
 /// TogetherLog Elevation Shadows (V1.1)
@@ -196,7 +208,7 @@ class AppTheme {
         elevation: 2,
         shadowColor: AppColors.shadowBase,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          borderRadius: BorderRadius.circular(AppRadius.rMd),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -215,7 +227,7 @@ class AppTheme {
             vertical: AppSpacing.sm + 4,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.button),
+            borderRadius: BorderRadius.circular(AppRadius.rSm),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 14,
@@ -237,7 +249,7 @@ class AppTheme {
             vertical: AppSpacing.sm + 4,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.button),
+            borderRadius: BorderRadius.circular(AppRadius.rSm),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 14,
@@ -257,7 +269,7 @@ class AppTheme {
             vertical: AppSpacing.sm + 4,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.button),
+            borderRadius: BorderRadius.circular(AppRadius.rSm),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 14,
@@ -311,7 +323,7 @@ class AppTheme {
         hoverElevation: 4,
         highlightElevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.button),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
         ),
         extendedTextStyle: GoogleFonts.inter(
           fontSize: 14,
@@ -324,27 +336,27 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.antiqueWhite,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: const BorderSide(color: AppColors.darkWalnut, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: const BorderSide(color: AppColors.errorMuted),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: const BorderSide(color: AppColors.errorMuted, width: 2),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.input),
+          borderRadius: BorderRadius.circular(AppRadius.rSm),
           borderSide: BorderSide(color: AppColors.disabledBorder),
         ),
         hintStyle: GoogleFonts.inter(
@@ -387,7 +399,7 @@ class AppTheme {
           vertical: AppSpacing.xs,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.chip),
+          borderRadius: BorderRadius.circular(AppRadius.rFull),
         ),
       ),
 
@@ -404,11 +416,11 @@ class AppTheme {
         backgroundColor: AppColors.antiqueWhite,
         elevation: 4,
         shadowColor: AppColors.shadowBase,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AppRadius.card)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.rLg)),
         ),
-        titleTextStyle: GoogleFonts.playfairDisplay(
-          fontSize: 22,
+        titleTextStyle: GoogleFonts.inter(
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.carbonBlack,
         ),
@@ -419,13 +431,13 @@ class AppTheme {
       ),
 
       // === Bottom Sheet ===
-      bottomSheetTheme: const BottomSheetThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: AppColors.antiqueWhite,
         elevation: 6,
         shadowColor: AppColors.shadowBase,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.card),
+            top: Radius.circular(AppRadius.rLg),
           ),
         ),
       ),
@@ -437,8 +449,8 @@ class AppTheme {
           fontSize: 14,
           color: AppColors.antiqueWhite,
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AppRadius.button)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.rSm)),
         ),
         behavior: SnackBarBehavior.floating,
       ),
@@ -544,41 +556,41 @@ class AppTheme {
   /// Build the text theme with Google Fonts
   static TextTheme _buildTextTheme() {
     return TextTheme(
-      // Display styles - Playfair Display
-      displayLarge: GoogleFonts.playfairDisplay(
-        fontSize: 36,
-        fontWeight: FontWeight.w600,
-        color: AppColors.carbonBlack,
-        height: 1.4,
-      ),
-      displayMedium: GoogleFonts.playfairDisplay(
+      // Display styles - Inter only per Typography.md
+      displayLarge: GoogleFonts.inter(
         fontSize: 32,
         fontWeight: FontWeight.w600,
         color: AppColors.carbonBlack,
         height: 1.4,
       ),
-      displaySmall: GoogleFonts.playfairDisplay(
+      displayMedium: GoogleFonts.inter(
         fontSize: 28,
         fontWeight: FontWeight.w600,
         color: AppColors.carbonBlack,
         height: 1.4,
       ),
-
-      // Headline styles - Playfair Display for titles
-      headlineLarge: GoogleFonts.playfairDisplay(
+      displaySmall: GoogleFonts.inter(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: AppColors.carbonBlack,
         height: 1.4,
       ),
-      headlineMedium: GoogleFonts.playfairDisplay(
+
+      // Headline styles - Inter only per Typography.md
+      headlineLarge: GoogleFonts.inter(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: AppColors.carbonBlack,
         height: 1.4,
       ),
-      headlineSmall: GoogleFonts.playfairDisplay(
+      headlineMedium: GoogleFonts.inter(
         fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.carbonBlack,
+        height: 1.4,
+      ),
+      headlineSmall: GoogleFonts.inter(
+        fontSize: 18,
         fontWeight: FontWeight.w600,
         color: AppColors.carbonBlack,
         height: 1.4,

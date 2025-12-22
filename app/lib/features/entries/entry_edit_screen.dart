@@ -89,7 +89,7 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.infoMuted.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppRadius.button),
+                    borderRadius: BorderRadius.circular(AppRadius.rSm),
                     border: Border.all(color: AppColors.infoMuted),
                   ),
                   child: const Row(

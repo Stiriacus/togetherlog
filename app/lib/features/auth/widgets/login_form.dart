@@ -63,7 +63,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
               decoration: BoxDecoration(
                 color: AppColors.errorMuted.withValues(alpha: 0.1),
                 border: Border.all(color: AppColors.errorMuted),
-                borderRadius: BorderRadius.circular(AppRadius.button),
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
               ),
               child: Text(
                 _errorMessage!,

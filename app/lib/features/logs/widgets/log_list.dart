@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_icons.dart';
 import '../../../data/models/log.dart';
 import '../providers/logs_providers.dart';
 import 'log_card.dart';
@@ -33,23 +34,35 @@ class LogList extends ConsumerWidget {
           return _buildEmptyState(context);
         }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            // Invalidate the provider to trigger a refresh
-            ref.invalidate(logsListProvider);
-          },
-          child: ListView.builder(
-            itemCount: logs.length,
-            itemBuilder: (context, index) {
-              final log = logs[index];
-              return LogCard(
-                log: log,
-                onTap: () => onLogTap(log),
-                onEdit: () => onLogEdit(log),
-                onDelete: () => onLogDelete(log),
-                onViewFlipbook: () => onViewFlipbook(log),
-              );
-            },
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 960),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                // Invalidate the provider to trigger a refresh
+                ref.invalidate(logsListProvider);
+              },
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                itemCount: logs.length,
+                itemBuilder: (context, index) {
+                  final log = logs[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: LogCard(
+                      log: log,
+                      onTap: () => onLogTap(log),
+                      onEdit: () => onLogEdit(log),
+                      onDelete: () => onLogDelete(log),
+                      onViewFlipbook: () => onViewFlipbook(log),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },
@@ -65,16 +78,16 @@ class LogList extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.book_outlined,
+            AppIcons.book,
             size: AppIconSize.extraLarge,
             color: AppColors.emptyStateIcon,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             'No logs yet',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             'Create your first memory book',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -88,8 +101,21 @@ class LogList extends ConsumerWidget {
 
   /// Build loading state
   Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Loading your logs...',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.secondaryText,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -102,7 +128,7 @@ class LogList extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              Icons.error_outline,
+              AppIcons.error,
               size: AppIconSize.extraLarge,
               color: AppColors.errorMuted,
             ),
@@ -125,7 +151,7 @@ class LogList extends ConsumerWidget {
                 // Retry by invalidating the provider
                 ref.invalidate(logsListProvider);
               },
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(AppIcons.refresh),
               label: const Text('Retry'),
             ),
           ],

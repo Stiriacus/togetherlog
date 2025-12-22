@@ -32,7 +32,7 @@ class EntryCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        borderRadius: BorderRadius.circular(AppRadius.rMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -172,7 +172,7 @@ class EntryCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.successMuted.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(AppRadius.chip),
+                            borderRadius: BorderRadius.circular(AppRadius.rFull),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
