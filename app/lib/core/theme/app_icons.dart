@@ -12,10 +12,13 @@ class AppIcons {
   // Navigation & Actions
   static const logout = Symbols.logout;
   static const add = Symbols.add;
+  static const close = Symbols.close;
   static const moreVert = Symbols.more_vert;
   static const edit = Symbols.edit;
   static const delete = Symbols.delete;
   static const refresh = Symbols.refresh;
+  static const save = Symbols.save;
+  static const calendar = Symbols.calendar_today;
 
   // Content Types
   static const book = Symbols.book;
@@ -28,4 +31,5 @@ class AppIcons {
 
   // States
   static const error = Symbols.error;
+  static const info = Symbols.info;
 }
