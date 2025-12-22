@@ -4,7 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/layouts/authenticated_shell.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_icons.dart';
 import 'providers/entries_providers.dart';
 import 'widgets/entry_card.dart';
 
@@ -22,29 +24,64 @@ class EntriesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(entriesListProvider(logId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Entries'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/logs'),
-        ),
-        actions: [
-          // View flipbook button (placeholder for MILESTONE 11)
-          IconButton(
-            icon: const Icon(Icons.auto_stories),
-            tooltip: 'View Flipbook',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Flipbook viewer coming in MILESTONE 11'),
+    return AuthenticatedShell(
+      currentRoute: '/logs/$logId/entries',
+      child: Scaffold(
+        backgroundColor: AppColors.antiqueWhite,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header zone - structural anchor for title
+            Container(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.divider,
+                    width: 1,
+                  ),
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: entriesAsync.when(
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(AppIcons.book),
+                    onPressed: () => context.go('/logs'),
+                    tooltip: 'Back to Logs',
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'Entries',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.auto_stories),
+                    tooltip: 'View Flipbook',
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Flipbook viewer coming soon'),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // Breathing space
+            const SizedBox(height: AppSpacing.xl),
+
+            // Primary content
+            Expanded(
+              child: entriesAsync.when(
         data: (entries) {
           if (entries.isEmpty) {
             return _buildEmptyState(context);
@@ -54,68 +91,100 @@ class EntriesScreen extends ConsumerWidget {
           final sortedEntries = List.from(entries)
             ..sort((a, b) => b.eventDate.compareTo(a.eventDate));
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(entriesListProvider(logId));
-            },
-            child: ListView.builder(
-              itemCount: sortedEntries.length,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemBuilder: (context, index) {
-                final entry = sortedEntries[index];
-                return EntryCard(
-                  entry: entry,
-                  onTap: () => _navigateToDetail(context, entry.id),
-                  onEdit: () => _navigateToEdit(context, entry.id),
-                  onDelete: () => _showDeleteConfirmation(
-                    context,
-                    ref,
-                    entry.id,
-                    entry.highlightText,
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 960),
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(entriesListProvider(logId));
+                },
+                child: ListView.builder(
+                  itemCount: sortedEntries.length,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
                   ),
-                );
-              },
+                  itemBuilder: (context, index) {
+                    final entry = sortedEntries[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: EntryCard(
+                        entry: entry,
+                        onTap: () => _navigateToDetail(context, entry.id),
+                        onEdit: () => _navigateToEdit(context, entry.id),
+                        onDelete: () => _showDeleteConfirmation(
+                          context,
+                          ref,
+                          entry.id,
+                          entry.highlightText,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
+        loading: () => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: AppIconSize.extraLarge,
-                color: AppColors.errorMuted,
-              ),
-              const SizedBox(height: 16),
+              const CircularProgressIndicator(),
+              const SizedBox(height: AppSpacing.md),
               Text(
-                'Failed to load entries',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  error.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
+                'Loading entries...',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.secondaryText,
                 ),
-              ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                onPressed: () => ref.invalidate(entriesListProvider(logId)),
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
               ),
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _navigateToCreate(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New Entry'),
+        error: (error, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  AppIcons.error,
+                  size: AppIconSize.extraLarge,
+                  color: AppColors.errorMuted,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Failed to load entries',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  error.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.secondaryText,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                FilledButton.icon(
+                  onPressed: () => ref.invalidate(entriesListProvider(logId)),
+                  icon: const Icon(AppIcons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _navigateToCreate(context),
+          icon: const Icon(AppIcons.add),
+          label: const Text('New Entry'),
+        ),
       ),
     );
   }
@@ -127,26 +196,26 @@ class EntriesScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.photo_library_outlined,
+            AppIcons.book,
             size: AppIconSize.extraLarge,
             color: AppColors.emptyStateIcon,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             'No entries yet',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             'Create your first memory entry',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.secondaryText,
                 ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
           FilledButton.icon(
             onPressed: () => _navigateToCreate(context),
-            icon: const Icon(Icons.add),
+            icon: const Icon(AppIcons.add),
             label: const Text('Create Entry'),
           ),
         ],

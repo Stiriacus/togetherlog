@@ -28,7 +28,7 @@ class EntryCard extends StatelessWidget {
     final hasPhotos = entry.photos.isNotEmpty;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -36,45 +36,58 @@ class EntryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Photo thumbnail (if available)
+            // Photo thumbnail (if available) - "window" treatment
             if (hasPhotos)
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Image.network(
-                  entry.photos.first.thumbnailUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: AppColors.softApricot.withValues(alpha: 0.3),
-                      child: Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: AppIconSize.large,
-                          color: AppColors.inactiveIcon,
+              Container(
+                width: 480,
+                height: 480,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.oliveWood.withValues(alpha: 0.15),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(AppRadius.rMd),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.rMd - 1),
+                  child: Image.network(
+                    entry.photos.first.thumbnailUrl,
+                    width: 480,
+                    height: 480,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppColors.softApricot.withValues(alpha: 0.3),
+                        child: Center(
+                          child: Icon(
+                            Icons.broken_image,
+                            size: AppIconSize.large,
+                            color: AppColors.inactiveIcon,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: AppColors.softApricot.withValues(alpha: 0.2),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: AppColors.softApricot.withValues(alpha: 0.2),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
 
             // Entry content
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -86,7 +99,7 @@ class EntryCard extends StatelessWidget {
                         size: AppIconSize.small,
                         color: AppColors.inactiveIcon,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Text(
                         dateFormat.format(entry.eventDate),
                         style: TextStyle(
@@ -98,7 +111,7 @@ class EntryCard extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Highlight text
                   Text(
@@ -110,7 +123,7 @@ class EntryCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Location (if available)
                   if (entry.location != null)
@@ -121,7 +134,7 @@ class EntryCard extends StatelessWidget {
                           size: AppIconSize.small,
                           color: AppColors.inactiveIcon,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: AppSpacing.xs),
                         Expanded(
                           child: Text(
                             entry.location!.displayName,
@@ -136,7 +149,7 @@ class EntryCard extends StatelessWidget {
                       ],
                     ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
 
                   // Photo count and Smart Page status
                   Row(
@@ -150,7 +163,7 @@ class EntryCard extends StatelessWidget {
                               size: AppIconSize.small,
                               color: AppColors.inactiveIcon,
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: AppSpacing.xs),
                             Text(
                               '${entry.photos.length} photo${entry.photos.length > 1 ? 's' : ''}',
                               style: TextStyle(
@@ -167,8 +180,8 @@ class EntryCard extends StatelessWidget {
                       if (entry.isProcessed)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.xs,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.successMuted.withValues(alpha: 0.15),
