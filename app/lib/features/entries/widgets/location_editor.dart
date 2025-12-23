@@ -2,6 +2,7 @@
 // Allows editing location display name with override flag
 
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/entry.dart';
 
 /// Location Editor Widget
@@ -80,7 +81,6 @@ class _LocationEditorState extends State<LocationEditor> {
             decoration: InputDecoration(
               labelText: 'Location',
               hintText: 'e.g., Paris, Eiffel Tower',
-              border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear),
                 onPressed: () {
@@ -99,13 +99,13 @@ class _LocationEditorState extends State<LocationEditor> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: _isUserOverridden
-                  ? Colors.blue[50]
-                  : Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
+                  ? AppColors.infoMuted.withValues(alpha: 0.1)
+                  : AppColors.softApricot.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(AppRadius.rSm),
               border: Border.all(
                 color: _isUserOverridden
-                    ? Colors.blue[200]!
-                    : Colors.grey[300]!,
+                    ? AppColors.infoMuted
+                    : AppColors.inputBorder,
               ),
             ),
             child: Row(
@@ -114,10 +114,10 @@ class _LocationEditorState extends State<LocationEditor> {
                   _isUserOverridden
                       ? Icons.edit_location
                       : Icons.location_on,
-                  size: 20,
+                  size: AppIconSize.small,
                   color: _isUserOverridden
-                      ? Colors.blue[700]
-                      : Colors.grey[600],
+                      ? AppColors.infoMuted
+                      : AppColors.inactiveIcon,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -128,8 +128,8 @@ class _LocationEditorState extends State<LocationEditor> {
                     style: TextStyle(
                       fontSize: 12,
                       color: _isUserOverridden
-                          ? Colors.blue[700]
-                          : Colors.grey[700],
+                          ? AppColors.infoMuted
+                          : AppColors.secondaryText,
                     ),
                   ),
                 ),

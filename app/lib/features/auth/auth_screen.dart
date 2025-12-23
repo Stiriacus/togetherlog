@@ -2,6 +2,8 @@
 // Provides login and signup forms with tab navigation
 
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_icons.dart';
 import 'widgets/login_form.dart';
 import 'widgets/signup_form.dart';
 
@@ -31,70 +33,68 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.antiqueWhite,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.all(24),
+              constraints: const BoxConstraints(maxWidth: 720),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // App Logo/Title
                   const Icon(
-                    Icons.auto_stories,
-                    size: 80,
-                    color: Colors.deepPurple,
+                    AppIcons.menuBook,
+                    size: AppIconSize.extraLarge,
+                    color: AppColors.darkWalnut,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
                     'TogetherLog',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.carbonBlack,
+                        ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     'Your shared memories, beautifully preserved',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: AppColors.secondaryText,
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: AppSpacing.xxl),
 
                   // Tabs
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.softApricot.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(AppRadius.rSm),
                     ),
+                    padding: const EdgeInsets.all(4),
                     child: TabBar(
                       controller: _tabController,
                       indicator: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: AppColors.antiqueWhite,
+                        borderRadius: BorderRadius.circular(AppRadius.rSm),
+                        boxShadow: AppShadows.elevation1,
                       ),
-                      labelColor: Colors.deepPurple,
-                      unselectedLabelColor: Colors.grey.shade600,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelColor: AppColors.darkWalnut,
+                      unselectedLabelColor: AppColors.secondaryText,
+                      dividerColor: Colors.transparent,
                       tabs: const [
                         Tab(text: 'Log In'),
                         Tab(text: 'Sign Up'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.lg),
 
                   // Tab Content
                   SizedBox(
@@ -102,8 +102,14 @@ class _AuthScreenState extends State<AuthScreen>
                     child: TabBarView(
                       controller: _tabController,
                       children: const [
-                        LoginForm(),
-                        SignupForm(),
+                        Padding(
+                          padding: EdgeInsets.only(top: AppSpacing.lg),
+                          child: LoginForm(),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: AppSpacing.lg),
+                          child: SignupForm(),
+                        ),
                       ],
                     ),
                   ),

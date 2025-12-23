@@ -5,6 +5,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/layouts/authenticated_shell.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_icons.dart';
 import '../../data/models/entry.dart';
 import 'providers/entries_providers.dart';
 import 'widgets/photo_picker.dart';
@@ -45,117 +48,167 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
   Widget build(BuildContext context) {
     final tagsAsync = ref.watch(tagsListProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Entry'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+    return AuthenticatedShell(
+      currentRoute: '/logs/${widget.logId}/entries/create',
+      child: Scaffold(
+        backgroundColor: AppColors.antiqueWhite,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Event Date Picker
-            _buildDatePicker(),
-
-            const SizedBox(height: 24),
-
-            // Highlight Text Field
-            TextFormField(
-              controller: _highlightTextController,
-              decoration: const InputDecoration(
-                labelText: 'Highlight Text',
-                hintText: 'Describe this memory...',
-                border: OutlineInputBorder(),
-                helperText: 'A short description of this memory',
+            // Header zone - structural anchor for title
+            Container(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
               ),
-              maxLines: 3,
-              maxLength: 500,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a description';
-                }
-                return null;
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Photo Picker
-            const Text(
-              'Photos',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            PhotoPicker(
-              onPhotosSelected: (bytes, fileNames) {
-                setState(() {
-                  _photoBytes = bytes;
-                  _photoFileNames = fileNames;
-                });
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Tags
-            const Text(
-              'Tags',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            tagsAsync.when(
-              data: (tags) => TagSelector(
-                availableTags: tags,
-                selectedTagIds: _selectedTagIds,
-                onSelectionChanged: (newSelection) {
-                  setState(() {
-                    _selectedTagIds = newSelection;
-                  });
-                },
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.divider,
+                    width: 1,
+                  ),
+                ),
               ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Text(
-                'Failed to load tags: $error',
-                style: const TextStyle(color: Colors.red),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(AppIcons.close),
+                    onPressed: () => context.pop(),
+                    tooltip: 'Close',
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'New Entry',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                ],
               ),
             ),
 
-            const SizedBox(height: 24),
+            // Breathing space
+            const SizedBox(height: AppSpacing.xl),
 
-            // Location
-            const Text(
-              'Location',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            LocationEditor(
-              initialLocation: _location,
-              onLocationChanged: (newLocation) {
-                setState(() {
-                  _location = newLocation;
-                });
-              },
-            ),
+            // Primary content
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      children: [
+                        // Event Date Picker
+                        _buildDatePicker(),
 
-            const SizedBox(height: 32),
+                        const SizedBox(height: AppSpacing.lg),
 
-            // Create Button
-            FilledButton.icon(
-              onPressed: _isCreating ? null : _handleCreate,
-              icon: _isCreating
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save),
-              label: Text(_isCreating ? 'Creating...' : 'Create Entry'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.all(16),
+                        // Highlight Text Field
+                        TextFormField(
+                          controller: _highlightTextController,
+                          decoration: const InputDecoration(
+                            labelText: 'Highlight Text',
+                            hintText: 'Describe this memory...',
+                            border: OutlineInputBorder(),
+                            helperText: 'A short description of this memory',
+                          ),
+                          maxLines: 3,
+                          maxLength: 500,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Photo Picker
+                        Text(
+                          'Photos',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        PhotoPicker(
+                          onPhotosSelected: (bytes, fileNames) {
+                            setState(() {
+                              _photoBytes = bytes;
+                              _photoFileNames = fileNames;
+                            });
+                          },
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Tags
+                        Text(
+                          'Tags',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        tagsAsync.when(
+                          data: (tags) => TagSelector(
+                            availableTags: tags,
+                            selectedTagIds: _selectedTagIds,
+                            onSelectionChanged: (newSelection) {
+                              setState(() {
+                                _selectedTagIds = newSelection;
+                              });
+                            },
+                          ),
+                          loading: () => const Center(child: CircularProgressIndicator()),
+                          error: (error, stack) => Text(
+                            'Failed to load tags: $error',
+                            style: const TextStyle(color: AppColors.errorMuted),
+                          ),
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Location
+                        Text(
+                          'Location',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        LocationEditor(
+                          initialLocation: _location,
+                          onLocationChanged: (newLocation) {
+                            setState(() {
+                              _location = newLocation;
+                            });
+                          },
+                        ),
+
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Create Button
+                        FilledButton.icon(
+                          onPressed: _isCreating ? null : _handleCreate,
+                          icon: _isCreating
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.antiqueWhite,
+                                  ),
+                                )
+                              : const Icon(AppIcons.save),
+                          label: Text(_isCreating ? 'Creating...' : 'Create Entry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -168,7 +221,7 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
   Widget _buildDatePicker() {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: const Icon(Icons.calendar_today),
+      leading: const Icon(AppIcons.calendar),
       title: const Text('Event Date'),
       subtitle: Text(
         '${_eventDate.day}/${_eventDate.month}/${_eventDate.year}',
@@ -226,7 +279,6 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Entry created successfully'),
-            backgroundColor: Colors.green,
           ),
         );
 
@@ -238,7 +290,6 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to create entry: $e'),
-            backgroundColor: Colors.red,
           ),
         );
       }

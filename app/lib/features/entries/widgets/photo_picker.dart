@@ -4,6 +4,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/theme/app_theme.dart';
 
 /// Photo Picker Widget
 /// Allows selecting up to 6 photos from gallery or camera
@@ -79,7 +80,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
           '${_photoBytes.length} of ${widget.maxPhotos} photos selected',
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: AppColors.secondaryText,
           ),
         ),
       ],
@@ -97,8 +98,8 @@ class _PhotoPickerState extends State<PhotoPicker> {
           // Photo thumbnail
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(AppRadius.rMd),
+              border: Border.all(color: AppColors.inputBorder),
               image: DecorationImage(
                 image: MemoryImage(_photoBytes[index]),
                 fit: BoxFit.cover,
@@ -114,19 +115,14 @@ class _PhotoPickerState extends State<PhotoPicker> {
               onTap: () => _removePhoto(index),
               child: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.red,
+                decoration: const BoxDecoration(
+                  color: AppColors.errorMuted,
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 4,
-                    ),
-                  ],
+                  boxShadow: AppShadows.elevation2,
                 ),
                 child: const Icon(
                   Icons.close,
-                  color: Colors.white,
+                  color: AppColors.antiqueWhite,
                   size: 16,
                 ),
               ),

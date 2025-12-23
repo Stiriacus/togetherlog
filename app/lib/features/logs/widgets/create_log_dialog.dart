@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
 import '../providers/logs_providers.dart';
 
 /// Dialog for creating a new log
@@ -107,7 +108,10 @@ class _CreateLogDialogState extends ConsumerState<CreateLogDialog> {
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.antiqueWhite,
+                  ),
                 )
               : const Text('Create'),
         ),
@@ -143,7 +147,6 @@ class _CreateLogDialogState extends ConsumerState<CreateLogDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to create log: $e'),
-            backgroundColor: Colors.red,
           ),
         );
       }

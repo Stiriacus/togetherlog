@@ -17,6 +17,8 @@ Before working on this codebase, read these files **in order**:
 2. **`docs/architecture.md`** - System architecture and technical decisions
 3. **`docs/CONTEXT.md`** - Comprehensive project context for AI assistants
 4. **`docs/MILESTONES.md`** - Development roadmap with detailed implementation steps
+5. **`docs/design_theme_v11.md`** - Authoritative design contract for app chrome styling
+6. **`docs/DESIGN_MIGRATION_MILESTONES.md`** - Design migration plan (M0-M15)
 
 ## Critical Architecture Principles
 
@@ -124,7 +126,7 @@ This rule is mandatory for consistency across the entire Flutter codebase.
 
 ### Common Development Commands
 
-### Flutter App
+#### Flutter App
 
 ```bash
 # Navigate to app directory
@@ -133,25 +135,23 @@ cd app
 # Get dependencies
 flutter pub get
 
-# Run on web (development because chrome is not installed -> use brave with this command)
+# Run on web (MANDATORY - use Brave browser)
 CHROME_EXECUTABLE=$(which brave-browser || which brave) flutter run -d chrome
 
 # Build for production
 flutter build web --release
-flutter build apk --release
-flutter build appbundle --release
 
 # Clean build cache
 flutter clean && flutter pub get
 
 # Run code generation (Riverpod)
 dart run build_runner build --delete-conflicting-outputs
+
+# Check for analyzer issues
+flutter analyze
 ```
 
-
-
-
-### Backend (Supabase)
+#### Backend (Supabase)
 
 ```bash
 # Navigate to project root
@@ -180,19 +180,14 @@ supabase start
 supabase stop
 ```
 
-### Git Workflow
+#### Git Workflow
 
 ```bash
 # All development happens on this branch:
 git checkout claude/implement-togetherlog-milestones-01VZCHt2jn2mHfHykS74GcA3
 
 # Commit format for milestones:
-git commit -m "feat(milestone-X): brief description, backtested
-
-Detailed description:
-- What was implemented
-- Architecture compliance
-- Backtest results
+git commit -m "feat(milestone-X): brief description, backtested"
 
 # Push to branch
 git push origin claude/implement-togetherlog-milestones-01VZCHt2jn2mHfHykS74GcA3
@@ -226,9 +221,10 @@ backend/supabase/
 app/lib/
 ├── core/
 │   ├── routing/
-│   │   └── router.dart         # go_router with auth guards
+│   │   └── router.dart            # go_router with auth guards
 │   └── theme/
-│       └── smart_page_theme.dart  # Color theme mappings
+│       ├── app_theme.dart         # ThemeData and component themes
+│       └── smart_page_theme.dart  # Smart Page color theme mappings
 ├── data/
 │   ├── api/
 │   │   ├── supabase_client.dart    # Supabase initialization
@@ -242,7 +238,8 @@ app/lib/
 │       ├── photo.dart              # Photo model
 │       └── tag.dart                # Tag model
 └── features/
-    ├── auth/                   # COMPLETED (MILESTONE 8)
+    ├── auth/
+    │   ├── auth_screen.dart           # Main auth screen
     │   ├── data/
     │   │   └── auth_repository.dart
     │   ├── providers/
@@ -250,29 +247,42 @@ app/lib/
     │   └── widgets/
     │       ├── login_form.dart
     │       └── signup_form.dart
-    ├── logs/                   # COMPLETED (MILESTONE 9)
+    ├── logs/
+    │   ├── logs_screen.dart           # Logs list screen
     │   ├── data/
     │   │   └── logs_repository.dart
     │   ├── providers/
     │   │   └── logs_providers.dart
     │   └── widgets/
-    │       └── logs_screen.dart
-    ├── entries/                # COMPLETED (MILESTONE 10)
+    │       ├── log_card.dart
+    │       ├── log_list.dart
+    │       ├── create_log_dialog.dart
+    │       └── edit_log_dialog.dart
+    ├── entries/
+    │   ├── entries_screen.dart        # Entries list screen
+    │   ├── entry_create_screen.dart
+    │   ├── entry_detail_screen.dart
+    │   ├── entry_edit_screen.dart
     │   ├── data/
     │   │   └── entries_repository.dart
     │   ├── providers/
     │   │   └── entries_providers.dart
     │   └── widgets/
-    │       ├── entries_list_screen.dart
-    │       ├── entry_detail_screen.dart
-    │       ├── entry_create_screen.dart
-    │       └── entry_edit_screen.dart
-    └── flipbook/               # COMPLETED (MILESTONE 11)
+    │       ├── entry_card.dart
+    │       ├── photo_picker.dart
+    │       ├── tag_selector.dart
+    │       └── location_editor.dart
+    └── flipbook/
+        ├── flipbook_viewer.dart       # Main flipbook screen
         ├── providers/
         │   └── flipbook_providers.dart
         └── widgets/
-            ├── flipbook_viewer.dart
-            └── smart_page_renderer.dart
+            ├── smart_page_renderer.dart
+            ├── sprinkles_overlay.dart
+            └── layouts/
+                ├── single_full_layout.dart
+                ├── grid_2x2_layout.dart
+                └── grid_3x2_layout.dart
 ```
 
 ## Database Schema Overview
@@ -461,6 +471,10 @@ See `docs/testing-guide.md` for comprehensive testing procedures:
 - `docs/MILESTONES.md` - Development roadmap with detailed steps
 - `docs/testing-guide.md` - Manual testing guide with step-by-step procedures
 - `docs/SETUP.md` - Setup and development guide
+- `docs/design_theme_v11.md` - Authoritative design contract (colors, typography, spacing)
+- `docs/design_spec.md` - Screen inventory and UI patterns
+- `docs/design_migration_context.md` - Gap analysis for theme migration
+- `docs/DESIGN_MIGRATION_MILESTONES.md` - 16-milestone design migration plan
 
 ### Backend
 - `backend/README.md` - Backend overview
@@ -472,6 +486,32 @@ See `docs/testing-guide.md` for comprehensive testing procedures:
 - `app/pubspec.yaml` - Dependencies list
 - `app/lib/main.dart` - App entry point with Supabase initialization
 - `app/lib/core/routing/router.dart` - Routing configuration
+- `app/lib/core/theme/app_theme.dart` - Main theme configuration
+
+## Design Theme Migration (V1.1)
+
+A design theme migration is in progress to apply the warm, journal-inspired aesthetic defined in `docs/design_theme_v11.md`. This migration:
+
+- **Applies to**: Application chrome only (AppBar, buttons, cards, inputs, chips, icons, dividers)
+- **Excludes**: Smart Page layouts, Flipbook internal UI, Emotion-Color-Engine output
+- **Structure**: 16 sequential milestones (M0-M15) defined in `docs/DESIGN_MIGRATION_MILESTONES.md`
+
+### Core Palette (Design Theme V1.1)
+| Color | HEX | Role |
+|-------|-----|------|
+| Antique White | #FAEBD5 | Background, surfaces |
+| Dark Walnut | #592611 | Primary actions, text |
+| Olive Wood | #785D3A | Secondary, borders |
+| Soft Apricot | #E8C4A0 | Accents, chips |
+| Carbon Black | #1D1E20 | Body text |
+
+### Theme Files to Create/Update
+- `app/lib/core/theme/app_colors.dart` - Color constants
+- `app/lib/core/theme/app_typography.dart` - Font definitions
+- `app/lib/core/theme/app_spacing.dart` - Spacing tokens
+- `app/lib/core/theme/app_shapes.dart` - Border radius values
+- `app/lib/core/theme/app_shadows.dart` - Warm-toned shadows
+- `app/lib/core/theme/app_theme.dart` - Unified ThemeData
 
 ## Performance Targets
 

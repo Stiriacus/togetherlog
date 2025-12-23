@@ -30,9 +30,8 @@ dependencies:
   # UI utilities
   flutter_svg: ^2.0.9
   intl: ^0.18.1
-
-  # Page turn animation
-  page_flip: ^0.2.0
+  google_fonts: ^6.1.0
+  material_symbols_icons: ^4.2785.1
 
 dev_dependencies:
   flutter_test:

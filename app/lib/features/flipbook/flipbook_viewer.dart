@@ -1,9 +1,8 @@
 // TogetherLog - Flipbook Viewer
-// 3D page-turn flipbook viewer for entries
+// Scrapbook-style flipbook viewer with slide animation
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:page_flip/page_flip.dart';
 import 'providers/flipbook_providers.dart';
 import 'widgets/smart_page_renderer.dart';
 
@@ -24,7 +23,29 @@ class FlipbookViewer extends ConsumerStatefulWidget {
 }
 
 class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
-  final _pageFlipKey = GlobalKey<PageFlipWidgetState>();
+  late final PageController _pageController;
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _pageController.addListener(() {
+      final newIndex = _pageController.page?.round() ?? 0;
+      if (newIndex != _currentPageIndex) {
+        setState(() {
+          _currentPageIndex = newIndex;
+        });
+        ref.read(currentPageIndexProvider.notifier).state = newIndex;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,20 +183,25 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
 
     return Stack(
       children: [
-        // Page flip widget
-        Center(
-          child: AspectRatio(
-            aspectRatio: 0.7, // Portrait book aspect ratio
-            child: PageFlipWidget(
-              key: _pageFlipKey,
-              backgroundColor: Colors.grey.shade900,
-              children: pages,
-            ),
-          ),
+        // PageView with slide animation
+        PageView.builder(
+          controller: _pageController,
+          itemCount: pages.length,
+          itemBuilder: (context, index) {
+            return Center(
+              child: AspectRatio(
+                aspectRatio: 0.7, // Portrait book aspect ratio
+                child: Container(
+                  color: Colors.grey.shade900,
+                  child: pages[index],
+                ),
+              ),
+            );
+          },
         ),
 
         // Navigation controls overlay
-        _buildNavigationControls(entries.length),
+        _buildNavigationControls(pages.length - 1),
       ],
     );
   }
@@ -190,9 +216,14 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
         children: [
           // Previous button
           IconButton(
-            onPressed: () {
-              _pageFlipKey.currentState?.previousPage();
-            },
+            onPressed: _currentPageIndex > 0
+                ? () {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                : null,
             icon: const Icon(Icons.chevron_left),
             iconSize: 48,
             color: Colors.white.withValues(alpha: 0.8),
@@ -209,27 +240,27 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
               color: Colors.black.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Consumer(
-              builder: (context, ref, _) {
-                final currentPage = ref.watch(currentPageIndexProvider);
-                return Text(
-                  '${currentPage + 1} / $totalPages',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                );
-              },
+            child: Text(
+              '${_currentPageIndex + 1} / ${totalPages + 1}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           const SizedBox(width: 24),
 
           // Next button
           IconButton(
-            onPressed: () {
-              _pageFlipKey.currentState?.nextPage();
-            },
+            onPressed: _currentPageIndex < totalPages
+                ? () {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                : null,
             icon: const Icon(Icons.chevron_right),
             iconSize: 48,
             color: Colors.white.withValues(alpha: 0.8),

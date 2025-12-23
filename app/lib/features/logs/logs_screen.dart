@@ -4,7 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../auth/providers/auth_providers.dart';
+import '../../core/layouts/authenticated_shell.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_icons.dart';
 import '../../data/models/log.dart';
 import 'providers/logs_providers.dart';
 import 'widgets/log_list.dart';
@@ -17,31 +19,54 @@ class LogsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authRepository = ref.read(authRepositoryProvider);
+    return AuthenticatedShell(
+      currentRoute: '/logs',
+      child: Scaffold(
+        backgroundColor: AppColors.antiqueWhite,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header zone - structural anchor for title
+            Container(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.divider,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Text(
+                'Your Logs',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TogetherLog'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign Out',
-            onPressed: () async {
-              await authRepository.signOut();
-            },
-          ),
-        ],
-      ),
-      body: LogList(
-        onLogTap: (log) => _navigateToEntries(context, log),
-        onLogEdit: (log) => _showEditDialog(context, log),
-        onLogDelete: (log) => _showDeleteConfirmation(context, ref, log),
-        onViewFlipbook: (log) => _navigateToFlipbook(context, log),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New Log'),
+            // Breathing space
+            const SizedBox(height: AppSpacing.xl),
+
+            // Primary content
+            Expanded(
+              child: LogList(
+                onLogTap: (log) => _navigateToEntries(context, log),
+                onLogEdit: (log) => _showEditDialog(context, log),
+                onLogDelete: (log) => _showDeleteConfirmation(context, ref, log),
+                onViewFlipbook: (log) => _navigateToFlipbook(context, log),
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _showCreateDialog(context),
+          icon: const Icon(AppIcons.add),
+          label: const Text('New Log'),
+        ),
       ),
     );
   }
@@ -67,7 +92,6 @@ class LogsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Log created successfully'),
-          backgroundColor: Colors.green,
         ),
       );
     }
@@ -84,7 +108,6 @@ class LogsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Log updated successfully'),
-          backgroundColor: Colors.green,
         ),
       );
     }
@@ -111,7 +134,7 @@ class LogsScreen extends ConsumerWidget {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.errorMuted,
             ),
             child: const Text('Delete'),
           ),
@@ -131,7 +154,6 @@ class LogsScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Log deleted successfully'),
-              backgroundColor: Colors.green,
             ),
           );
         }
@@ -140,7 +162,6 @@ class LogsScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Failed to delete log: $e'),
-              backgroundColor: Colors.red,
             ),
           );
         }

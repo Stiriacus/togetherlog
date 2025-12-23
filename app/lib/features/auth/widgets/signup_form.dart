@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_icons.dart';
 import '../providers/auth_providers.dart';
 
 class SignupForm extends ConsumerStatefulWidget {
@@ -65,31 +67,31 @@ class _SignupFormState extends ConsumerState<SignupForm> {
         children: [
           if (_successMessage != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                border: Border.all(color: Colors.green.shade300),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.successMuted.withValues(alpha: 0.1),
+                border: Border.all(color: AppColors.successMuted),
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
               ),
               child: Text(
                 _successMessage!,
-                style: TextStyle(color: Colors.green.shade900),
+                style: const TextStyle(color: AppColors.successMuted),
               ),
             ),
           ],
           if (_errorMessage != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                border: Border.all(color: Colors.red.shade300),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.errorMuted.withValues(alpha: 0.1),
+                border: Border.all(color: AppColors.errorMuted),
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
               ),
               child: Text(
                 _errorMessage!,
-                style: TextStyle(color: Colors.red.shade900),
+                style: const TextStyle(color: AppColors.errorMuted),
               ),
             ),
           ],
@@ -98,8 +100,7 @@ class _SignupFormState extends ConsumerState<SignupForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: 'Email',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.email),
+              prefixIcon: Icon(AppIcons.email),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -112,14 +113,13 @@ class _SignupFormState extends ConsumerState<SignupForm> {
             },
             enabled: !_isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _passwordController,
             obscureText: true,
             decoration: const InputDecoration(
               labelText: 'Password',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock),
+              prefixIcon: Icon(AppIcons.lock),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -132,14 +132,13 @@ class _SignupFormState extends ConsumerState<SignupForm> {
             },
             enabled: !_isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _confirmPasswordController,
             obscureText: true,
             decoration: const InputDecoration(
               labelText: 'Confirm Password',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock_outline),
+              prefixIcon: Icon(AppIcons.lockOpen),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -152,22 +151,19 @@ class _SignupFormState extends ConsumerState<SignupForm> {
             },
             enabled: !_isLoading,
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(
+          const SizedBox(height: AppSpacing.lg),
+          FilledButton(
             onPressed: _isLoading ? null : _handleSignup,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
             child: _isLoading
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.antiqueWhite,
+                    ),
                   )
-                : const Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                : const Text('Sign Up'),
           ),
         ],
       ),
