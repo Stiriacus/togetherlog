@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_icons.dart';
+import '../../core/layouts/authenticated_shell.dart';
 import 'providers/entries_providers.dart';
 
 /// Entry detail screen
@@ -22,34 +24,80 @@ class EntryDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final entryAsync = ref.watch(entryDetailProvider(entryId));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Entry Details'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: 'Edit',
-            onPressed: () => context.push('/entries/$entryId/edit'),
-          ),
-        ],
-      ),
-      body: entryAsync.when(
+    return AuthenticatedShell(
+      currentRoute: '/entries/$entryId',
+      child: Scaffold(
+        backgroundColor: AppColors.antiqueWhite,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header zone - structural anchor for title and actions
+            Container(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.divider,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(AppIcons.book),
+                    onPressed: () => context.pop(),
+                    tooltip: 'Back',
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'Entry Details',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(AppIcons.edit),
+                    tooltip: 'Edit Entry',
+                    onPressed: () => context.push('/entries/$entryId/edit'),
+                  ),
+                ],
+              ),
+            ),
+
+            // Breathing space
+            const SizedBox(height: AppSpacing.xl),
+
+            // Primary content
+            Expanded(
+              child: entryAsync.when(
         data: (entry) {
           final dateFormat = DateFormat('MMMM d, yyyy');
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 960),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                 // Event Date
                 Row(
                   children: [
                     Icon(
-                      Icons.calendar_today,
+                      AppIcons.calendar,
                       color: AppColors.inactiveIcon,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       dateFormat.format(entry.eventDate),
                       style: TextStyle(
@@ -61,7 +109,7 @@ class EntryDetailScreen extends ConsumerWidget {
                   ],
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
 
                 // Highlight Text
                 Text(
@@ -69,7 +117,7 @@ class EntryDetailScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
 
                 // Location
                 if (entry.location != null) ...[
@@ -77,11 +125,11 @@ class EntryDetailScreen extends ConsumerWidget {
                     children: [
                       Icon(
                         entry.location!.isUserOverridden
-                            ? Icons.edit_location
-                            : Icons.location_on,
+                            ? AppIcons.editLocation
+                            : AppIcons.location,
                         color: AppColors.inactiveIcon,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
                           entry.location!.displayName,
@@ -93,13 +141,13 @@ class EntryDetailScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                 ],
 
                 // Smart Page Status
                 if (entry.isProcessed) ...[
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: AppColors.successMuted.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppRadius.rMd),
@@ -111,10 +159,10 @@ class EntryDetailScreen extends ConsumerWidget {
                         const Row(
                           children: [
                             Icon(
-                              Icons.auto_awesome,
+                              AppIcons.autoAwesome,
                               color: AppColors.successMuted,
                             ),
-                            SizedBox(width: 8),
+                            SizedBox(width: AppSpacing.sm),
                             Text(
                               'Smart Page Generated',
                               style: TextStyle(
@@ -125,7 +173,7 @@ class EntryDetailScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.sm),
                         if (entry.pageLayoutType != null)
                           Text(
                             'Layout: ${entry.pageLayoutType}',
@@ -139,7 +187,7 @@ class EntryDetailScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                 ],
 
                 // Photos
@@ -148,41 +196,46 @@ class EntryDetailScreen extends ConsumerWidget {
                     'Photos',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: entry.photos.length,
-                    itemBuilder: (context, index) {
-                      final photo = entry.photos[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.rMd),
-                        child: Image.network(
-                          photo.url,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: AppColors.softApricot.withValues(alpha: 0.3),
-                              child: Center(
-                                child: Icon(
-                                  Icons.broken_image,
-                                  size: AppIconSize.large,
-                                  color: AppColors.inactiveIcon,
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: entry.photos.map((photo) {
+                      return Container(
+                        width: 240,
+                        height: 240,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.oliveWood.withValues(alpha: 0.15),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(AppRadius.rMd),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.rMd - 1),
+                          child: Image.network(
+                            photo.url,
+                            width: 240,
+                            height: 240,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.softApricot.withValues(alpha: 0.3),
+                                child: Center(
+                                  child: Icon(
+                                    AppIcons.brokenImage,
+                                    size: AppIconSize.large,
+                                    color: AppColors.inactiveIcon,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                 ],
 
                 // Tags
@@ -191,10 +244,10 @@ class EntryDetailScreen extends ConsumerWidget {
                     'Tags',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
                     children: entry.tags.map((tag) {
                       return Chip(
                         label: Text(tag.name),
@@ -202,7 +255,9 @@ class EntryDetailScreen extends ConsumerWidget {
                     }).toList(),
                   ),
                 ],
-              ],
+                  ],
+                ),
+              ),
             ),
           );
         },
@@ -212,13 +267,13 @@ class EntryDetailScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
-                Icons.error_outline,
+                AppIcons.error,
                 size: AppIconSize.extraLarge,
                 color: AppColors.errorMuted,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                 child: Text(
                   'Failed to load entry: $error',
                   textAlign: TextAlign.center,
@@ -226,6 +281,10 @@ class EntryDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+              ),
+            ),
+          ],
         ),
       ),
     );

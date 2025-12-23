@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_icons.dart';
 import '../providers/auth_providers.dart';
 
 class LoginForm extends ConsumerStatefulWidget {
@@ -58,8 +59,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
         children: [
           if (_errorMessage != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
               decoration: BoxDecoration(
                 color: AppColors.errorMuted.withValues(alpha: 0.1),
                 border: Border.all(color: AppColors.errorMuted),
@@ -76,7 +77,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: 'Email',
-              prefixIcon: Icon(Icons.email),
+              prefixIcon: Icon(AppIcons.email),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -89,13 +90,13 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             },
             enabled: !_isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           TextFormField(
             controller: _passwordController,
             obscureText: true,
             decoration: const InputDecoration(
               labelText: 'Password',
-              prefixIcon: Icon(Icons.lock),
+              prefixIcon: Icon(AppIcons.lock),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -108,7 +109,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             },
             enabled: !_isLoading,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
           FilledButton(
             onPressed: _isLoading ? null : _handleLogin,
             child: _isLoading

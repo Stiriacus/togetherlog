@@ -29,6 +29,19 @@ class AppIcons {
   static const familyRestroom = Symbols.family_restroom;
   static const person = Symbols.person;
 
+  // Auth & Security
+  static const email = Symbols.email;
+  static const lock = Symbols.lock;
+  static const lockOpen = Symbols.lock_open;
+
+  // Location
+  static const location = Symbols.location_on;
+  static const editLocation = Symbols.edit_location;
+
+  // Media & Content
+  static const brokenImage = Symbols.broken_image;
+  static const autoAwesome = Symbols.auto_awesome;
+
   // States
   static const error = Symbols.error;
   static const info = Symbols.info;

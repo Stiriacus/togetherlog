@@ -15,7 +15,7 @@ class AppColors {
   static const Color darkWalnut = Color(0xFF592611);
   static const Color oliveWood = Color(0xFF785D3A);
   static const Color softApricot = Color(0xFFFCDCB5);
-  static const Color antiqueWhite = Color(0xFFFAEBD5);
+  static const Color antiqueWhite = Color(0xFFFDF5E6);
 
   // === Status Colors (V1.1) ===
   static const Color successMuted = Color(0xFF6F8F7A);
@@ -416,7 +416,7 @@ class AppTheme {
         backgroundColor: AppColors.antiqueWhite,
         elevation: 4,
         shadowColor: AppColors.shadowBase,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppRadius.rLg)),
         ),
         titleTextStyle: GoogleFonts.inter(
@@ -431,7 +431,7 @@ class AppTheme {
       ),
 
       // === Bottom Sheet ===
-      bottomSheetTheme: BottomSheetThemeData(
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.antiqueWhite,
         elevation: 6,
         shadowColor: AppColors.shadowBase,
@@ -449,7 +449,7 @@ class AppTheme {
           fontSize: 14,
           color: AppColors.antiqueWhite,
         ),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppRadius.rSm)),
         ),
         behavior: SnackBarBehavior.floating,
