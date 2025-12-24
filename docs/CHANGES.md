@@ -1,4 +1,43 @@
-# TogetherLog - Recent Changes
+# TogetherLog - Changes
+
+**Purpose:** Append-only changelog of what was actually implemented
+
+---
+
+## How to Write Entries
+
+**Format:**
+```markdown
+## [Category Name] - YYYY-MM-DD (optional)
+
+### Subcategory
+- **What changed** with file references and technical details
+  - Sub-detail if needed
+  - Implementation notes
+```
+
+**Requirements:**
+- **Append-only** — Never delete old entries
+- **Implementation-focused** — What was done, not what was planned
+- **File references** — Link to changed files where relevant (e.g., `app_theme.dart:70`)
+- **Technical details** — Include values, tokens, sizes (e.g., "Changed from 500px to 720px")
+
+**Categories:**
+- UI Quality Upgrades
+- Backend Changes
+- Theme Updates
+- Bug Fixes
+- Performance Improvements
+- Architecture Documentation
+- Dependencies
+
+**Rules:**
+- Update after each meaningful commit or milestone
+- Break down changes to necessary elements only
+- No planning discussion — only what was shipped
+- Git history preserves everything; this is the readable summary
+
+---
 
 ## UI Quality Upgrades
 
@@ -117,6 +156,35 @@
   - Tracks architectural improvement proposals
   - Documents backend-authoritative Smart Page layout refactor proposal
   - Includes implementation plan for V2 consideration
+
+## Documentation Structure - 2024-12-24
+
+### Consolidated Design System
+- **Created `design-system.md`** (17KB) consolidating 6 separate design docs
+  - Merged: Typography.md, Design Tokens.md, Iconography.md, Structural UI Patterns.md, design_spec.md
+  - Deleted: design_theme_v11.md (conflicted with code - specified Playfair but code uses Inter only)
+  - Added sections: Screen Inventory, User Journey, Global UI Patterns, Component Library Reference
+  - Result: Single authoritative design contract matching actual implementation
+
+### Documentation Organization
+- **Enhanced `CHANGES.md`** with self-documenting format rules at top
+- **Removed `VERSIONING.md`** (redundant - changelog is now self-explanatory)
+- **Removed `CONTEXT.md`** (redundant - CLAUDE.md serves AI assistant quick start purpose)
+- **Removed `design_spec.md`** (screen inventory merged into design-system.md)
+- **Removed `ARCHITECTURE_IMPROVEMENTS.md`** (converted to planning file: backend-photo-layout-coordinates.md)
+- **Created planning/archive structure:**
+  - `/docs/planning/` — Active work (flat structure, next-to-do items)
+  - `/docs/archive/` — Completed work (historical reference only)
+- **Total core specs:** 6 files (down from 15)
+- **Moved completed/outdated docs** to archive
+
+### Planning Workflow
+- Place planning files directly in `/docs/planning/` (no subdirectories)
+- Planning contains committed next steps unless explicitly instructed otherwise
+- Move to `/docs/archive/` when complete
+- Archive not referenced in CLAUDE.md (historical only)
+
+---
 
 ## Recent Updates (2024-12-24)
 

@@ -1,0 +1,62 @@
+domains:
+  presentation:
+    description: "User interface layer including screens, widgets, layouts, and navigation components"
+    paths:
+      - app/lib/features/auth/widgets
+      - app/lib/features/auth/auth_screen.dart
+      - app/lib/features/logs/widgets
+      - app/lib/features/logs/logs_screen.dart
+      - app/lib/features/entries/widgets
+      - app/lib/features/entries/entries_screen.dart
+      - app/lib/features/entries/entry_create_screen.dart
+      - app/lib/features/entries/entry_detail_screen.dart
+      - app/lib/features/entries/entry_edit_screen.dart
+      - app/lib/features/flipbook/widgets
+      - app/lib/features/flipbook/flipbook_viewer.dart
+      - app/lib/core/layouts
+      - app/lib/core/navigation
+      - app/lib/core/widgets
+    readme: README.md
+
+  application:
+    description: "Application orchestration including state management, routing, and entry point"
+    paths:
+      - app/lib/features/auth/providers
+      - app/lib/features/logs/providers
+      - app/lib/features/entries/providers
+      - app/lib/features/flipbook/providers
+      - app/lib/core/routing
+      - app/lib/main.dart
+    readme: README.md
+
+  infrastructure:
+    description: "Infrastructure layer including API clients, repositories, backend services, database persistence, and platform integration"
+    paths:
+      - app/lib/data
+      - app/lib/features/auth/data
+      - app/lib/features/logs/data
+      - app/lib/features/entries/data
+      - backend/supabase/functions
+      - backend/supabase/migrations
+      - backend/supabase/config.toml
+      - app/web
+      - app/android
+      - app/pubspec.yaml
+      - app/analysis_options.yaml
+    readme: README.md
+
+  design_system:
+    description: "Design system including theme configuration, typography, colors, and visual assets"
+    paths:
+      - app/lib/core/theme
+      - app/assets
+    readme: README.md
+
+  project:
+    description: "Project-level documentation, configuration, and meta files"
+    paths:
+      - CLAUDE.md
+      - README.md
+      - LICENSE (MIT)
+      - startup_prompt.md
+    readme: README.md
