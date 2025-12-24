@@ -155,14 +155,14 @@ supabase migration new <migration-name>
 ### Git Workflow
 
 ```bash
-# All development happens on this branch:
-git checkout claude/implement-togetherlog-milestones-01VZCHt2jn2mHfHykS74GcA3
+# Development branch
+git checkout dev
 
-# Commit format:
-git commit -m "feat: brief description"
+# Commit with simple descriptive messages
+git commit -m "brief description of changes"
 
-# Push to branch
-git push origin claude/implement-togetherlog-milestones-01VZCHt2jn2mHfHykS74GcA3
+# Push changes
+git push origin dev
 ```
 
 ---
