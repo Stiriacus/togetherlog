@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../data/models/entry.dart';
 import '../polaroid_photo.dart';
 
@@ -23,115 +24,125 @@ class Grid2x2Layout extends StatelessWidget {
     final dateFormatter = DateFormat('MMMM d, yyyy');
     final photos = entry.photos.take(4).toList(); // Max 4 photos
 
-    return Stack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Responsive font size based on available width
+        final containerWidth = constraints.maxWidth;
+        final responsiveFontSize = (containerWidth * 0.035).clamp(14.0, 24.0);
+
+        return Stack(
       children: [
         // Background surface
         Container(color: colorScheme.surface),
 
-        // Decorative frame border
-        Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color(0xFF8B7355), // Warm brown frame
-              width: 12,
+        // Decorative frame border (PNG image)
+        Positioned.fill(
+          child: Center(
+            child: Image.asset(
+              'assets/images/decorations/classic_boarder_olivebrown.png',
+              fit: BoxFit.contain,
             ),
-            borderRadius: BorderRadius.circular(4),
           ),
         ),
 
-        // Inner shadow for depth
-        Container(
-          margin: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 16,
-                spreadRadius: -4,
-              ),
-            ],
-          ),
-        ),
-
-        // Content inside frame with large padding
+        // Content inside frame with padding to account for border
         Padding(
-          padding: const EdgeInsets.all(48.0),
+          padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 48.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Text header section - compact at top
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Date
-                  Text(
-                    dateFormatter.format(entry.eventDate),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: colorScheme.primary,
-                      letterSpacing: 1.2,
-                    ),
+              // Top spacer (7% of page height)
+              const Spacer(flex: 5),
+
+              // Date at top center
+              Center(
+                child: Text(
+                  dateFormatter.format(entry.eventDate),
+                  style: GoogleFonts.justAnotherHand(
+                    fontSize: responsiveFontSize * 1.5, // Same size as description
+                    fontWeight: FontWeight.w400,
+                    color: colorScheme.primary,
+                    letterSpacing: 0.5,
                   ),
-                  const SizedBox(height: 6),
-
-                  // Highlight text
-                  if (entry.highlightText.isNotEmpty)
-                    Text(
-                      entry.highlightText,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onSurface,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                  // Location
-                  if (entry.location != null) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 12,
-                          color: colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            entry.location!.displayName,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colorScheme.onSurface.withValues(alpha: 0.7),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
+                ),
               ),
 
-              const SizedBox(height: 24),
+              // Spacer between date and photos (5% of page height)
+              const Spacer(flex: 5),
 
-              // Photo grid section - fills remaining space, anchored to top
+              // Photo grid section - fills middle space (60% of page height)
               Expanded(
+                flex: 60,
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: _buildPhotoGrid(photos),
                 ),
               ),
+
+              // Spacer between photos and text (5% of page height)
+              const Spacer(flex: 5),
+
+              // Text section - at bottom (centered with responsive width)
+              FractionallySizedBox(
+                widthFactor: 0.65, // 65% of available width
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Highlight text
+                    if (entry.highlightText.isNotEmpty)
+                      Text(
+                        entry.highlightText,
+                        style: GoogleFonts.justAnotherHand(
+                          fontSize: responsiveFontSize * 1.5, // Larger for handwritten font
+                          fontWeight: FontWeight.w400,
+                          color: colorScheme.onSurface,
+                          height: 1.2,
+                        ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+
+                    // Location
+                    if (entry.location != null) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              entry.location!.displayName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.onSurface.withValues(alpha: 0.7),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              // Bottom spacer (4% of page height)
+              const Spacer(flex: 4),
             ],
           ),
         ),
       ],
+        );
+      },
     );
   }
 
