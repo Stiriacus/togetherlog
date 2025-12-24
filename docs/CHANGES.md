@@ -1,4 +1,43 @@
-# TogetherLog - Recent Changes
+# TogetherLog - Changes
+
+**Purpose:** Append-only changelog of what was actually implemented
+
+---
+
+## How to Write Entries
+
+**Format:**
+```markdown
+## [Category Name] - YYYY-MM-DD (optional)
+
+### Subcategory
+- **What changed** with file references and technical details
+  - Sub-detail if needed
+  - Implementation notes
+```
+
+**Requirements:**
+- **Append-only** — Never delete old entries
+- **Implementation-focused** — What was done, not what was planned
+- **File references** — Link to changed files where relevant (e.g., `app_theme.dart:70`)
+- **Technical details** — Include values, tokens, sizes (e.g., "Changed from 500px to 720px")
+
+**Categories:**
+- UI Quality Upgrades
+- Backend Changes
+- Theme Updates
+- Bug Fixes
+- Performance Improvements
+- Architecture Documentation
+- Dependencies
+
+**Rules:**
+- Update after each meaningful commit or milestone
+- Break down changes to necessary elements only
+- No planning discussion — only what was shipped
+- Git history preserves everything; this is the readable summary
+
+---
 
 ## UI Quality Upgrades
 
@@ -37,20 +76,48 @@
   - Uses photo URL hash for deterministic randomness
 
 - **Added decorative frame borders**
-  - Warm brown frame (#8B7355) on all layouts
-  - 12px border width with 48px inner padding
-  - Inner shadow for depth effect
-  - Content stays safely inside frame
+  - ~~Warm brown frame (#8B7355) on all layouts~~ (replaced)
+  - **Classic olive-brown PNG border** (`classic_boarder_olivebrown.png`)
+  - Transparent border asset with vintage aesthetic
+  - Border properly centered with `Positioned.fill` and `BoxFit.contain`
+  - Removed inner shadow (interfered with transparent border)
+
+### Responsive Layout System
+- **Flex-based spacing** using `Spacer` widgets for proportional scaling
+  - Top spacer: 5% of page height (date padding)
+  - Date-to-photo gap: 5%
+  - Photo area: 60% (fills middle space)
+  - Photo-to-text gap: 5%
+  - Bottom spacer: 4% (text padding)
+- **Responsive text width**: `FractionallySizedBox` at 65% of page width
+  - Maintains proportions across all screen sizes
+  - Prevents text from being too wide or too narrow
+- All layouts wrapped in `LayoutBuilder` for dynamic sizing
+
+### Typography & Text Layout
+- **Handwritten font**: "Just Another Hand" via Google Fonts
+  - Applied to both date and description text
+  - Authentic scrapbook/journal aesthetic
+- **Responsive font sizing**:
+  - Scales dynamically: `(containerWidth * 0.035).clamp(14.0, 24.0)`
+  - Multiplied by 1.5x for handwritten font readability
+  - Date and description use same size for visual consistency
+- **Text positioning**:
+  - Date centered at top with flex-based padding
+  - Description centered at bottom with 4 max lines (up from 2)
+  - Location icon centered below description
+  - All text center-aligned for scrapbook look
+- Padding increased to 64px horizontal, 48px vertical
 
 ### Layout Changes
-- **Single Full Layout**: 380px Polaroid, top-center aligned
-- **Grid 2x2 Layout**: 220px Polaroids, scattered Wrap layout
-- **Grid 3x2 Layout**: 190px Polaroids, densely packed
+- **Single Full Layout**: 380px Polaroid, centered, date at top, text at bottom
+- **Grid 2x2 Layout**: 220px Polaroids, scattered Wrap layout, date at top, text at bottom
+- **Grid 3x2 Layout**: 190px Polaroids, densely packed, date at top, text at bottom
 
-- Photos anchor to top (not centered) for page-filling effect
+- Photos anchor to top-center/top-left for page-filling effect
 - Wrap widget replaces GridView for organic scatter
-- Text headers minimized to maximize photo coverage
-- Expanded widgets allow photos to fill vertical space
+- **Layout hierarchy**: Date (top) → Photos (middle) → Description + Location (bottom)
+- Expanded widgets with flex values for proportional space distribution
 
 ### Animation
 - Removed `page_flip` package dependency
@@ -82,6 +149,74 @@
 - ✅ Icon tree-shaking: 99.5% size reduction
 - ✅ All changes committed and pushed
 
+## Architecture Documentation
+
+### New Documentation Files
+- **`ARCHITECTURE_IMPROVEMENTS.md`**
+  - Tracks architectural improvement proposals
+  - Documents backend-authoritative Smart Page layout refactor proposal
+  - Includes implementation plan for V2 consideration
+
+## Documentation Structure - 2024-12-24
+
+### Consolidated Design System
+- **Created `design-system.md`** (17KB) consolidating 6 separate design docs
+  - Merged: Typography.md, Design Tokens.md, Iconography.md, Structural UI Patterns.md, design_spec.md
+  - Deleted: design_theme_v11.md (conflicted with code - specified Playfair but code uses Inter only)
+  - Added sections: Screen Inventory, User Journey, Global UI Patterns, Component Library Reference
+  - Result: Single authoritative design contract matching actual implementation
+
+### Documentation Organization
+- **Enhanced `CHANGES.md`** with self-documenting format rules at top
+- **Removed `VERSIONING.md`** (redundant - changelog is now self-explanatory)
+- **Removed `CONTEXT.md`** (redundant - CLAUDE.md serves AI assistant quick start purpose)
+- **Removed `design_spec.md`** (screen inventory merged into design-system.md)
+- **Removed `ARCHITECTURE_IMPROVEMENTS.md`** (converted to planning file: backend-photo-layout-coordinates.md)
+- **Created planning/archive structure:**
+  - `/docs/planning/` — Active work (flat structure, next-to-do items)
+  - `/docs/archive/` — Completed work (historical reference only)
+- **Total core specs:** 6 files (down from 15)
+- **Moved completed/outdated docs** to archive
+
+### Planning Workflow
+- Place planning files directly in `/docs/planning/` (no subdirectories)
+- Planning contains committed next steps unless explicitly instructed otherwise
+- Move to `/docs/archive/` when complete
+- Archive not referenced in CLAUDE.md (historical only)
+
 ---
 
-*Last updated: 2025-12-23*
+## Recent Updates (2024-12-24)
+
+### Flipbook Hand-Drawn Map Integration
+- **Added PolaroidMap widget** for displaying locations in scrapbook style
+  - Uses flutter_map with Stamen Watercolor tiles for hand-drawn aesthetic
+  - Rendered in Polaroid frame matching photo style
+  - Location name displayed as handwritten caption in "Just Another Hand" font
+  - Stable random rotation (-6° to +6°) based on location name hash
+  - Non-interactive map with centered pin marker
+- **Integrated map into single_full_layout**
+  - Map displays as additional Polaroid card alongside photo
+  - Shows both photo + map when entry has location data
+  - Map appears in last position (as designed)
+  - Removed location icon/text from bottom section (map shows it)
+- **Dependencies added**: flutter_map ^6.0.0, latlong2 ^0.9.0
+
+### Location Editor Bug Fix
+- **Fixed location data not persisting** on entry create/edit
+  - Backend expects flat fields (location_lat, location_lng, location_display_name)
+  - Frontend was sending nested object
+  - Updated entries_repository.dart to flatten location data before API calls
+  - Location now saves correctly in both create and update operations
+
+### Flipbook Responsive Typography & Layout
+- Implemented fully responsive flipbook layouts across all three layout types
+- Added "Just Another Hand" handwritten font for authentic scrapbook aesthetic
+- Migrated to flex-based spacing system for consistent scaling across screen sizes
+- Centered text layout with responsive width constraints (65% of page width)
+- Increased description text from 2 to 4 max lines
+- Fixed PNG border rendering with proper centering and aspect ratio preservation
+
+---
+
+*Last updated: 2024-12-24*

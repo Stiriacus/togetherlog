@@ -84,8 +84,12 @@ class EntriesRepository {
       'photo_ids': <String>[], // Empty initially
     };
 
+    // Flatten location data for backend API
     if (location != null) {
-      createData['location'] = location.toJson();
+      if (location.lat != null) createData['location_lat'] = location.lat;
+      if (location.lng != null) createData['location_lng'] = location.lng;
+      createData['location_display_name'] = location.displayName;
+      createData['location_is_user_overridden'] = location.isUserOverridden;
     }
 
     final entryJson = await _entriesApiClient.createEntry(logId, createData);
@@ -154,8 +158,12 @@ class EntriesRepository {
     if (tagIds != null) {
       updateData['tag_ids'] = tagIds;
     }
+    // Flatten location data for backend API
     if (location != null) {
-      updateData['location'] = location.toJson();
+      if (location.lat != null) updateData['location_lat'] = location.lat;
+      if (location.lng != null) updateData['location_lng'] = location.lng;
+      updateData['location_display_name'] = location.displayName;
+      updateData['location_is_user_overridden'] = location.isUserOverridden;
     }
 
     if (updateData.isEmpty) {

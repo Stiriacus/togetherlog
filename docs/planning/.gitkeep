@@ -1,0 +1,20 @@
+# Planning Directory
+
+This directory contains active planning work for upcoming features, migrations, and changes.
+
+## Usage
+
+- Place planning files **directly in this directory** (not in subdirectories)
+- File naming: `feature-name.md`, `migration-name.md`, etc.
+- When complete, move entire file to `/docs/archive/`
+
+## Examples
+
+```
+planning/
+├── backend-layout-refactor.md (in progress)
+├── navigation-rail-implementation.md (next up)
+└── dark-mode-proposal.md (under consideration)
+```
+
+When `backend-layout-refactor.md` is complete, move it to `/docs/archive/backend-layout-refactor.md`
