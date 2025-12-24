@@ -33,6 +33,21 @@ class Entry {
       tagIds = tags.map((tag) => tag.id).toList();
     }
 
+    // Parse location - can be either flat fields or nested object
+    Location? location;
+    if (json['location'] != null) {
+      // Nested object format (from toJson)
+      location = Location.fromJson(json['location'] as Map<String, dynamic>);
+    } else if (json['location_display_name'] != null) {
+      // Flat fields format (from database view)
+      location = Location(
+        lat: (json['location_lat'] as num?)?.toDouble(),
+        lng: (json['location_lng'] as num?)?.toDouble(),
+        displayName: json['location_display_name'] as String,
+        isUserOverridden: json['location_is_user_overridden'] as bool? ?? false,
+      );
+    }
+
     return Entry(
       id: json['id'] as String,
       logId: json['log_id'] as String,
@@ -46,9 +61,7 @@ class Entry {
           [],
       tagIds: tagIds,
       tags: tags,
-      location: json['location'] != null
-          ? Location.fromJson(json['location'] as Map<String, dynamic>)
-          : null,
+      location: location,
       pageLayoutType: json['page_layout_type'] as String?,
       colorTheme: json['color_theme'] as String?,
       sprinkles: (json['sprinkles'] as List<dynamic>?)?.cast<String>(),

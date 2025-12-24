@@ -199,16 +199,16 @@ app/lib/
 ## Flipbook Page Structure
 
 ### Page Dimensions
-- **Fixed aspect ratio:** DIN A5 (800px × 1142px = 0.7 ratio)
-- **Scaling:** Proportional on smaller screens (ratio always preserved)
-- **All content scales:** Photos, icons, text, frame decoration
+- **Fixed baseline:** DIN A5 at 150 DPI (874px × 1240px)
+- **Rendering method:** Client-side Canvas to image (pixel-perfect, no scaling)
+- **All content rendered at exact dimensions:** Photos, icons, text, frame decoration
 
 ### Frame Decorations
 - **Location:** `app/assets/images/decorations/`
 - **Current frame:** `classic_boarder_olivebrown.png`
 - **Implementation:** PNG overlay using `Positioned.fill` with `BoxFit.contain`
 - **Content padding:** 64px horizontal, 48px vertical (reserved space for frame)
-- **Usable content area:** 672px × 1046px (within frame borders)
+- **Usable content area:** 746px × 1144px (within frame borders)
 
 **Frame rendering (all layouts):**
 ```dart

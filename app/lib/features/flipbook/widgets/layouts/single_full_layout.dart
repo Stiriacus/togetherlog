@@ -1,6 +1,6 @@
-// TogetherLog - Single Full Layout Widget
+// TogetherLog - Single Full Layout Widget (Pixel-Perfect)
 // Hero layout for entries with 0-1 photos
-// Scrapbook-style with Polaroid photo and decorative frame
+// Uses absolute positioning with exact pixel coordinates
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,8 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../data/models/entry.dart';
 import '../polaroid_photo.dart';
 import '../polaroid_map.dart';
+import '../layout_constants.dart';
 
 /// Single full layout - displays one large photo with text in a framed scrapbook page
+/// All elements positioned at exact pixel coordinates
 class SingleFullLayout extends StatelessWidget {
   const SingleFullLayout({
     super.key,
@@ -24,13 +26,7 @@ class SingleFullLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormatter = DateFormat('MMMM d, yyyy');
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Responsive font size based on available width
-        final containerWidth = constraints.maxWidth;
-        final responsiveFontSize = (containerWidth * 0.035).clamp(14.0, 24.0);
-
-        return Stack(
+    return Stack(
       children: [
         // Background surface
         Container(color: colorScheme.surface),
@@ -45,122 +41,105 @@ class SingleFullLayout extends StatelessWidget {
           ),
         ),
 
-        // Content inside frame with padding to account for border
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 48.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Top spacer (7% of page height)
-              const Spacer(flex: 5),
-
-              // Date at top center
-              Center(
-                child: Text(
-                  dateFormatter.format(entry.eventDate),
-                  style: GoogleFonts.justAnotherHand(
-                    fontSize: responsiveFontSize * 1.5, // Same size as description
-                    fontWeight: FontWeight.w400,
-                    color: colorScheme.primary,
-                    letterSpacing: 0.5,
-                  ),
+        // DATE BOX (with visible border for debugging)
+        Positioned(
+          left: LayoutConstants.dateBox.left,
+          top: LayoutConstants.dateBox.top,
+          width: LayoutConstants.dateBox.width,
+          height: LayoutConstants.dateBox.height,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1), // Light blue background
+              border: Border.all(color: Colors.blue, width: 2), // Blue border
+            ),
+            child: Center(
+              child: Text(
+                dateFormatter.format(entry.eventDate),
+                style: GoogleFonts.justAnotherHand(
+                  fontSize: LayoutConstants.dateFontSize,
+                  fontWeight: FontWeight.w400,
+                  color: colorScheme.primary,
+                  letterSpacing: 0.5,
                 ),
               ),
+            ),
+          ),
+        ),
 
-              // Spacer between date and photo (5% of page height)
-              const Spacer(flex: 5),
+        // CONTENT BOX (with visible border for debugging)
+        Positioned(
+          left: LayoutConstants.singleContentBox.left,
+          top: LayoutConstants.singleContentBox.top,
+          width: LayoutConstants.singleContentBox.width,
+          height: LayoutConstants.singleContentBox.height,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1), // Light green background
+              border: Border.all(color: Colors.green, width: 2), // Green border
+            ),
+            child: Center(
+              child: _buildContent(),
+            ),
+          ),
+        ),
 
-              // Photo/Map section - fills middle space (60% of page height)
-              Expanded(
-                flex: 60,
-                child: Center(
-                  child: _buildContentGrid(),
-                ),
-              ),
-
-              // Spacer between photo and text (5% of page height)
-              const Spacer(flex: 5),
-
-              // Text section - at bottom (centered with responsive width)
-              FractionallySizedBox(
-                widthFactor: 0.65, // 65% of available width
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Highlight text
-                    if (entry.highlightText.isNotEmpty)
-                      Text(
-                        entry.highlightText,
-                        style: GoogleFonts.justAnotherHand(
-                          fontSize: responsiveFontSize * 1.5, // Larger for handwritten font
-                          fontWeight: FontWeight.w400,
-                          color: colorScheme.onSurface,
-                          height: 1.2,
-                        ),
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
+        // TEXT BOX (with visible border for debugging)
+        Positioned(
+          left: LayoutConstants.textBox.left,
+          top: LayoutConstants.textBox.top,
+          width: LayoutConstants.textBox.width,
+          height: LayoutConstants.textBox.height,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1), // Light orange background
+              border: Border.all(color: Colors.orange, width: 2), // Orange border
+            ),
+            child: Center(
+              child: entry.highlightText.isNotEmpty
+                  ? Text(
+                      entry.highlightText,
+                      style: GoogleFonts.justAnotherHand(
+                        fontSize: LayoutConstants.textFontSize,
+                        fontWeight: FontWeight.w400,
+                        color: colorScheme.onSurface,
+                        height: LayoutConstants.textLineHeight,
                       ),
-                  ],
-                ),
-              ),
-
-              // Bottom spacer (6% of page height)
-              const Spacer(flex: 4),
-            ],
+                      maxLines: LayoutConstants.textMaxLines,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    )
+                  : null,
+            ),
           ),
         ),
       ],
-        );
-      },
     );
   }
 
-  /// Build content grid with photo(s) and map
-  Widget _buildContentGrid() {
+  /// Build content (photo or map)
+  Widget _buildContent() {
     final hasPhoto = entry.photos.isNotEmpty;
     final hasLocation = entry.location != null;
 
-    // Case 1: Photo + Location → Show both in a row
-    if (hasPhoto && hasLocation) {
-      return Wrap(
-        spacing: 20,
-        runSpacing: 20,
-        alignment: WrapAlignment.center,
-        children: [
-          PolaroidPhoto(
-            photoUrl: entry.photos.first.url,
-            colorScheme: colorScheme,
-            size: 280.0,
-          ),
-          PolaroidMap(
-            location: entry.location!,
-            colorScheme: colorScheme,
-            size: 280.0,
-          ),
-        ],
-      );
-    }
-
-    // Case 2: Only Photo
+    // Only Photo
     if (hasPhoto) {
       return PolaroidPhoto(
         photoUrl: entry.photos.first.url,
         colorScheme: colorScheme,
-        size: 380.0,
+        size: LayoutConstants.polaroidSizeLarge,
       );
     }
 
-    // Case 3: Only Location
+    // Only Location
     if (hasLocation) {
       return PolaroidMap(
         location: entry.location!,
         colorScheme: colorScheme,
-        size: 380.0,
+        size: LayoutConstants.polaroidSizeLarge,
       );
     }
 
-    // Case 4: No photo, no location
+    // No content
     return const SizedBox.shrink();
   }
 }

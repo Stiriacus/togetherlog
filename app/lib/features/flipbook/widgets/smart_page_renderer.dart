@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/smart_page_theme.dart';
 import '../../../data/models/entry.dart';
 import 'layouts/single_full_layout.dart';
-import 'layouts/grid_2x2_layout.dart';
-import 'layouts/grid_3x2_layout.dart';
+import 'layouts/two_by_one_layout.dart';
 import 'sprinkles_overlay.dart';
 
 /// Smart Page Renderer - renders an entry based on backend Smart Page data
@@ -60,31 +59,26 @@ class SmartPageRenderer extends StatelessWidget {
     );
   }
 
-  /// Select appropriate layout widget based on pageLayoutType
-  /// Layout type is computed by backend Smart Pages Engine
+  /// Select appropriate layout widget
+  /// Uses pixel-perfect layouts:
+  /// - TwoByOneLayout: Photo + Location side by side
+  /// - SingleFullLayout: Single photo OR single location
   Widget _getLayoutWidget(ColorScheme colorScheme) {
-    switch (entry!.pageLayoutType) {
-      case 'single_full':
-        return SingleFullLayout(
-          entry: entry!,
-          colorScheme: colorScheme,
-        );
-      case 'grid_2x2':
-        return Grid2x2Layout(
-          entry: entry!,
-          colorScheme: colorScheme,
-        );
-      case 'grid_3x2':
-        return Grid3x2Layout(
-          entry: entry!,
-          colorScheme: colorScheme,
-        );
-      default:
-        // Fallback to single_full if layout type is null or unknown
-        return SingleFullLayout(
-          entry: entry!,
-          colorScheme: colorScheme,
-        );
+    final hasPhoto = entry!.photos.isNotEmpty;
+    final hasLocation = entry!.location != null;
+
+    // If both photo and location exist, use 2×1 layout
+    if (hasPhoto && hasLocation) {
+      return TwoByOneLayout(
+        entry: entry!,
+        colorScheme: colorScheme,
+      );
     }
+
+    // Otherwise use single full layout (photo only, location only, or empty)
+    return SingleFullLayout(
+      entry: entry!,
+      colorScheme: colorScheme,
+    );
   }
 }

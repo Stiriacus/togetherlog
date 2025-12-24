@@ -217,6 +217,69 @@
 - Increased description text from 2 to 4 max lines
 - Fixed PNG border rendering with proper centering and aspect ratio preservation
 
+### Pixel-Perfect Flipbook Layout System - 2025-12-24
+- **Complete rewrite of flipbook rendering to pixel-perfect positioning**
+  - Changed from responsive/flex-based layout to absolute positioning
+  - Fixed page dimensions to DIN A5 at 150 DPI: 874×1240px (was 800×1142px)
+  - All content constrained to exact pixel boxes - no overflow allowed
+
+- **Created layout_constants.dart** - Single source of truth for all positioning
+  - Date Box: (307, 100) - 242×60px - Centered, fixed position
+  - Content Box: (74, 230) - 726×740px - Hard boundary for all photos/maps
+  - Text Box: (200, 980) - 474×160px - Centered, max 3 lines
+  - Frame padding: 74px horizontal, 48px vertical
+  - All boxes documented with HARD BOUNDARY constraints
+
+- **Implemented two pixel-perfect layouts**
+  - **single_full_layout.dart**: One large photo OR location map
+    - Polaroid size: 420px, centered in content box
+  - **two_by_one_layout.dart**: Photo + location map side by side
+    - Photo box (left): (84, 430) - 340×480px
+    - Map box (right): (450, 430) - 340×480px
+    - Polaroid size: 340px for both
+    - Staggered positioning: One randomly moves up 50px using deterministic random
+    - Uses entry ID hash for consistency (same entry = same stagger)
+
+- **Updated SmartPageRenderer logic**
+  - Removed grid_2x2 and grid_3x2 layouts (not needed for V1)
+  - Simple logic: If photo AND location → TwoByOneLayout, else → SingleFullLayout
+
+- **Visual debugging** - All boxes show colored borders during development
+  - Blue = Date box
+  - Green = Photo/Content box
+  - Purple = Map box (2×1 layout only)
+  - Orange = Text box
+
+- **Black background** for flipbook viewer instead of grey
+  - flipbook_viewer.dart: Changed from Colors.grey.shade900 to Colors.black
+  - Creates better contrast for page content
+
+### Location Features - 2025-12-24
+- **Removed auto-detect location feature**
+  - Replaced with manual geocoding search using Nominatim API
+  - location_editor.dart: New search-based interface
+
+- **Location geocoding search**
+  - Uses OpenStreetMap Nominatim for location lookups
+  - Shows up to 5 results with full addresses
+  - Saves GPS coordinates (lat/lng) with location
+  - All locations marked as user-overridden (isUserOverridden: true)
+
+- **Shortened location names**
+  - Full address shown in search results as subtitle
+  - Saves only first 3 parts: "Eiffel Tower, 5, Avenue Anatole France"
+  - Instead of full: "Eiffel Tower, 5, Avenue Anatole France, Quartier du Gros-Caillou..."
+
+- **Fixed location persistence bug**
+  - Entry.fromJson now handles both flat fields (from DB) and nested object (from toJson)
+  - Database returns: location_lat, location_lng, location_display_name, location_is_user_overridden
+  - Frontend was expecting nested 'location' object
+  - Now builds Location from flat fields when present
+
+- **Added debug logging** for location data submission
+  - entries_repository.dart: Logs all location data being sent to backend
+  - Shows lat, lng, displayName, isUserOverridden in console
+
 ---
 
-*Last updated: 2024-12-24*
+*Last updated: 2025-12-24*

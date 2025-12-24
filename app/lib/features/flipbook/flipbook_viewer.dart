@@ -52,10 +52,10 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
     final entriesAsync = ref.watch(flipbookEntriesProvider(widget.logId));
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade900,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(widget.logName),
-        backgroundColor: Colors.grey.shade900,
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -147,7 +147,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
     pages.add(
       SmartPageRenderer.customPage(
         child: Container(
-          color: Colors.grey.shade800,
+          color: Colors.black,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -188,13 +188,13 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
           controller: _pageController,
           itemCount: pages.length,
           itemBuilder: (context, index) {
+            // Display page at exact baseline dimensions (874×1240 - DIN A5 at 150 DPI)
+            // Fixed size - pixel-perfect rendering
             return Center(
-              child: AspectRatio(
-                aspectRatio: 0.7, // Portrait book aspect ratio
-                child: Container(
-                  color: Colors.grey.shade900,
-                  child: pages[index],
-                ),
+              child: SizedBox(
+                width: 874,
+                height: 1240,
+                child: pages[index],
               ),
             );
           },
