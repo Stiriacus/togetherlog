@@ -124,18 +124,22 @@ class SingleFullLayout extends StatelessWidget {
     // Only Photo
     if (hasPhoto) {
       return PolaroidPhoto(
+        key: ValueKey('photo_${entry.photos.first.url}_${entry.layoutVariant}'),
         photoUrl: entry.photos.first.url,
         colorScheme: colorScheme,
         size: LayoutConstants.polaroidSizeLarge,
+        layoutVariant: entry.layoutVariant,
       );
     }
 
     // Only Location
     if (hasLocation) {
       return PolaroidMap(
+        key: ValueKey('map_${entry.location!.displayName}_${entry.layoutVariant}'),
         location: entry.location!,
         colorScheme: colorScheme,
         size: LayoutConstants.polaroidSizeLarge,
+        layoutVariant: entry.layoutVariant,
       );
     }
 

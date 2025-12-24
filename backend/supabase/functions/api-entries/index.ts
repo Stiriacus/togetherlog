@@ -25,6 +25,7 @@ interface UpdateEntryRequest {
   location_display_name?: string
   location_is_user_overridden?: boolean
   tag_ids?: string[]
+  layout_variant?: number
 }
 
 serve(async (req: Request) => {
@@ -423,6 +424,7 @@ async function updateEntry(supabase: any, userId: string, entryId: string, req: 
   if (body.location_lng !== undefined) updates.location_lng = body.location_lng
   if (body.location_display_name !== undefined) updates.location_display_name = body.location_display_name
   if (body.location_is_user_overridden !== undefined) updates.location_is_user_overridden = body.location_is_user_overridden
+  if (body.layout_variant !== undefined) updates.layout_variant = body.layout_variant
 
   if (Object.keys(updates).length > 0) {
     const { error: updateError } = await supabase

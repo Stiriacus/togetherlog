@@ -24,21 +24,26 @@ class TwoByOneLayout extends StatelessWidget {
   final ColorScheme colorScheme;
 
   /// Calculate staggered positions for photo and map
-  /// Uses deterministic random based on entry ID for consistency
+  /// Uses deterministic random based on entry ID + layoutVariant for consistency
   (Rect photoBox, Rect mapBox) _calculateStaggeredPositions() {
-    // Use entry ID hash for deterministic randomness
-    final random = math.Random(entry.id.hashCode);
+    // Use entry ID hash + layoutVariant for deterministic randomness
+    final seed = entry.id.hashCode + entry.layoutVariant;
+    final random = math.Random(seed);
 
     // Randomly choose which one goes up
     final photoGoesUp = random.nextBool();
 
+    // Generate random offset between min and max (e.g., 120-175px)
+    final offsetRange = LayoutConstants.twoByOneVerticalOffsetMax - LayoutConstants.twoByOneVerticalOffsetMin;
+    final verticalOffset = LayoutConstants.twoByOneVerticalOffsetMin + (random.nextDouble() * offsetRange);
+
     final photoY = photoGoesUp
-        ? LayoutConstants.twoByOnePhotoBoxBase.top - LayoutConstants.twoByOneVerticalOffset
+        ? LayoutConstants.twoByOnePhotoBoxBase.top - verticalOffset
         : LayoutConstants.twoByOnePhotoBoxBase.top;
 
     final mapY = photoGoesUp
         ? LayoutConstants.twoByOneMapBoxBase.top
-        : LayoutConstants.twoByOneMapBoxBase.top - LayoutConstants.twoByOneVerticalOffset;
+        : LayoutConstants.twoByOneMapBoxBase.top - verticalOffset;
 
     final photoBox = Rect.fromLTWH(
       LayoutConstants.twoByOnePhotoBoxBase.left,
@@ -118,9 +123,11 @@ class TwoByOneLayout extends StatelessWidget {
             child: Center(
               child: entry.photos.isNotEmpty
                   ? PolaroidPhoto(
+                      key: ValueKey('photo_${entry.photos.first.url}_${entry.layoutVariant}'),
                       photoUrl: entry.photos.first.url,
                       colorScheme: colorScheme,
                       size: LayoutConstants.polaroidSizeMedium,
+                      layoutVariant: entry.layoutVariant,
                     )
                   : null,
             ),
@@ -141,9 +148,11 @@ class TwoByOneLayout extends StatelessWidget {
             child: Center(
               child: entry.location != null
                   ? PolaroidMap(
+                      key: ValueKey('map_${entry.location!.displayName}_${entry.layoutVariant}'),
                       location: entry.location!,
                       colorScheme: colorScheme,
                       size: LayoutConstants.polaroidSizeMedium,
+                      layoutVariant: entry.layoutVariant,
                     )
                   : null,
             ),

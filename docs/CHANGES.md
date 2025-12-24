@@ -280,6 +280,34 @@
   - entries_repository.dart: Logs all location data being sent to backend
   - Shows lat, lng, displayName, isUserOverridden in console
 
+### Flipbook Layout Improvements - 2025-12-24
+
+- **Increased polaroid stagger variation**
+  - Changed from fixed 50px offset to random 120-175px range
+  - layout_constants.dart: Added twoByOneVerticalOffsetMin/Max (120px/175px)
+  - two_by_one_layout.dart: Random offset calculation within range
+  - Creates more visual variety between pages
+
+- **Regenerate layout button**
+  - Added refresh icon button on each flipbook page (top-right corner)
+  - Increments `layout_variant` field in database to change random seed
+  - Frontend-only visual regeneration (rotations, stagger positions)
+  - Does not recompute Smart Page (layout type, colors, sprinkles remain same)
+
+  **Implementation:**
+  - Entry model: Added `layoutVariant` integer field (defaults to 0)
+  - Database: Migration 003 adds `layout_variant` column to entries table
+  - Database: Migration 004 updates entries_with_photos_and_tags view
+  - Backend: Updated api-entries function to accept layout_variant in request
+  - Polaroid widgets: Calculate rotation using `photoUrl.hashCode + layoutVariant`
+  - Layout widgets: Calculate stagger using `entry.id.hashCode + layoutVariant`
+  - Widget keys: ValueKey includes layoutVariant to force rebuild on change
+
+- **Fixed flipbook navigation from Entries page**
+  - entries_screen.dart:68: Flipbook button now navigates to flipbook viewer
+  - Changed from "coming soon" snackbar to `context.go('/logs/$logId/flipbook')`
+  - Matches behavior of flipbook button in Logs screen
+
 ---
 
 *Last updated: 2025-12-24*

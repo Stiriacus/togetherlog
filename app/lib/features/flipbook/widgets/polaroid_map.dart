@@ -10,48 +10,40 @@ import '../../../data/models/entry.dart';
 
 /// Polaroid-style map widget with stable random rotation
 /// Used in flipbook layouts for entries with location data
-class PolaroidMap extends StatefulWidget {
+class PolaroidMap extends StatelessWidget {
   const PolaroidMap({
     required this.location,
     required this.colorScheme,
     this.size = 180.0,
+    this.layoutVariant = 0,
     super.key,
   });
 
   final Location location;
   final ColorScheme colorScheme;
   final double size;
+  final int layoutVariant;
 
-  @override
-  State<PolaroidMap> createState() => _PolaroidMapState();
-}
-
-class _PolaroidMapState extends State<PolaroidMap> {
-  // Stable random rotation - generated once and cached
-  late final double _rotationAngle;
-
-  @override
-  void initState() {
-    super.initState();
-    // Generate rotation once during initialization
-    // Range: -6° to +6° converted to radians
-    // Use location displayName hash for deterministic randomness
-    final random = math.Random(widget.location.displayName.hashCode);
+  /// Calculate rotation angle based on location and layoutVariant
+  /// Range: -6° to +6° converted to radians
+  double _getRotationAngle() {
+    final seed = location.displayName.hashCode + layoutVariant;
+    final random = math.Random(seed);
     final degrees = -6.0 + random.nextDouble() * 12.0;
-    _rotationAngle = degrees * (math.pi / 180.0);
+    return degrees * (math.pi / 180.0);
   }
 
   @override
   Widget build(BuildContext context) {
     // Default coordinates if GPS not available (center of map)
-    final lat = widget.location.lat ?? 48.8566; // Paris as default
-    final lng = widget.location.lng ?? 2.3522;
+    final lat = location.lat ?? 48.8566; // Paris as default
+    final lng = location.lng ?? 2.3522;
     final coordinates = LatLng(lat, lng);
 
     return Transform.rotate(
-      angle: _rotationAngle,
+      angle: _getRotationAngle(),
       child: Container(
-        width: widget.size,
+        width: size,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(4),
@@ -102,7 +94,7 @@ class _PolaroidMapState extends State<PolaroidMap> {
                             height: 40,
                             child: Icon(
                               Icons.location_on,
-                              color: widget.colorScheme.primary,
+                              color: colorScheme.primary,
                               size: 40,
                               shadows: [
                                 Shadow(
@@ -126,7 +118,7 @@ class _PolaroidMapState extends State<PolaroidMap> {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                widget.location.displayName,
+                location.displayName,
                 style: GoogleFonts.justAnotherHand(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,

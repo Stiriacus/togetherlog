@@ -140,7 +140,10 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
   Widget _buildFlipbook(List entries) {
     // Build page widgets
     final pages = entries
-        .map((entry) => SmartPageRenderer(entry: entry))
+        .map((entry) => SmartPageRenderer(
+              key: ValueKey('${entry.id}_${entry.layoutVariant}'),
+              entry: entry,
+            ))
         .toList();
 
     // Add last page

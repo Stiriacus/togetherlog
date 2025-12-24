@@ -293,6 +293,26 @@ class EntriesRepository {
     return photoIds;
   }
 
+  /// Regenerate layout variant for an entry
+  /// Increments the layoutVariant field to trigger new random positioning
+  Future<Entry> regenerateLayout(String entryId) async {
+    if (entryId.isEmpty) {
+      throw Exception('Entry ID cannot be empty');
+    }
+
+    // Fetch current entry to get current layoutVariant
+    final currentEntry = await fetchEntry(entryId);
+    final newVariant = currentEntry.layoutVariant + 1;
+
+    // Update layoutVariant in database
+    final updateData = <String, dynamic>{
+      'layout_variant': newVariant,
+    };
+
+    final entryJson = await _entriesApiClient.updateEntry(entryId, updateData);
+    return Entry.fromJson(entryJson);
+  }
+
   /// Update Smart Page layout type based on photo count
   /// Implements basic Smart Pages Engine Rule 1: Layout Type Selection
   Future<void> _updateSmartPageLayout(String entryId, int photoCount) async {

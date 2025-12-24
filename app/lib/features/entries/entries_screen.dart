@@ -65,11 +65,7 @@ class EntriesScreen extends ConsumerWidget {
                     icon: const Icon(Icons.auto_stories),
                     tooltip: 'View Flipbook',
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Flipbook viewer coming soon'),
-                        ),
-                      );
+                      context.go('/logs/$logId/flipbook');
                     },
                   ),
                 ],

@@ -63,9 +63,10 @@ class LayoutConstants {
     480.0,
   );
 
-  /// Vertical offset for staggered positioning in 2×1 layout
-  /// One element will be moved up by this amount for depth
-  static const double twoByOneVerticalOffset = 50.0;
+  /// Vertical offset range for staggered positioning in 2×1 layout
+  /// One element will be randomly moved up by an amount within this range for depth
+  static const double twoByOneVerticalOffsetMin = 120.0;
+  static const double twoByOneVerticalOffsetMax = 175.0;
 
   // Text Box (Bottom, centered)
   static const Rect textBox = Rect.fromLTWH(

@@ -7,43 +7,35 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 /// Polaroid-style photo widget with stable random rotation
 /// Used in flipbook layouts for scrapbook aesthetic
-class PolaroidPhoto extends StatefulWidget {
+class PolaroidPhoto extends StatelessWidget {
   const PolaroidPhoto({
     required this.photoUrl,
     required this.colorScheme,
     this.size = 180.0,
+    this.layoutVariant = 0,
     super.key,
   });
 
   final String photoUrl;
   final ColorScheme colorScheme;
   final double size;
+  final int layoutVariant;
 
-  @override
-  State<PolaroidPhoto> createState() => _PolaroidPhotoState();
-}
-
-class _PolaroidPhotoState extends State<PolaroidPhoto> {
-  // Stable random rotation - generated once and cached
-  late final double _rotationAngle;
-
-  @override
-  void initState() {
-    super.initState();
-    // Generate rotation once during initialization
-    // Range: -6° to +6° converted to radians
-    // Use URL hash for deterministic randomness per photo
-    final random = math.Random(widget.photoUrl.hashCode);
+  /// Calculate rotation angle based on photo URL and layoutVariant
+  /// Range: -6° to +6° converted to radians
+  double _getRotationAngle() {
+    final seed = photoUrl.hashCode + layoutVariant;
+    final random = math.Random(seed);
     final degrees = -6.0 + random.nextDouble() * 12.0;
-    _rotationAngle = degrees * (math.pi / 180.0);
+    return degrees * (math.pi / 180.0);
   }
 
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: _rotationAngle,
+      angle: _getRotationAngle(),
       child: Container(
-        width: widget.size,
+        width: size,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(4),
@@ -71,13 +63,13 @@ class _PolaroidPhotoState extends State<PolaroidPhoto> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(2),
                   child: CachedNetworkImage(
-                    imageUrl: widget.photoUrl,
+                    imageUrl: photoUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: const Color(0xFFF5F5F5),
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: widget.colorScheme.primary,
+                          color: colorScheme.primary,
                           strokeWidth: 2,
                         ),
                       ),
@@ -87,7 +79,7 @@ class _PolaroidPhotoState extends State<PolaroidPhoto> {
                       child: Icon(
                         Icons.broken_image,
                         size: 32,
-                        color: widget.colorScheme.onSurface.withValues(alpha: 0.3),
+                        color: colorScheme.onSurface.withValues(alpha: 0.3),
                       ),
                     ),
                   ),

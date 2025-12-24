@@ -16,6 +16,7 @@ class Entry {
     this.colorTheme,
     this.sprinkles,
     this.isProcessed = false,
+    this.layoutVariant = 0,
   });
 
   factory Entry.fromJson(Map<String, dynamic> json) {
@@ -66,6 +67,7 @@ class Entry {
       colorTheme: json['color_theme'] as String?,
       sprinkles: (json['sprinkles'] as List<dynamic>?)?.cast<String>(),
       isProcessed: json['is_processed'] as bool? ?? false,
+      layoutVariant: json['layout_variant'] as int? ?? 0,
     );
   }
 
@@ -83,6 +85,7 @@ class Entry {
   final String? colorTheme; // Set by backend Smart Page engine
   final List<String>? sprinkles; // Set by backend Smart Page engine
   final bool isProcessed; // Backend processing complete flag
+  final int layoutVariant; // Used for visual variation seed (rotation, stagger)
 
   Map<String, dynamic> toJson() {
     return {
@@ -99,6 +102,7 @@ class Entry {
       if (colorTheme != null) 'color_theme': colorTheme,
       if (sprinkles != null) 'sprinkles': sprinkles,
       'is_processed': isProcessed,
+      'layout_variant': layoutVariant,
     };
   }
 }
