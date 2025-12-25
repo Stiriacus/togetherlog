@@ -196,6 +196,55 @@ app/lib/
 
 ---
 
+## Flipbook Page Structure
+
+### Page Dimensions
+- **Fixed baseline:** DIN A5 at 150 DPI (874px × 1240px)
+- **Rendering method:** Client-side Canvas to image (pixel-perfect, no scaling)
+- **All content rendered at exact dimensions:** Photos, icons, text, frame decoration
+
+### Frame Decorations
+- **Location:** `app/assets/images/decorations/`
+- **Current frame:** `classic_boarder_olivebrown.png`
+- **Implementation:** PNG overlay using `Positioned.fill` with `BoxFit.contain`
+- **Content padding:** 64px horizontal, 48px vertical (reserved space for frame)
+- **Usable content area:** 746px × 1144px (within frame borders)
+
+**Frame rendering (all layouts):**
+```dart
+Stack(
+  children: [
+    Container(color: colorScheme.surface), // Background
+    Positioned.fill(
+      child: Image.asset(
+        'assets/images/decorations/classic_boarder_olivebrown.png',
+        fit: BoxFit.contain,
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 48.0),
+      child: // Content here
+    ),
+  ],
+)
+```
+
+**Important:** Frame decoration defines the visual boundary. Content padding values should NOT change when adding new frames - frames must adapt to fixed content area.
+
+### Page Content Limits
+- **Max photos + location maps:** 4 total items
+  - Example: 3 photos + 1 map = 4 ✅
+  - Example: 4 photos + 0 map = 4 ✅
+- **Max icons (sprinkles):** 3 per page
+- **Text:** Always present (date + highlight text)
+
+### Layout Approach
+- **Coordinate-based:** Absolute positioning using `Stack` + `Positioned`
+- **No automatic layouts:** No `Wrap`, `Row`, or `Column` for photos/maps
+- **Deterministic:** Same content = same layout (seeded randomness)
+
+---
+
 ## Key Concepts
 
 ### Database Tables
