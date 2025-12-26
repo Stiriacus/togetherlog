@@ -236,7 +236,7 @@ class TextBlockLayout {
 }
 
 /// Complete page layout data
-/// Contains all positioned elements for a flipbook page
+/// Contains all positioned elements for a scrapbook page
 @immutable
 class PageLayoutData {
   const PageLayoutData({

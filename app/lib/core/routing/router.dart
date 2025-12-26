@@ -10,7 +10,7 @@ import '../../features/entries/entries_screen.dart';
 import '../../features/entries/entry_create_screen.dart';
 import '../../features/entries/entry_detail_screen.dart';
 import '../../features/entries/entry_edit_screen.dart';
-import '../../features/flipbook/flipbook_viewer.dart';
+import '../../features/scrapbook/scrapbook_viewer.dart';
 
 /// Router provider for the app
 final routerProvider = Provider<GoRouter>((ref) {
@@ -97,14 +97,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Flipbook route
+      // Scrapbook route
       GoRoute(
-        path: '/logs/:logId/flipbook',
-        name: 'flipbook',
+        path: '/logs/:logId/scrapbook',
+        name: 'scrapbook',
         builder: (context, state) {
           final logId = state.pathParameters['logId']!;
-          final logName = state.uri.queryParameters['logName'] ?? 'Flipbook';
-          return FlipbookViewer(
+          final logName = state.uri.queryParameters['logName'] ?? 'Scrapbook';
+          return ScrapbookViewer(
             logId: logId,
             logName: logName,
           );

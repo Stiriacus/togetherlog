@@ -1,5 +1,5 @@
 // TogetherLog - Pixel-Perfect Layout Constants
-// Defines exact pixel boxes for flipbook page layouts at 874×1240 (DIN A5 at 150 DPI)
+// Defines exact pixel boxes for scrapbook page layouts at 874×1240 (DIN A5 at 150 DPI)
 //
 // IMPORTANT CONSTRAINTS:
 // - Date Box: FIXED position and size (do not modify)
@@ -11,7 +11,7 @@
 
 import 'dart:ui';
 
-/// Flipbook page layout constants - all measurements in pixels
+/// Scrapbook page layout constants - all measurements in pixels
 class LayoutConstants {
   // Page Dimensions (DIN A5 at 150 DPI)
   static const double pageWidth = 874.0;

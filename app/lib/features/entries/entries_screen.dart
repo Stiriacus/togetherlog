@@ -63,9 +63,9 @@ class EntriesScreen extends ConsumerWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.auto_stories),
-                    tooltip: 'View Flipbook',
+                    tooltip: 'View Scrapbook',
                     onPressed: () {
-                      context.go('/logs/$logId/flipbook');
+                      context.go('/logs/$logId/scrapbook');
                     },
                   ),
                 ],

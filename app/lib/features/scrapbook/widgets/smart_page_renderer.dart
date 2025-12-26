@@ -47,7 +47,7 @@ class _SmartPageRendererState extends ConsumerState<SmartPageRenderer> {
       await repository.regenerateLayout(widget.entry!.id);
 
       // Refresh the entries list to show the updated layout
-      // This will cascade to flipbook entries provider
+      // This will cascade to scrapbook entries provider
       ref.invalidate(entriesListProvider(widget.entry!.logId));
     } catch (e) {
       if (mounted) {

@@ -14,7 +14,7 @@ import '../polaroid_photo.dart';
 import '../polaroid_map.dart';
 import '../layout_constants.dart';
 
-/// Unified coordinate-based layout for all flipbook pages
+/// Unified coordinate-based layout for all scrapbook pages
 /// Handles 0-4 items (any combination of photos and maps)
 class CoordinateLayout extends StatelessWidget {
   const CoordinateLayout({

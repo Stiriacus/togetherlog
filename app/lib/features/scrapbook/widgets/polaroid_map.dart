@@ -1,4 +1,4 @@
-// TogetherLog - Polaroid Map Widget for Flipbook
+// TogetherLog - Polaroid Map Widget for Scrapbook
 // Displays a hand-drawn style map in a Polaroid frame with stable random rotation
 
 import 'dart:math' as math;
@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../data/models/entry.dart';
 
 /// Polaroid-style map widget with stable random rotation
-/// Used in flipbook layouts for entries with location data
+/// Used in scrapbook layouts for entries with location data
 class PolaroidMap extends StatelessWidget {
   const PolaroidMap({
     required this.location,
