@@ -350,25 +350,36 @@ See `docs/testing-guide.md` for comprehensive procedures:
 - `docs/design-system.md` - UI design contract (colors, typography, spacing, patterns)
 - `docs/testing-guide.md` - Manual testing guide
 - `docs/CHANGES.md` - Implementation changelog (append-only, self-documenting)
-- `docs/v2optional.md` - V2+ feature proposals
+- `docs/a5-layout-coordinate-specification.md` - Scrapbook page layout specifications
+- `docs/a5-layout-quick-reference.md` - Quick reference for layout constants
 
 ### Planning Documents (`/docs/planning/`)
 
-**Active planning work** for upcoming features and changes.
+**Feature requests only** - planned work for future releases.
 
 **Structure:**
 - Files placed **directly in `/docs/planning/`** (flat structure)
-- File naming: `feature-name.md`, `migration-name.md`
+- File naming: `feature-*.md` for individual features, `vX.X-*.md` for release milestones
 - When complete: move to `/docs/archive/`
 
 **Purpose:**
-- Contains feature requests and changes that are **next to do**
+- Contains **feature requests** with user stories and requirements
+- Focus on WHAT to build, not detailed implementation
 - Default work queue unless explicitly instructed otherwise
-- Planning files represent committed next steps
 
 **Current planning files:**
-- `flipbook-fade-transition.md` - Smooth fade during page swipe
-- `backend-photo-layout-coordinates.md` - Backend-authoritative layout coordinates
+- `v1.5-ux-polish-and-database-prep.md` - V1.5 feature request
+- `v2-interactive-scrapbook-editor.md` - V2 interactive editor feature
+- `feature-map-view.md` - Interactive map view (V3+)
+- `feature-story-slideshow.md` - Auto-advancing slideshow (V3+)
+- `feature-ai-assisted-improvements.md` - AI-powered enhancements (V3+)
+- `feature-memory-widgets.md` - Mobile home screen widgets (V3+)
+- `feature-gamification-progress.md` - XP and progress system (V3+)
+- `feature-heatmap-visualization.md` - Location heatmap (V3+)
+
+### Archived Documentation (`/docs/archive/`)
+
+**Completed planning work** and historical reference documents. Not actively referenced.
 
 ---
 
@@ -388,7 +399,7 @@ Claude Code must NEVER:
 - Attempt to run Android or iOS builds
 - Attempt to use `flutter devices`
 - Attempt to auto-launch any browser
-- Attempt to generate or modify v2optional features
+- Attempt to generate or modify V3+ future features (see `/docs/planning/feature-*.md`)
 - Attempt to create automated UI or E2E tests
 - Attempt to bypass backend-authoritative rules
 
