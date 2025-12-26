@@ -3,6 +3,7 @@
 // Supports 0-4 items (photos + location maps) with deterministic positioning
 
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import '../../../../data/models/entry.dart';
 import '../models/layout_data.dart';
@@ -44,8 +45,13 @@ class LayoutComputer {
           )
         : null;
 
-    // Icons will be computed separately (Task 3)
-    final icons = <IconLayoutData>[];
+    // Compute icon positions with collision detection
+    final icons = _computeIconPositions(
+      sprinkles: entry.sprinkles ?? [],
+      items: items,
+      textBlock: textBlock,
+      layoutVariant: entry.layoutVariant,
+    );
 
     return PageLayoutData(
       items: items,
@@ -285,5 +291,111 @@ class LayoutComputer {
         random.nextDouble() *
             (LayoutConstants.maxRotation - LayoutConstants.minRotation);
     return rotation;
+  }
+
+  /// Compute icon positions with collision detection
+  /// Returns list of positioned icons (max 3)
+  static List<IconLayoutData> _computeIconPositions({
+    required List<String> sprinkles,
+    required List<ItemLayoutData> items,
+    required TextBlockLayout? textBlock,
+    required int layoutVariant,
+  }) {
+    if (sprinkles.isEmpty) return [];
+
+    final icons = <IconLayoutData>[];
+    final occupiedRegions = <Rect>[];
+
+    // Build list of occupied regions (photos, maps, text)
+    for (final item in items) {
+      occupiedRegions.add(_getItemBoundingBox(item));
+    }
+
+    // Add text block region if present
+    if (textBlock != null) {
+      occupiedRegions.add(Rect.fromLTWH(
+        0,
+        textBlock.y,
+        LayoutConstants.contentAreaWidth,
+        100, // Approximate text height
+      ));
+    }
+
+    // Place each icon (max 3)
+    for (int i = 0; i < sprinkles.length && i < 3; i++) {
+      final iconData = _findIconPosition(
+        iconName: sprinkles[i],
+        index: i,
+        occupiedRegions: occupiedRegions,
+        layoutVariant: layoutVariant,
+      );
+
+      if (iconData != null) {
+        icons.add(iconData);
+        occupiedRegions.add(iconData.boundingBox);
+      }
+    }
+
+    return icons;
+  }
+
+  /// Get bounding box for an item with safety padding
+  static Rect _getItemBoundingBox(ItemLayoutData item) {
+    const padding = 16.0; // Safety margin around items
+
+    return Rect.fromLTWH(
+      item.x - padding,
+      item.y - padding,
+      item.width + (padding * 2),
+      item.height + (padding * 2),
+    );
+  }
+
+  /// Find valid position for an icon with collision detection
+  /// Returns null if no valid position found after max attempts
+  static IconLayoutData? _findIconPosition({
+    required String iconName,
+    required int index,
+    required List<Rect> occupiedRegions,
+    required int layoutVariant,
+  }) {
+    const iconSize = 32.0;
+    const maxAttempts = 20;
+
+    // Use icon name + index + layoutVariant for deterministic randomness
+    final random = math.Random('${iconName}_${index}_$layoutVariant'.hashCode);
+
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      // Generate random position within content area
+      final x = random.nextDouble() * (LayoutConstants.contentAreaWidth - iconSize);
+      final y = random.nextDouble() * (LayoutConstants.contentAreaHeight - iconSize);
+
+      final iconRect = Rect.fromLTWH(x, y, iconSize, iconSize);
+
+      // Check collision with all occupied regions
+      bool hasCollision = false;
+      for (final region in occupiedRegions) {
+        if (iconRect.overlaps(region)) {
+          hasCollision = true;
+          break;
+        }
+      }
+
+      // Valid position found
+      if (!hasCollision) {
+        final rotation = -15.0 + (random.nextDouble() * 30.0); // -15 to +15
+
+        return IconLayoutData(
+          iconName: iconName,
+          x: x,
+          y: y,
+          rotation: rotation,
+          size: iconSize,
+        );
+      }
+    }
+
+    // No valid position found after max attempts
+    return null;
   }
 }
