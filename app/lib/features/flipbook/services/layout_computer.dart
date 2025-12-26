@@ -26,7 +26,7 @@ class LayoutComputer {
     // Enforce max items constraint
     if (totalItems > LayoutConstants.maxPhotosAndMaps) {
       debugPrint(
-          'Warning: Entry has $totalItems items (max ${LayoutConstants.maxPhotosAndMaps}). Only first ${LayoutConstants.maxPhotosAndMaps} will be displayed.');
+          'Warning: Entry has $totalItems items (max ${LayoutConstants.maxPhotosAndMaps}). Only first ${LayoutConstants.maxPhotosAndMaps} will be displayed.',);
     }
 
     // Compute item positions
@@ -94,7 +94,7 @@ class LayoutComputer {
         height: _getPolaroidHeight(polaroidSize),
         rotation: position['rotation']!,
         zIndex: 0,
-      ));
+      ),);
     }
 
     // Add location map if present
@@ -115,7 +115,7 @@ class LayoutComputer {
         height: _getPolaroidHeight(polaroidSize),
         rotation: position['rotation']!,
         zIndex: 0,
-      ));
+      ),);
     }
 
     return items;
@@ -201,15 +201,15 @@ class LayoutComputer {
     double polaroidSize,
     int layoutVariant,
   ) {
-    final gap = LayoutConstants.itemSpacingThreeItems;
-    final contentWidth = LayoutConstants.contentAreaWidth;
+    const gap = LayoutConstants.itemSpacingThreeItems;
+    const contentWidth = LayoutConstants.contentAreaWidth;
 
     if (index < 2) {
       // Top row (2 items)
       final totalWidthTopRow = (polaroidSize * 2) + gap;
       final startX = (contentWidth - totalWidthTopRow) / 2;
       final x = startX + (index * (polaroidSize + gap));
-      final y = 100.0; // From top of content area
+      const y = 100.0; // From top of content area
 
       return {
         'x': x,
@@ -235,8 +235,8 @@ class LayoutComputer {
     double polaroidSize,
     int layoutVariant,
   ) {
-    final gap = LayoutConstants.itemSpacingFourItems;
-    final contentWidth = LayoutConstants.contentAreaWidth;
+    const gap = LayoutConstants.itemSpacingFourItems;
+    const contentWidth = LayoutConstants.contentAreaWidth;
     final polaroidHeight = _getPolaroidHeight(polaroidSize);
 
     // Calculate grid positions
@@ -318,7 +318,7 @@ class LayoutComputer {
         textBlock.y,
         LayoutConstants.contentAreaWidth,
         100, // Approximate text height
-      ));
+      ),);
     }
 
     // Place each icon (max 3)
