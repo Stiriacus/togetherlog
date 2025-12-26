@@ -95,7 +95,6 @@ class _LocationEditorState extends State<LocationEditor> {
         });
       }
     } catch (e) {
-      print('🔍 DEBUG: Geocoding error: $e');
       setState(() {
         _isSearching = false;
         _searchResults = [];

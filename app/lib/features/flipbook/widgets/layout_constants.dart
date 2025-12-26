@@ -81,6 +81,20 @@ class LayoutConstants {
   static const int textMaxLines = 3;
 
   // Polaroid Sizes
-  static const double polaroidSizeLarge = 420.0;
-  static const double polaroidSizeMedium = 340.0;
+  static const double polaroidSizeLarge = 420.0;   // 1 item
+  static const double polaroidSizeMedium = 340.0;  // 2 items
+  static const double polaroidSizeSmall = 280.0;   // 3 items
+  static const double polaroidSizeXSmall = 220.0;  // 4 items
+
+  // Maximum items per page
+  static const int maxPhotosAndMaps = 4;
+
+  // Rotation range (degrees)
+  static const double minRotation = -5.0;
+  static const double maxRotation = 5.0;
+
+  // Item spacing (gaps between polaroids)
+  static const double itemSpacingTwoItems = 32.0;
+  static const double itemSpacingThreeItems = 28.0;
+  static const double itemSpacingFourItems = 24.0;
 }

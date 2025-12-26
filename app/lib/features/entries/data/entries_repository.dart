@@ -90,16 +90,7 @@ class EntriesRepository {
       if (location.lng != null) createData['location_lng'] = location.lng;
       createData['location_display_name'] = location.displayName;
       createData['location_is_user_overridden'] = location.isUserOverridden;
-      print('🔍 DEBUG: Sending location data to backend:');
-      print('   - lat: ${location.lat}');
-      print('   - lng: ${location.lng}');
-      print('   - displayName: ${location.displayName}');
-      print('   - isUserOverridden: ${location.isUserOverridden}');
-    } else {
-      print('🔍 DEBUG: No location data to send');
     }
-
-    print('🔍 DEBUG: Full create data: $createData');
 
     final entryJson = await _entriesApiClient.createEntry(logId, createData);
     final entry = Entry.fromJson(entryJson);
@@ -173,18 +164,11 @@ class EntriesRepository {
       if (location.lng != null) updateData['location_lng'] = location.lng;
       updateData['location_display_name'] = location.displayName;
       updateData['location_is_user_overridden'] = location.isUserOverridden;
-      print('🔍 DEBUG: Sending location update to backend:');
-      print('   - lat: ${location.lat}');
-      print('   - lng: ${location.lng}');
-      print('   - displayName: ${location.displayName}');
-      print('   - isUserOverridden: ${location.isUserOverridden}');
     }
 
     if (updateData.isEmpty) {
       throw Exception('No data to update');
     }
-
-    print('🔍 DEBUG: Full update data: $updateData');
 
     final entryJson = await _entriesApiClient.updateEntry(entryId, updateData);
     return Entry.fromJson(entryJson);

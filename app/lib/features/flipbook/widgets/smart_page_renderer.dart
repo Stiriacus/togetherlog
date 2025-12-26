@@ -7,9 +7,7 @@ import '../../../core/theme/smart_page_theme.dart';
 import '../../../data/models/entry.dart';
 import '../../entries/data/entries_repository.dart';
 import '../../entries/providers/entries_providers.dart';
-import 'layouts/single_full_layout.dart';
-import 'layouts/two_by_one_layout.dart';
-import 'sprinkles_overlay.dart';
+import 'layouts/coordinate_layout.dart';
 
 /// Smart Page Renderer - renders an entry based on backend Smart Page data
 /// IMPORTANT: This widget does NOT compute layouts or themes - it only renders
@@ -84,17 +82,11 @@ class _SmartPageRendererState extends ConsumerState<SmartPageRenderer> {
     // Get color scheme from backend-computed theme
     final colorScheme = SmartPageTheme.getColorScheme(widget.entry!.colorTheme);
 
-    // Select layout widget based on backend-computed layout type
-    final layoutWidget = _getLayoutWidget(colorScheme);
-
     return Stack(
       children: [
-        // Layout widget (background)
-        layoutWidget,
-
-        // Sprinkles overlay (decorative icons)
-        SprinklesOverlay(
-          sprinkles: widget.entry!.sprinkles,
+        // Unified coordinate layout (handles all item counts)
+        CoordinateLayout(
+          entry: widget.entry!,
           colorScheme: colorScheme,
         ),
 
@@ -132,29 +124,6 @@ class _SmartPageRendererState extends ConsumerState<SmartPageRenderer> {
           ),
         ),
       ],
-    );
-  }
-
-  /// Select appropriate layout widget
-  /// Uses pixel-perfect layouts:
-  /// - TwoByOneLayout: Photo + Location side by side
-  /// - SingleFullLayout: Single photo OR single location
-  Widget _getLayoutWidget(ColorScheme colorScheme) {
-    final hasPhoto = widget.entry!.photos.isNotEmpty;
-    final hasLocation = widget.entry!.location != null;
-
-    // If both photo and location exist, use 2×1 layout
-    if (hasPhoto && hasLocation) {
-      return TwoByOneLayout(
-        entry: widget.entry!,
-        colorScheme: colorScheme,
-      );
-    }
-
-    // Otherwise use single full layout (photo only, location only, or empty)
-    return SingleFullLayout(
-      entry: widget.entry!,
-      colorScheme: colorScheme,
     );
   }
 }

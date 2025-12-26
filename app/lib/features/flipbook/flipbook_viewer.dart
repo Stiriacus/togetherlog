@@ -143,7 +143,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
         .map((entry) => SmartPageRenderer(
               key: ValueKey('${entry.id}_${entry.layoutVariant}'),
               entry: entry,
-            ))
+            ),)
         .toList();
 
     // Add last page
@@ -186,18 +186,34 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
 
     return Stack(
       children: [
-        // PageView with slide animation
+        // PageView with slide + fade animation
         PageView.builder(
           controller: _pageController,
           itemCount: pages.length,
           itemBuilder: (context, index) {
-            // Display page at exact baseline dimensions (874×1240 - DIN A5 at 150 DPI)
-            // Fixed size - pixel-perfect rendering
-            return Center(
-              child: SizedBox(
-                width: 874,
-                height: 1240,
-                child: pages[index],
+            // Fade transition based on page position
+            return AnimatedBuilder(
+              animation: _pageController,
+              builder: (context, child) {
+                double opacity = 1.0;
+                if (_pageController.position.haveDimensions) {
+                  // Calculate distance from current page
+                  final position = (_pageController.page ?? 0.0) - index;
+                  // Convert distance to opacity (1.0 at current page, 0.0 at ±1 page)
+                  opacity = (1 - position.abs()).clamp(0.0, 1.0);
+                }
+
+                return Opacity(
+                  opacity: opacity,
+                  child: child,
+                );
+              },
+              child: Center(
+                child: SizedBox(
+                  width: 874,
+                  height: 1240,
+                  child: pages[index],
+                ),
               ),
             );
           },

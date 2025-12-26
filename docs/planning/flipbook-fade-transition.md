@@ -215,8 +215,7 @@ itemBuilder: (context, index) {
 - Direct and obvious
 - No over-engineering
 
-**Estimated effort:** ~15 minutes
-**Estimated testing:** ~10 minutes
+**Effort:** Small
 
 ---
 
