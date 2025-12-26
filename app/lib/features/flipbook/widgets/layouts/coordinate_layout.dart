@@ -9,6 +9,7 @@ import 'dart:math' as math;
 import '../../../../../data/models/entry.dart';
 import '../../models/layout_data.dart';
 import '../../services/layout_computer.dart';
+import '../../services/icon_mapping_service.dart';
 import '../polaroid_photo.dart';
 import '../polaroid_map.dart';
 import '../layout_constants.dart';
@@ -158,48 +159,11 @@ class CoordinateLayout extends StatelessWidget {
       child: Transform.rotate(
         angle: icon.rotation * (math.pi / 180),
         child: Icon(
-          _getIconFromName(icon.iconName),
+          IconMappingService.getIconFromName(icon.iconName),
           size: icon.size,
           color: colorScheme.primary.withValues(alpha: 0.3), // Semi-transparent
         ),
       ),
     );
-  }
-
-  /// Map icon name to Material icon
-  /// TODO: Move to separate icon mapping service
-  IconData _getIconFromName(String iconName) {
-    switch (iconName) {
-      case 'favorite':
-      case 'heart':
-        return Icons.favorite;
-      case 'star':
-        return Icons.star;
-      case 'local_florist':
-      case 'flower':
-        return Icons.local_florist;
-      case 'cake':
-        return Icons.cake;
-      case 'beach_access':
-      case 'beach':
-        return Icons.beach_access;
-      case 'terrain':
-      case 'mountain':
-        return Icons.terrain;
-      case 'flight':
-      case 'airplane':
-        return Icons.flight;
-      case 'restaurant':
-      case 'food':
-        return Icons.restaurant;
-      case 'card_giftcard':
-      case 'gift':
-        return Icons.card_giftcard;
-      case 'celebration':
-      case 'balloon':
-        return Icons.celebration;
-      default:
-        return Icons.star;
-    }
   }
 }
