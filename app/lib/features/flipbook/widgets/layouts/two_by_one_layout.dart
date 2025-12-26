@@ -34,7 +34,7 @@ class TwoByOneLayout extends StatelessWidget {
     final photoGoesUp = random.nextBool();
 
     // Generate random offset between min and max (e.g., 120-175px)
-    final offsetRange = LayoutConstants.twoByOneVerticalOffsetMax - LayoutConstants.twoByOneVerticalOffsetMin;
+    const offsetRange = LayoutConstants.twoByOneVerticalOffsetMax - LayoutConstants.twoByOneVerticalOffsetMin;
     final verticalOffset = LayoutConstants.twoByOneVerticalOffsetMin + (random.nextDouble() * offsetRange);
 
     final photoY = photoGoesUp

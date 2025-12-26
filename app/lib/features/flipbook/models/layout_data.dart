@@ -15,6 +15,18 @@ enum ItemType {
 /// Used for both automated layout computation and user-edited positions
 @immutable
 class ItemLayoutData {
+  /// Constructor
+  const ItemLayoutData({
+    required this.itemId,
+    required this.type,
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
+    required this.rotation,
+    this.zIndex = 0,
+  });
+
   /// Unique identifier (photo ID or "location")
   final String itemId;
 
@@ -40,21 +52,6 @@ class ItemLayoutData {
   /// Default: 0 (for V1), can be adjusted in V2 editor
   final int zIndex;
 
-  /// Constructor
-  const ItemLayoutData({
-    required this.itemId,
-    required this.type,
-    required this.x,
-    required this.y,
-    required this.width,
-    required this.height,
-    required this.rotation,
-    this.zIndex = 0,
-  });
-
-  /// Get bounding box for collision detection
-  Rect get boundingBox => Rect.fromLTWH(x, y, width, height);
-
   /// Copy with modified fields
   ItemLayoutData copyWith({
     String? itemId,
@@ -77,6 +74,9 @@ class ItemLayoutData {
       zIndex: zIndex ?? this.zIndex,
     );
   }
+
+  /// Get bounding box for collision detection
+  Rect get boundingBox => Rect.fromLTWH(x, y, width, height);
 
   @override
   bool operator ==(Object other) =>
@@ -111,6 +111,15 @@ class ItemLayoutData {
 /// Position and styling data for decorative icons (sprinkles)
 @immutable
 class IconLayoutData {
+  const IconLayoutData({
+    required this.iconName,
+    required this.x,
+    required this.y,
+    required this.rotation,
+    this.size = 32.0,
+    this.zIndex = -1,
+  });
+
   /// Icon name (e.g., 'heart', 'star', 'mountain')
   final String iconName;
 
@@ -128,18 +137,6 @@ class IconLayoutData {
 
   /// Z-index for layering (default: -1 to place behind photos)
   final int zIndex;
-
-  const IconLayoutData({
-    required this.iconName,
-    required this.x,
-    required this.y,
-    required this.rotation,
-    this.size = 32.0,
-    this.zIndex = -1,
-  });
-
-  /// Get bounding box for collision detection
-  Rect get boundingBox => Rect.fromLTWH(x, y, size, size);
 
   /// Copy with modified fields
   IconLayoutData copyWith({
@@ -159,6 +156,9 @@ class IconLayoutData {
       zIndex: zIndex ?? this.zIndex,
     );
   }
+
+  /// Get bounding box for collision detection
+  Rect get boundingBox => Rect.fromLTWH(x, y, size, size);
 
   @override
   bool operator ==(Object other) =>
@@ -189,6 +189,12 @@ class IconLayoutData {
 /// Position data for text block
 @immutable
 class TextBlockLayout {
+  const TextBlockLayout({
+    required this.y,
+    required this.maxWidth,
+    this.zIndex = 10,
+  });
+
   /// Y position (pixels from top edge of content area)
   /// X is calculated to center the text
   final double y;
@@ -198,12 +204,6 @@ class TextBlockLayout {
 
   /// Z-index for layering (default: 10 to place on top)
   final int zIndex;
-
-  const TextBlockLayout({
-    required this.y,
-    required this.maxWidth,
-    this.zIndex = 10,
-  });
 
   /// Copy with modified fields
   TextBlockLayout copyWith({
@@ -239,6 +239,12 @@ class TextBlockLayout {
 /// Contains all positioned elements for a flipbook page
 @immutable
 class PageLayoutData {
+  const PageLayoutData({
+    required this.items,
+    this.icons = const [],
+    this.textBlock,
+  });
+
   /// All items (photos and maps) with their positions
   final List<ItemLayoutData> items;
 
@@ -248,11 +254,18 @@ class PageLayoutData {
   /// Text block position (nullable - no text if null)
   final TextBlockLayout? textBlock;
 
-  const PageLayoutData({
-    required this.items,
-    this.icons = const [],
-    this.textBlock,
-  });
+  /// Copy with modified fields
+  PageLayoutData copyWith({
+    List<ItemLayoutData>? items,
+    List<IconLayoutData>? icons,
+    TextBlockLayout? textBlock,
+  }) {
+    return PageLayoutData(
+      items: items ?? this.items,
+      icons: icons ?? this.icons,
+      textBlock: textBlock ?? this.textBlock,
+    );
+  }
 
   /// Get all items sorted by z-index (for rendering order)
   List<ItemLayoutData> get itemsByZIndex {
@@ -266,19 +279,6 @@ class PageLayoutData {
     final sorted = List<IconLayoutData>.from(icons);
     sorted.sort((a, b) => a.zIndex.compareTo(b.zIndex));
     return sorted;
-  }
-
-  /// Copy with modified fields
-  PageLayoutData copyWith({
-    List<ItemLayoutData>? items,
-    List<IconLayoutData>? icons,
-    TextBlockLayout? textBlock,
-  }) {
-    return PageLayoutData(
-      items: items ?? this.items,
-      icons: icons ?? this.icons,
-      textBlock: textBlock ?? this.textBlock,
-    );
   }
 
   @override
