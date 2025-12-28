@@ -190,20 +190,42 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
 
                         const SizedBox(height: AppSpacing.xl),
 
-                        // Create Button
-                        FilledButton.icon(
-                          onPressed: _isCreating ? null : _handleCreate,
-                          icon: _isCreating
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: AppColors.antiqueWhite,
-                                  ),
-                                )
-                              : const Icon(AppIcons.save),
-                          label: Text(_isCreating ? 'Creating...' : 'Create Entry'),
+                        // Create Entry Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton.icon(
+                                onPressed: _isCreating ? null : () => _handleCreate(openEditor: true),
+                                icon: _isCreating
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: AppColors.antiqueWhite,
+                                        ),
+                                      )
+                                    : const Icon(AppIcons.edit),
+                                label: Text(_isCreating ? 'Creating...' : 'Open Editor'),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _isCreating ? null : () => _handleCreate(openEditor: false),
+                                icon: const Icon(AppIcons.book),
+                                label: const Text('Scrapbook Page'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Open Editor to customize your page, or create a Scrapbook Page automatically',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.black54,
+                              ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -251,7 +273,7 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
   }
 
   /// Handle create entry
-  Future<void> _handleCreate() async {
+  Future<void> _handleCreate({required bool openEditor}) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -262,7 +284,7 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
 
     try {
       final notifier = ref.read(entryNotifierProvider.notifier);
-      await notifier.createEntry(
+      final newEntry = await notifier.createEntry(
         logId: widget.logId,
         eventDate: _eventDate,
         highlightText: _highlightTextController.text.trim(),
@@ -276,14 +298,26 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         // Invalidate entries list to refresh
         ref.invalidate(entriesListProvider(widget.logId));
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Entry created successfully'),
-          ),
-        );
+        if (openEditor) {
+          // Show dialog asking user how to start
+          final shouldAutoGenerate = await _showEditorStartDialog();
+          if (shouldAutoGenerate != null && mounted) {
+            // Navigate to page editor
+            context.go('/logs/${widget.logId}/entries/${newEntry.id}/page-editor');
+          } else if (mounted) {
+            context.pop();
+          }
+        } else {
+          // TODO: Generate Smart Page automatically here
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Entry created! Smart Page generated automatically.'),
+            ),
+          );
 
-        // Navigate back to entries list
-        context.pop();
+          // Navigate to scrapbook
+          context.go('/logs/${widget.logId}/scrapbook');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -300,5 +334,44 @@ class _EntryCreateScreenState extends ConsumerState<EntryCreateScreen> {
         });
       }
     }
+  }
+
+  /// Show dialog asking how to start editor
+  Future<bool?> _showEditorStartDialog() async {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('How would you like to start?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<bool>(
+              value: true,
+              groupValue: true,
+              onChanged: (value) => Navigator.of(context).pop(true),
+              title: const Text('Auto-generate Smart Page'),
+              subtitle: const Text('Let TogetherLog create a beautiful layout for you'),
+            ),
+            RadioListTile<bool>(
+              value: false,
+              groupValue: true,
+              onChanged: (value) => Navigator.of(context).pop(false),
+              title: const Text('Start with blank canvas'),
+              subtitle: const Text('Build your page from scratch'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
   }
 }

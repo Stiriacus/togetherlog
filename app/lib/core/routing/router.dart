@@ -11,6 +11,7 @@ import '../../features/entries/entry_create_screen.dart';
 import '../../features/entries/entry_detail_screen.dart';
 import '../../features/entries/entry_edit_screen.dart';
 import '../../features/scrapbook/scrapbook_viewer.dart';
+import '../../features/page_editor/editor_screen.dart';
 
 /// Router provider for the app
 final routerProvider = Provider<GoRouter>((ref) {
@@ -107,6 +108,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           return ScrapbookViewer(
             logId: logId,
             logName: logName,
+          );
+        },
+      ),
+
+      // Page editor route
+      GoRoute(
+        path: '/logs/:logId/entries/:entryId/page-editor',
+        name: 'page-editor',
+        builder: (context, state) {
+          final logId = state.pathParameters['logId']!;
+          final entryId = state.pathParameters['entryId']!;
+          return EditorScreen(
+            entryId: entryId,
+            logId: logId,
           );
         },
       ),

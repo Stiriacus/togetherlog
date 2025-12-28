@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'providers/scrapbook_providers.dart';
 import 'widgets/smart_page_renderer.dart';
 
@@ -221,7 +222,31 @@ class _ScrapbookViewerState extends ConsumerState<ScrapbookViewer> {
 
         // Navigation controls overlay
         _buildNavigationControls(pages.length - 1),
+
+        // Edit Page button overlay (top-right, only for entry pages)
+        if (_currentPageIndex < entries.length)
+          _buildEditPageButton(entries[_currentPageIndex]),
       ],
+    );
+  }
+
+  Widget _buildEditPageButton(dynamic entry) {
+    return Positioned(
+      top: 16,
+      right: 16,
+      child: IconButton(
+        onPressed: () {
+          context.go('/logs/${widget.logId}/entries/${entry.id}/page-editor');
+        },
+        icon: const Icon(Icons.palette),
+        iconSize: 28,
+        color: Colors.white.withValues(alpha: 0.8),
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.black.withValues(alpha: 0.5),
+          padding: const EdgeInsets.all(12),
+        ),
+        tooltip: 'Edit Page',
+      ),
     );
   }
 

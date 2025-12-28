@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**TogetherLog** is a Flutter-based flipbook application for preserving shared memories, backed by Supabase. The core innovation is the **Smart Pages Engine** - a backend-authoritative system that automatically generates beautiful page layouts based on photos, tags, and emotions.
+**TogetherLog** is a Flutter-based flipbook application for preserving shared memories, backed by Supabase. The core innovation is the **Smart Pages Engine** - a client-side system that automatically generates beautiful page layouts based on photos, tags, and emotions, with optional user customization through an interactive editor.
 
 - **Frontend**: Flutter (Web + Android)
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
@@ -21,16 +21,17 @@ Before working on this codebase, read these files **in order**:
 
 These principles are **non-negotiable** and must be followed at all times:
 
-### 1. Backend Authoritative
-- **All business logic runs on the backend** (Supabase Edge Functions)
-- Smart Page computation (layout types, color themes, sprinkles) is **server-side only**
-- Image processing, EXIF extraction, and geocoding happen on backend
-- Flutter app **NEVER** computes layouts, themes, or performs image analysis
+### 1. Client-Side Smart Pages
+- **Smart Page computation happens on the client** (Flutter)
+- Layout types, color themes, sprinkles, and page assembly are computed in Flutter
+- Backend stores final layouts without validation (trusts client data)
+- Image processing, EXIF extraction, and geocoding still happen on backend (worker functions)
 
-### 2. Frontend Lean
-- Flutter app only renders UI and handles user input
-- No Smart Page logic in Flutter code - client receives pre-computed data
-- All API calls go through Supabase Edge Functions (REST endpoints)
+### 2. Interactive Editor First
+- Users can customize generated Smart Pages through a dedicated editor
+- Editor supports drag-drop, resize, rotate, layering, and decorations
+- Client computes initial Smart Page, then sends final (edited or unedited) layout to backend
+- Backend stores layout data as-is in `custom_layout` JSONB field
 
 ### 3. Clean Architecture
 ```
@@ -45,16 +46,15 @@ app/lib/
 ```
 
 ### 4. No Feature Drift
-- Only implement features specified in `docs/v1Spez.md`
+- Only implement features specified in planning docs or explicitly requested
 - Do NOT add "helpful" features, abstractions, or optimizations
 - Keep implementations simple and focused
 
 ### 5. Backtest Everything
 Before any commit, verify:
-- Requirements compliance against `docs/v1Spez.md`
 - Architecture compliance against `docs/architecture.md`
 - All code paths tested
-- Backend authoritative principle maintained
+- Client-side Smart Pages principle maintained
 
 ---
 
@@ -259,9 +259,9 @@ Stack(
 
 ### Smart Pages Engine
 
-**Location:** `backend/supabase/functions/compute-smart-page/index.ts`
+**Location:** `app/lib/features/page_editor/` (client-side)
 
-Runs **entirely on the backend** and applies three rule engines:
+Runs **entirely on the client (Flutter)** and applies three rule engines:
 
 1. **Layout Type Selection** (based on photo count)
    - 0-1 photos → `single_full`
@@ -279,7 +279,9 @@ Runs **entirely on the backend** and applies three rule engines:
 
 3. **Sprinkles Selection** (tag-to-icon mapping, max 3)
 
-**Flutter's Job:** Render the pre-computed layout. **No computation.**
+**Backend's Job:** Store the final layout data (JSONB) without validation.
+
+**Note:** Existing backend Smart Pages function (`compute-smart-page`) is kept for backwards compatibility but not used for new entries.
 
 ---
 
@@ -318,9 +320,9 @@ See `docs/testing-guide.md` for comprehensive procedures:
 
 ## Common Pitfalls to Avoid
 
-### 1. Smart Page Logic in Flutter
-- ❌ **WRONG:** Computing layout types or color themes in Flutter
-- ✅ **CORRECT:** Fetching pre-computed data from backend and rendering it
+### 1. Smart Page Logic Location
+- ❌ **WRONG:** Sending entry data to backend expecting Smart Page computation
+- ✅ **CORRECT:** Computing Smart Pages in Flutter, sending final layout to backend
 
 ### 2. Feature Drift
 - ❌ **WRONG:** Adding "helpful" features not in `v1Spez.md`
@@ -401,7 +403,6 @@ Claude Code must NEVER:
 - Attempt to auto-launch any browser
 - Attempt to generate or modify V3+ future features (see `/docs/planning/feature-*.md`)
 - Attempt to create automated UI or E2E tests
-- Attempt to bypass backend-authoritative rules
 
 All testing is manual unless otherwise specified. Claude Code must NOT attempt automated UI testing or automated browser interactions.
 
