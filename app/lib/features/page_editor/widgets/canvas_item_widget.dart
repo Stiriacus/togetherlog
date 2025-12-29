@@ -27,7 +27,7 @@ class CanvasItemWidget extends ConsumerStatefulWidget {
 class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
   BoundingBoxController? _controller;
   double _previousRotation = 0.0;
-  static const double _rotationSensitivity = 2.5; // Multiplier for rotation
+  static const double _rotationSensitivity = 4.0; // Multiplier for rotation
 
   @override
   void initState() {
