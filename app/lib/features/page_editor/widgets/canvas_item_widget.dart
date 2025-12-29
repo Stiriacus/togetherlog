@@ -65,46 +65,6 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
       size: widget.item.size,
       rotation: widget.item.rotation * (3.14159265359 / 180),
       enable: true,
-      // Make handles larger for better touch interaction
-      actionSize: 48.0, // Increased from default for better mobile UX
-      handleResizeStrokeWidth: 3.0,
-      handleRotateStrokeWidth: 3.0,
-      strokeWidth: 2.5,
-      // Custom rotation handle - larger for easier interaction
-      customHandleRotate: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.green,
-          border: Border.all(color: Colors.white, width: 3),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const Icon(Icons.rotate_right, size: 24, color: Colors.white),
-      ),
-      // Custom resize handles - also larger
-      customHandleResize: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          border: Border.all(color: Colors.white, width: 2),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-      ),
     );
 
     // Listen for changes
