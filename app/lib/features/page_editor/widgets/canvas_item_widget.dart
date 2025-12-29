@@ -26,6 +26,8 @@ class CanvasItemWidget extends ConsumerStatefulWidget {
 
 class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
   BoundingBoxController? _controller;
+  double _previousRotation = 0.0;
+  static const double _rotationSensitivity = 2.5; // Multiplier for rotation
 
   @override
   void initState() {
@@ -60,10 +62,13 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
   }
 
   void _initController() {
+    final initialRotationRadians = widget.item.rotation * (3.14159265359 / 180);
+    _previousRotation = initialRotationRadians;
+
     _controller = BoundingBoxController(
       position: widget.item.position,
       size: widget.item.size,
-      rotation: widget.item.rotation * (3.14159265359 / 180),
+      rotation: initialRotationRadians,
       enable: true,
     );
 
@@ -78,12 +83,17 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
     final size = _controller!.size;
     final rotation = _controller!.rotation;
 
+    // Apply rotation sensitivity multiplier
+    final rotationDelta = rotation - _previousRotation;
+    final amplifiedRotation = _previousRotation + (rotationDelta * _rotationSensitivity);
+    _previousRotation = rotation;
+
     // Update in state
     ref.read(editorStateProvider(widget.entryId).notifier).updateItemPosition(widget.item.id, position);
     ref.read(editorStateProvider(widget.entryId).notifier).updateItemSize(widget.item.id, size);
 
-    // Convert radians to degrees
-    final degrees = rotation * (180 / 3.14159265359);
+    // Convert radians to degrees with amplified rotation
+    final degrees = amplifiedRotation * (180 / 3.14159265359);
     ref.read(editorStateProvider(widget.entryId).notifier).updateItemRotation(widget.item.id, degrees);
   }
 
