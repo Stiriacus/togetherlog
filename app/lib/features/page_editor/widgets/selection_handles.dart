@@ -14,12 +14,14 @@ class SelectionHandles extends ConsumerStatefulWidget {
   final CanvasItem item;
   final String entryId;
   final VoidCallback? onEditText;
+  final ValueChanged<double?>? onRotationPreview;
 
   const SelectionHandles({
     super.key,
     required this.item,
     required this.entryId,
     this.onEditText,
+    this.onRotationPreview,
   });
 
   @override
@@ -179,9 +181,12 @@ class _SelectionHandlesState extends ConsumerState<SelectionHandles> {
             details.localPosition.dy - center.dy - 40,
             details.localPosition.dx - center.dx,
           );
+          final newRotation = (angle * 180 / math.pi) + 90;
           setState(() {
-            _rotateAngle = (angle * 180 / math.pi) + 90;
+            _rotateAngle = newRotation;
           });
+          // Notify parent for live preview
+          widget.onRotationPreview?.call(newRotation);
         },
         onPanEnd: (_) {
           if (_rotateAngle != null) {
@@ -190,6 +195,8 @@ class _SelectionHandlesState extends ConsumerState<SelectionHandles> {
                 .updateItemRotation(widget.item.id, _rotateAngle!);
             setState(() => _rotateAngle = null);
           }
+          // Clear preview
+          widget.onRotationPreview?.call(null);
         },
         child: MouseRegion(
           cursor: SystemMouseCursors.click,

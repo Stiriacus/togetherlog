@@ -28,6 +28,7 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
   Offset? _dragStart;
   Offset? _dragOffset;
   bool _isDragging = false;
+  double? _previewRotation;
 
   @override
   Widget build(BuildContext context) {
@@ -36,71 +37,81 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
     }
 
     final effectivePosition = _dragOffset ?? widget.item.position;
+    final effectiveRotation = _previewRotation ?? widget.item.rotation;
 
     return Positioned(
       left: effectivePosition.dx,
       top: effectivePosition.dy,
-      child: Transform.rotate(
-        angle: widget.item.rotation * (3.14159265359 / 180), // degrees to radians
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Item content with drag and double-click
-            MouseRegion(
-              cursor: widget.isSelected ? SystemMouseCursors.move : SystemMouseCursors.click,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  // Select this item
-                  ref
-                      .read(editorStateProvider(widget.entryId).notifier)
-                      .selectItem(widget.item.id);
-                },
-                onDoubleTap: widget.item.type == CanvasItemType.text
-                    ? () => _showTextEditor(context)
-                    : null,
-                onPanStart: (details) {
-                  if (widget.isSelected) {
-                    setState(() {
-                      _isDragging = true;
-                      _dragStart = details.globalPosition - widget.item.position;
-                    });
-                  }
-                },
-                onPanUpdate: (details) {
-                  if (widget.isSelected && _isDragging) {
-                    setState(() {
-                      _dragOffset = details.globalPosition - _dragStart!;
-                    });
-                  }
-                },
-                onPanEnd: (details) {
-                  if (widget.isSelected && _isDragging && _dragOffset != null) {
-                    // Update item position in state
+      child: SizedBox(
+        width: widget.item.size.width,
+        height: widget.item.size.height,
+        child: Transform.rotate(
+          angle: effectiveRotation * (3.14159265359 / 180), // degrees to radians
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Item content with drag and double-click
+              MouseRegion(
+                cursor: widget.isSelected ? SystemMouseCursors.move : SystemMouseCursors.click,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    // Select this item
                     ref
                         .read(editorStateProvider(widget.entryId).notifier)
-                        .updateItemPosition(widget.item.id, _dragOffset!);
-                  }
-                  setState(() {
-                    _dragOffset = null;
-                    _dragStart = null;
-                    _isDragging = false;
-                  });
-                },
-                child: _buildItemContent(),
+                        .selectItem(widget.item.id);
+                  },
+                  onDoubleTap: widget.item.type == CanvasItemType.text
+                      ? () => _showTextEditor(context)
+                      : null,
+                  onPanStart: (details) {
+                    if (widget.isSelected) {
+                      setState(() {
+                        _isDragging = true;
+                        _dragStart = details.globalPosition - widget.item.position;
+                      });
+                    }
+                  },
+                  onPanUpdate: (details) {
+                    if (widget.isSelected && _isDragging) {
+                      setState(() {
+                        _dragOffset = details.globalPosition - _dragStart!;
+                      });
+                    }
+                  },
+                  onPanEnd: (details) {
+                    if (widget.isSelected && _isDragging && _dragOffset != null) {
+                      // Update item position in state
+                      ref
+                          .read(editorStateProvider(widget.entryId).notifier)
+                          .updateItemPosition(widget.item.id, _dragOffset!);
+                    }
+                    setState(() {
+                      _dragOffset = null;
+                      _dragStart = null;
+                      _isDragging = false;
+                    });
+                  },
+                  child: _buildItemContent(),
+                ),
               ),
-            ),
 
-            // Selection handles (if selected)
-            if (widget.isSelected)
-              SelectionHandles(
-                item: widget.item,
-                entryId: widget.entryId,
-                onEditText: widget.item.type == CanvasItemType.text
-                    ? () => _showTextEditor(context)
-                    : null,
-              ),
-          ],
+              // Selection handles (if selected)
+              if (widget.isSelected)
+                SelectionHandles(
+                  item: widget.item,
+                  entryId: widget.entryId,
+                  onEditText: widget.item.type == CanvasItemType.text
+                      ? () => _showTextEditor(context)
+                      : null,
+                  onRotationPreview: (rotation) {
+                    setState(() {
+                      _previewRotation = rotation;
+                    });
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
