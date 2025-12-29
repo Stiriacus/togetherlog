@@ -38,14 +38,12 @@ class _SelectionHandlesState extends ConsumerState<SelectionHandles> {
     const buttonOverhang = 50.0; // Space for buttons outside bounds
 
     return DeferPointer(
-      child: Positioned(
-        left: -buttonOverhang,
-        top: -buttonOverhang,
-        child: Container(
-          width: size.width + (buttonOverhang * 2),
-          height: size.height + (buttonOverhang * 2),
-          color: Colors.transparent,
-          child: Stack(
+      child: Container(
+        width: size.width + (buttonOverhang * 2),
+        height: size.height + (buttonOverhang * 2),
+        transform: Matrix4.translationValues(-buttonOverhang, -buttonOverhang, 0),
+        color: Colors.transparent,
+        child: Stack(
           clipBehavior: Clip.none,
           children: [
             // Selection border (ignores pointer, positioned to match actual content)
@@ -63,25 +61,24 @@ class _SelectionHandlesState extends ConsumerState<SelectionHandles> {
               ),
             ),
 
-          // Resize handles (4 corners) - offset by buttonOverhang
-          ..._buildResizeHandles(buttonOverhang),
+            // Resize handles (4 corners) - offset by buttonOverhang
+            ..._buildResizeHandles(buttonOverhang),
 
-          // Rotation handle (top center) - offset by buttonOverhang
-          _buildRotationHandle(buttonOverhang),
+            // Rotation handle (top center) - offset by buttonOverhang
+            _buildRotationHandle(buttonOverhang),
 
-          // Layer controls (bottom right) - offset by buttonOverhang
-          _buildLayerControls(buttonOverhang),
+            // Layer controls (bottom right) - offset by buttonOverhang
+            _buildLayerControls(buttonOverhang),
 
-          // Delete button (top left) - offset by buttonOverhang
-          _buildDeleteButton(buttonOverhang),
+            // Delete button (top left) - offset by buttonOverhang
+            _buildDeleteButton(buttonOverhang),
 
-          // Edit button (top right, for text items) - offset by buttonOverhang
-          if (widget.onEditText != null) _buildEditButton(buttonOverhang),
-        ],
+            // Edit button (top right, for text items) - offset by buttonOverhang
+            if (widget.onEditText != null) _buildEditButton(buttonOverhang),
+          ],
+        ),
       ),
-    ),
-  ),
-);
+    );
   }
 
   List<Widget> _buildResizeHandles(double overhang) {
