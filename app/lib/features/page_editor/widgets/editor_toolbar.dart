@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../providers/editor_state_provider.dart';
 
 /// Editor toolbar (placeholder for now)
 class EditorToolbar extends ConsumerWidget {
@@ -20,6 +21,9 @@ class EditorToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final editorState = ref.watch(editorStateProvider(entryId));
+    final hasSelection = editorState.selectedItemId != null;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -33,6 +37,17 @@ class EditorToolbar extends ConsumerWidget {
       ),
       child: Row(
         children: [
+          // Delete button (only visible when item is selected)
+          if (hasSelection) ...[
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                ref.read(editorStateProvider(entryId).notifier).removeItem(editorState.selectedItemId!);
+              },
+              tooltip: 'Delete',
+            ),
+            const SizedBox(width: AppSpacing.md),
+          ],
           _buildToolbarButton(
             icon: Icons.photo_library,
             label: 'Photos',

@@ -3,9 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bounding_box/bounding_box.dart';
 import '../models/canvas_item.dart';
 import '../providers/editor_state_provider.dart';
-import 'selection_handles.dart';
 
 /// Renders a canvas item with drag-drop, resize, rotate support
 class CanvasItemWidget extends ConsumerStatefulWidget {
@@ -25,10 +25,67 @@ class CanvasItemWidget extends ConsumerStatefulWidget {
 }
 
 class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
-  Offset? _dragStart;
-  Offset? _dragOffset;
-  bool _isDragging = false;
-  double? _previewRotation;
+  BoundingBoxController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isSelected) {
+      _initController();
+    }
+  }
+
+  @override
+  void didUpdateWidget(CanvasItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isSelected && !oldWidget.isSelected) {
+      _initController();
+    } else if (!widget.isSelected && oldWidget.isSelected) {
+      _controller?.dispose();
+      _controller = null;
+    } else if (widget.isSelected) {
+      // Update controller if item changed
+      _controller?.update(
+        newPosition: widget.item.position,
+        newSize: widget.item.size,
+        newRotation: widget.item.rotation * (3.14159265359 / 180),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _initController() {
+    _controller = BoundingBoxController(
+      position: widget.item.position,
+      size: widget.item.size,
+      rotation: widget.item.rotation * (3.14159265359 / 180),
+      enable: true,
+    );
+
+    // Listen for changes
+    _controller!.addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (_controller == null) return;
+
+    final position = _controller!.position;
+    final size = _controller!.size;
+    final rotation = _controller!.rotation;
+
+    // Update in state
+    ref.read(editorStateProvider(widget.entryId).notifier).updateItemPosition(widget.item.id, position);
+    ref.read(editorStateProvider(widget.entryId).notifier).updateItemSize(widget.item.id, size);
+
+    // Convert radians to degrees
+    final degrees = rotation * (180 / 3.14159265359);
+    ref.read(editorStateProvider(widget.entryId).notifier).updateItemRotation(widget.item.id, degrees);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,84 +93,29 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
       return const SizedBox.shrink();
     }
 
-    final effectivePosition = _dragOffset ?? widget.item.position;
-    final effectiveRotation = _previewRotation ?? widget.item.rotation;
-
-    return Positioned(
-      left: effectivePosition.dx,
-      top: effectivePosition.dy,
-      child: SizedBox(
-        width: widget.item.size.width,
-        height: widget.item.size.height,
-        child: Transform.rotate(
-          angle: effectiveRotation * (3.14159265359 / 180), // degrees to radians
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // Item content with drag and double-click
-              MouseRegion(
-                cursor: widget.isSelected ? SystemMouseCursors.move : SystemMouseCursors.click,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    // Select this item
-                    ref
-                        .read(editorStateProvider(widget.entryId).notifier)
-                        .selectItem(widget.item.id);
-                  },
-                  onDoubleTap: widget.item.type == CanvasItemType.text
-                      ? () => _showTextEditor(context)
-                      : null,
-                  onPanStart: (details) {
-                    if (widget.isSelected) {
-                      setState(() {
-                        _isDragging = true;
-                        _dragStart = details.globalPosition - widget.item.position;
-                      });
-                    }
-                  },
-                  onPanUpdate: (details) {
-                    if (widget.isSelected && _isDragging) {
-                      setState(() {
-                        _dragOffset = details.globalPosition - _dragStart!;
-                      });
-                    }
-                  },
-                  onPanEnd: (details) {
-                    if (widget.isSelected && _isDragging && _dragOffset != null) {
-                      // Update item position in state
-                      ref
-                          .read(editorStateProvider(widget.entryId).notifier)
-                          .updateItemPosition(widget.item.id, _dragOffset!);
-                    }
-                    setState(() {
-                      _dragOffset = null;
-                      _dragStart = null;
-                      _isDragging = false;
-                    });
-                  },
-                  child: _buildItemContent(),
-                ),
-              ),
-
-              // Selection handles (if selected)
-              if (widget.isSelected)
-                SelectionHandles(
-                  item: widget.item,
-                  entryId: widget.entryId,
-                  onEditText: widget.item.type == CanvasItemType.text
-                      ? () => _showTextEditor(context)
-                      : null,
-                  onRotationPreview: (rotation) {
-                    setState(() {
-                      _previewRotation = rotation;
-                    });
-                  },
-                ),
-            ],
+    if (!widget.isSelected) {
+      // Not selected: just show content at position
+      return Positioned(
+        left: widget.item.position.dx,
+        top: widget.item.position.dy,
+        child: GestureDetector(
+          onTap: () {
+            ref.read(editorStateProvider(widget.entryId).notifier).selectItem(widget.item.id);
+          },
+          child: Transform.rotate(
+            angle: widget.item.rotation * (3.14159265359 / 180),
+            child: _buildItemContent(),
           ),
         ),
-      ),
+      );
+    }
+
+    // Selected: wrap with BoundingBoxOverlay for drag/resize/rotate
+    return BoundingBoxOverlay(
+      controller: _controller!,
+      builder: (size, position, rotation) {
+        return _buildItemContent();
+      },
     );
   }
 
@@ -191,41 +193,6 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
       child: Text(
         widget.item.text ?? '',
         style: widget.item.textStyle ?? const TextStyle(fontSize: 16),
-      ),
-    );
-  }
-
-  void _showTextEditor(BuildContext context) {
-    final textController = TextEditingController(text: widget.item.text ?? '');
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Text'),
-        content: TextField(
-          controller: textController,
-          autofocus: true,
-          maxLines: 5,
-          decoration: const InputDecoration(
-            hintText: 'Enter text...',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              ref
-                  .read(editorStateProvider(widget.entryId).notifier)
-                  .updateItemText(widget.item.id, textController.text);
-              Navigator.of(context).pop();
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
   }
