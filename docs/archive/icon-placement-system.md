@@ -4,7 +4,7 @@
 **Status:** Ready to Implement
 **Priority:** Medium
 **Effort:** Medium
-**Dependencies:** `layout-computation-service.md`
+**Dependencies:** `unified-coordinate-layout-system.md`
 
 ---
 

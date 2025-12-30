@@ -24,7 +24,7 @@ TogetherLog consists of three main parts:
 3. **External Services**
    - OpenStreetMap/Nominatim for reverse geocoding
 
-The goal is to keep the Flutter client as lean as possible and move non-trivial logic (Smart Pages, image processing, metadata extraction) to the backend.
+The goal is to handle Smart Pages computation client-side for immediate feedback and editability, while keeping heavy processing (image processing, metadata extraction) on the backend.
 
 ---
 
@@ -42,16 +42,16 @@ The goal is to keep the Flutter client as lean as possible and move non-trivial 
   - Creating and editing logs
   - Uploading photos (through Supabase APIs / signed URLs)
   - Creating and editing entries (date, tags, highlight text, location)
-  - Rendering Smart Page layouts and color themes returned by the backend
+  - Computing Smart Page layouts, color themes, and sprinkles
+  - Providing an interactive editor for customizing Smart Pages
+  - Rendering Smart Page layouts in the flipbook
   - Displaying the flipbook with a 3D-like page-turn animation
   - Applying dynamic, per-page theming based on Smart Page data
 
 **Non-responsibilities:**
 
-- EXIF extraction
-- Thumbnail creation
-- Dominant color analysis
-- Smart Page rule computation
+- EXIF extraction (backend)
+- Thumbnail creation (backend)
 - Storing data locally (beyond transient in-memory state)
 
 The app is **online-only** in V1.
@@ -116,17 +116,18 @@ Supabase Edge Functions are used for:
      - Trigger Smart Page recomputation for an entry
 
 2. **Async Worker Functions**
-   - Triggered after a photo is uploaded or an entry is created/updated
+   - Triggered after a photo is uploaded
    - Responsibilities:
      - Extract EXIF metadata (date, GPS)
      - Generate thumbnails
-     - Compute dominant colors for images
      - Call reverse geocoding (OpenStreetMap/Nominatim) when GPS is available
-     - Compute Smart Page fields:
-       - `page_layout_type`
-       - `color_theme`
-       - optional `sprinkles[]`
    - Update relevant database records with processed data
+
+3. **Custom Layout Storage**
+   - Backend stores final Smart Page layouts sent by client
+   - Layouts stored as JSONB in `entries.custom_layout` field
+   - No validation of layout data (trusts client)
+   - Backend serves as persistent storage only
 
 This approach keeps heavy or sensitive processing off the client and in an environment controlled by the backend.
 
@@ -178,17 +179,22 @@ Architecture decisions:
      - Updates `event_date` if not set
      - Extracts GPS and calls Nominatim to get `display_name`
      - Generates thumbnails and stores them in storage
-     - Computes dominant colors
-     - Runs deterministic Smart Page rules and sets:
-       - `page_layout_type`
-       - `color_theme`
-       - optional `sprinkles[]`
      - Saves all results back to PostgreSQL
 
-5. **Client Refresh**
+5. **Client-Side Smart Page Computation**
    - The Flutter app:
-     - Either polls or receives updated entry data (via reload or re-fetch)
-     - Renders the entry as part of the flipbook using the Smart Page configuration
+     - Fetches processed entry data (with EXIF metadata)
+     - Runs Smart Page rules client-side:
+       - Determines `page_layout_type` based on photo count
+       - Selects `color_theme` based on tags
+       - Chooses `sprinkles[]` based on tags
+     - Generates initial layout coordinates
+     - Optionally allows user to customize via interactive editor
+     - Sends final layout to backend for storage in `custom_layout` JSONB field
+
+6. **Client Refresh**
+   - The Flutter app:
+     - Renders the entry as part of the flipbook using the computed/customized Smart Page layout
 
 ---
 
@@ -196,12 +202,10 @@ Architecture decisions:
 
 1. User selects a log in the Flutter app.
 2. Flutter app fetches entries from the REST API (sorted chronologically).
-3. Each entry is mapped to a two-page spread using:
-   - `page_layout_type`
-   - `color_theme`
-   - `photos[]`
-   - `highlight_text`
-   - `location`
+3. Each entry is mapped to a scrapbook page using:
+   - `custom_layout` (if exists, contains full layout data)
+   - OR computed on-the-fly from entry data (photos, tags, text)
+   - Includes `page_layout_type`, `color_theme`, `photos[]`, `highlight_text`, `location`, and `sprinkles[]`
 4. Flipbook component uses a simple 3D page-turn animation to move between spreads.
 
 ---
@@ -301,8 +305,9 @@ Key architectural characteristics:
 - **Flutter Web + Android** frontend
 - **Supabase** backend (PostgreSQL, Auth, Storage, Edge Functions)
 - **REST API** implemented in TypeScript (Deno) via Edge Functions
-- **Async workers** for media processing and Smart Page computation
-- **Deterministic Smart Pages** and Emotion-Color-Engine V1 on the backend
+- **Async workers** for media processing (EXIF, thumbnails, geocoding)
+- **Client-side Smart Pages** with deterministic rules and optional customization
+- **Interactive editor** for drag-drop page customization
 - **OpenStreetMap/Nominatim** for geocoding with caching
 - Monorepo structure optimized for open source and future self-hosting
 

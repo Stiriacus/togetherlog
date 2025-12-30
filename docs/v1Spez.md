@@ -15,7 +15,7 @@ Users can:
 - Assign tags from a predefined set
 - Write short highlight notes
 
-A backend-powered **Smart Page** system automatically creates visually appealing memory pages using rules and templates. The client stays relatively lean and focuses on rendering, while the backend handles most of the layout logic.
+A client-side **Smart Page** system automatically creates visually appealing memory pages using rules and templates. Users can optionally customize layouts through an interactive editor. The backend serves as persistent storage for final layouts.
 
 The MVP is **online-only** (no offline mode).
 
@@ -60,9 +60,9 @@ An entry represents a single memory event belonging to one log.
   - `lng` (optional)
   - `display_name` (e.g., "Berlin, Tempelhofer Feld")
   - `is_user_overridden` (boolean)
-- `page_layout_type` (enum chosen by backend Smart Page logic)
-- `color_theme` (theme identifier chosen by backend Smart Page logic)
-- optional: `sprinkles[]` (icons/decorations; stored but not necessarily used in V1 UI)
+- `custom_layout` (JSONB containing client-computed or user-customized layout data)
+  - Includes: `page_layout_type`, `color_theme`, `sprinkles[]`, item positions, decorations
+- `is_customized` (boolean - whether user has manually edited the page)
 
 ### 3.2 Photo Handling
 
@@ -74,6 +74,10 @@ An entry represents a single memory event belonging to one log.
   - Extracts EXIF metadata when available:
     - Date/time (can be used as default `event_date`)
     - GPS coordinates (used for location lookup)
+- The client:
+  - Computes Smart Page layout based on photos, tags, and entry data
+  - Optionally allows user to customize layout via interactive editor
+  - Sends final layout to backend for storage
 
 The Flutter client communicates with the backend via HTTP/JSON and does not manage persistent local storage for V1 (no Isar/Hive needed initially).
 
@@ -120,9 +124,11 @@ On photo upload, the backend:
 
 - Reads EXIF GPS coordinates if present.
 - Performs reverse geocoding (e.g., using OpenStreetMap/Nominatim or a similar open provider).
-- Sets:
+- Stores:
   - `lat`, `lng`
   - `display_name` (human-readable location)
+
+The client uses location data (along with photos and tags) to compute Smart Page layouts.
 
 ### 5.2 Manual Editing
 
@@ -134,21 +140,26 @@ In the Flutter app, the user can:
 
 If `is_user_overridden = true`, the backend will not overwrite the location automatically on future updates.
 
+The client uses location data (along with photos and tags) to compute Smart Page layouts.
+
 ---
 
-## 6. Smart Pages (Backend-Driven, Rule-Based)
+## 6. Smart Pages (Client-Side, Rule-Based with Optional Customization)
 
 ### 6.1 Purpose
 
-Smart Pages automatically generate visually consistent and aesthetic memory pages so that the user does not need to manually design layouts.
+Smart Pages automatically generate visually consistent and aesthetic memory pages so that the user does not need to manually design layouts. Users can optionally customize layouts through an interactive editor.
 
 ### 6.2 Where It Runs
 
-- The **backend** computes:
+- The **client (Flutter)** computes:
   - `page_layout_type`
   - `color_theme`
-  - optional `sprinkles[]`
-- The **Flutter client** just renders the provided layout definitions and colors.
+  - `sprinkles[]` (icon sets or decorations)
+  - Item positions, sizes, and rotations
+  - Optional decorations and customizations
+- The **backend** stores the final layout as JSONB without validation
+- Users can enter an interactive editor to customize any auto-generated layout
 
 ### 6.3 Inputs to Smart Page Logic
 
@@ -175,14 +186,14 @@ Basic, rule-based color theme mapping:
 - Lake / Beach → blues / turquoise.
 - Nightlife → dark blue / purple.
 - Otherwise:
-  - Optionally derive a dominant color from the main photo on the backend.
+  - Client may derive a dominant color from the main photo.
   - Fallback to neutral, elegant themes.
 
 The chosen color theme is returned as a `color_theme` identifier, which the Flutter app uses to build styles for that page. Global dark mode is planned for later versions and not required in V1.
 
 ### 6.6 Optional Layout & Decoration Data
 
-The backend may already set (even if UI doesn’t use them fully yet):
+The client may compute and store (even if UI doesn't render all yet):
 
 - Polaroid-style frames.
 - Collage patterns (e.g., stacked, overlapping).
@@ -256,8 +267,9 @@ Core tables (conceptually):
 
 ### 8.4 Smart Pages & Export
 
-- The backend computes Smart Page definitions.
-- Future: backend will also handle:
+- The client computes Smart Page definitions and sends to backend for storage.
+- Users can customize layouts through an interactive editor.
+- Future: backend will handle:
   - PDF export.
   - Printable layouts.
 

@@ -95,7 +95,6 @@ class _LocationEditorState extends State<LocationEditor> {
         });
       }
     } catch (e) {
-      print('🔍 DEBUG: Geocoding error: $e');
       setState(() {
         _isSearching = false;
         _searchResults = [];
@@ -211,7 +210,7 @@ class _LocationEditorState extends State<LocationEditor> {
                         widget.onLocationChanged(location);
                       },
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -226,14 +225,14 @@ class _LocationEditorState extends State<LocationEditor> {
               borderRadius: BorderRadius.circular(AppRadius.rSm),
               border: Border.all(color: AppColors.infoMuted),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.info_outline,
                   size: AppIconSize.small,
                   color: AppColors.infoMuted,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Type a location name and press Enter or tap the search icon',

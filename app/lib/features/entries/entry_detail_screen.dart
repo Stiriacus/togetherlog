@@ -61,6 +61,19 @@ class EntryDetailScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
+                  // Edit Page button (page editor)
+                  entryAsync.when(
+                    data: (entry) => IconButton(
+                      icon: const Icon(Icons.palette),
+                      tooltip: 'Edit Page',
+                      onPressed: () {
+                        context.go('/logs/${entry.logId}/entries/$entryId/page-editor');
+                      },
+                    ),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                  ),
+                  // Edit Entry button (metadata)
                   IconButton(
                     icon: const Icon(AppIcons.edit),
                     tooltip: 'Edit Entry',

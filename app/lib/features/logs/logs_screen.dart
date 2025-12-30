@@ -57,7 +57,7 @@ class LogsScreen extends ConsumerWidget {
                 onLogTap: (log) => _navigateToEntries(context, log),
                 onLogEdit: (log) => _showEditDialog(context, log),
                 onLogDelete: (log) => _showDeleteConfirmation(context, ref, log),
-                onViewFlipbook: (log) => _navigateToFlipbook(context, log),
+                onViewScrapbook: (log) => _navigateToScrapbook(context, log),
               ),
             ),
           ],
@@ -76,9 +76,9 @@ class LogsScreen extends ConsumerWidget {
     context.go('/logs/${log.id}/entries');
   }
 
-  /// Navigate to flipbook viewer for the selected log
-  void _navigateToFlipbook(BuildContext context, Log log) {
-    context.go('/logs/${log.id}/flipbook?logName=${Uri.encodeComponent(log.name)}');
+  /// Navigate to scrapbook viewer for the selected log
+  void _navigateToScrapbook(BuildContext context, Log log) {
+    context.go('/logs/${log.id}/scrapbook?logName=${Uri.encodeComponent(log.name)}');
   }
 
   /// Show create log dialog

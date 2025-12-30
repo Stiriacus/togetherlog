@@ -1,15 +1,16 @@
-// TogetherLog - Flipbook Viewer
-// Scrapbook-style flipbook viewer with slide animation
+// TogetherLog - Scrapbook Viewer
+// Scrapbook pages viewer with slide animation
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/flipbook_providers.dart';
+import 'package:go_router/go_router.dart';
+import 'providers/scrapbook_providers.dart';
 import 'widgets/smart_page_renderer.dart';
 
-/// Flipbook viewer with 3D page-turn animation
+/// Scrapbook viewer with slide animation
 /// Displays all entries of a log in chronological order
-class FlipbookViewer extends ConsumerStatefulWidget {
-  const FlipbookViewer({
+class ScrapbookViewer extends ConsumerStatefulWidget {
+  const ScrapbookViewer({
     super.key,
     required this.logId,
     required this.logName,
@@ -19,10 +20,10 @@ class FlipbookViewer extends ConsumerStatefulWidget {
   final String logName;
 
   @override
-  ConsumerState<FlipbookViewer> createState() => _FlipbookViewerState();
+  ConsumerState<ScrapbookViewer> createState() => _ScrapbookViewerState();
 }
 
-class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
+class _ScrapbookViewerState extends ConsumerState<ScrapbookViewer> {
   late final PageController _pageController;
   int _currentPageIndex = 0;
 
@@ -49,7 +50,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final entriesAsync = ref.watch(flipbookEntriesProvider(widget.logId));
+    final entriesAsync = ref.watch(scrapbookEntriesProvider(widget.logId));
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -64,7 +65,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
           if (entries.isEmpty) {
             return _buildEmptyState();
           }
-          return _buildFlipbook(entries);
+          return _buildScrapbook(entries);
         },
         loading: () => const Center(
           child: CircularProgressIndicator(),
@@ -94,7 +95,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add some memories to start your flipbook',
+            'Add some memories to start your scrapbook',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
@@ -117,7 +118,7 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Failed to load flipbook',
+            'Failed to load scrapbook',
             style: TextStyle(
               fontSize: 20,
               color: Colors.grey.shade400,
@@ -137,13 +138,13 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
     );
   }
 
-  Widget _buildFlipbook(List entries) {
+  Widget _buildScrapbook(List entries) {
     // Build page widgets
     final pages = entries
         .map((entry) => SmartPageRenderer(
               key: ValueKey('${entry.id}_${entry.layoutVariant}'),
               entry: entry,
-            ))
+            ),)
         .toList();
 
     // Add last page
@@ -186,18 +187,34 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
 
     return Stack(
       children: [
-        // PageView with slide animation
+        // PageView with slide + fade animation
         PageView.builder(
           controller: _pageController,
           itemCount: pages.length,
           itemBuilder: (context, index) {
-            // Display page at exact baseline dimensions (874×1240 - DIN A5 at 150 DPI)
-            // Fixed size - pixel-perfect rendering
-            return Center(
-              child: SizedBox(
-                width: 874,
-                height: 1240,
-                child: pages[index],
+            // Fade transition based on page position
+            return AnimatedBuilder(
+              animation: _pageController,
+              builder: (context, child) {
+                double opacity = 1.0;
+                if (_pageController.position.haveDimensions) {
+                  // Calculate distance from current page
+                  final position = (_pageController.page ?? 0.0) - index;
+                  // Convert distance to opacity (1.0 at current page, 0.0 at ±1 page)
+                  opacity = (1 - position.abs()).clamp(0.0, 1.0);
+                }
+
+                return Opacity(
+                  opacity: opacity,
+                  child: child,
+                );
+              },
+              child: Center(
+                child: SizedBox(
+                  width: 874,
+                  height: 1240,
+                  child: pages[index],
+                ),
               ),
             );
           },
@@ -205,7 +222,31 @@ class _FlipbookViewerState extends ConsumerState<FlipbookViewer> {
 
         // Navigation controls overlay
         _buildNavigationControls(pages.length - 1),
+
+        // Edit Page button overlay (top-right, only for entry pages)
+        if (_currentPageIndex < entries.length)
+          _buildEditPageButton(entries[_currentPageIndex]),
       ],
+    );
+  }
+
+  Widget _buildEditPageButton(dynamic entry) {
+    return Positioned(
+      top: 16,
+      right: 16,
+      child: IconButton(
+        onPressed: () {
+          context.go('/logs/${widget.logId}/entries/${entry.id}/page-editor');
+        },
+        icon: const Icon(Icons.palette),
+        iconSize: 28,
+        color: Colors.white.withValues(alpha: 0.8),
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.black.withValues(alpha: 0.5),
+          padding: const EdgeInsets.all(12),
+        ),
+        tooltip: 'Edit Page',
+      ),
     );
   }
 

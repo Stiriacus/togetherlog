@@ -1,19 +1,19 @@
-// TogetherLog - Flipbook Providers
-// Riverpod state management for flipbook viewer
+// TogetherLog - Scrapbook Providers
+// Riverpod state management for scrapbook viewer
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/entry.dart';
 import '../../entries/providers/entries_providers.dart';
 
-/// Flipbook entries provider for a specific log
-/// Fetches entries sorted chronologically (oldest first for flipbook reading)
-final flipbookEntriesProvider =
+/// Scrapbook entries provider for a specific log
+/// Fetches entries sorted chronologically (oldest first for scrapbook reading)
+final scrapbookEntriesProvider =
     FutureProvider.family<List<Entry>, String>((ref, logId) async {
   // Reuse the entries list provider from entries feature
   final entries = await ref.watch(entriesListProvider(logId).future);
 
   // Sort entries chronologically (oldest first)
-  // This matches the flipbook reading experience (start from first memory)
+  // This matches the scrapbook reading experience (start from first memory)
   final sortedEntries = List<Entry>.from(entries)
     ..sort((a, b) => a.eventDate.compareTo(b.eventDate));
 
@@ -25,10 +25,10 @@ final flipbookEntriesProvider =
 final currentPageIndexProvider = StateProvider<int>((ref) => 0);
 
 /// Total pages count provider
-/// Returns the total number of pages in the flipbook
+/// Returns the total number of pages in the scrapbook
 final totalPagesProvider =
     Provider.family<int, String>((ref, logId) {
-  final entriesAsync = ref.watch(flipbookEntriesProvider(logId));
+  final entriesAsync = ref.watch(scrapbookEntriesProvider(logId));
 
   return entriesAsync.when(
     data: (entries) => entries.length,

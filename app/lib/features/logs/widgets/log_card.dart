@@ -14,7 +14,7 @@ class LogCard extends StatelessWidget {
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
-    required this.onViewFlipbook,
+    required this.onViewScrapbook,
     super.key,
   });
 
@@ -22,7 +22,7 @@ class LogCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback onViewFlipbook;
+  final VoidCallback onViewScrapbook;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class LogCard extends StatelessWidget {
     );
   }
 
-  /// Show options menu (View Flipbook / Edit / Delete)
+  /// Show options menu (View Scrapbook / Edit / Delete)
   void _showOptionsMenu(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -106,10 +106,10 @@ class LogCard extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(AppIcons.menuBook, color: AppColors.darkWalnut),
-              title: const Text('View Flipbook'),
+              title: const Text('View Scrapbook'),
               onTap: () {
                 Navigator.pop(context);
-                onViewFlipbook();
+                onViewScrapbook();
               },
             ),
             ListTile(

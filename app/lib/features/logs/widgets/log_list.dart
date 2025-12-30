@@ -15,14 +15,14 @@ class LogList extends ConsumerWidget {
     required this.onLogTap,
     required this.onLogEdit,
     required this.onLogDelete,
-    required this.onViewFlipbook,
+    required this.onViewScrapbook,
     super.key,
   });
 
   final Function(Log) onLogTap;
   final Function(Log) onLogEdit;
   final Function(Log) onLogDelete;
-  final Function(Log) onViewFlipbook;
+  final Function(Log) onViewScrapbook;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,7 +57,7 @@ class LogList extends ConsumerWidget {
                       onTap: () => onLogTap(log),
                       onEdit: () => onLogEdit(log),
                       onDelete: () => onLogDelete(log),
-                      onViewFlipbook: () => onViewFlipbook(log),
+                      onViewScrapbook: () => onViewScrapbook(log),
                     ),
                   );
                 },

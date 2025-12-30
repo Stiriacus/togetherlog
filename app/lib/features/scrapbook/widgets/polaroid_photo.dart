@@ -1,4 +1,4 @@
-// TogetherLog - Polaroid Photo Widget for Flipbook
+// TogetherLog - Polaroid Photo Widget for Scrapbook
 // Displays a photo with a Polaroid frame effect and stable random rotation
 
 import 'dart:math' as math;
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 /// Polaroid-style photo widget with stable random rotation
-/// Used in flipbook layouts for scrapbook aesthetic
+/// Used in scrapbook layouts for scrapbook aesthetic
 class PolaroidPhoto extends StatelessWidget {
   const PolaroidPhoto({
     required this.photoUrl,

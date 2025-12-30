@@ -104,6 +104,18 @@ class _EntryEditScreenState extends ConsumerState<EntryEditScreen> {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
+                  // Edit Page button (page editor)
+                  entryAsync.when(
+                    data: (entry) => IconButton(
+                      icon: const Icon(Icons.palette),
+                      tooltip: 'Edit Page',
+                      onPressed: () {
+                        context.go('/logs/${entry.logId}/entries/${widget.entryId}/page-editor');
+                      },
+                    ),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                  ),
                 ],
               ),
             ),
