@@ -97,25 +97,27 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               bottom: 0,
               child: Container(
                 color: const Color(0xFFF5E6D3), // Warm tan
-                child: Scrollbar(
-                  controller: _verticalScrollController,
-                  thumbVisibility: true,
-                  notificationPredicate: (notification) => notification.depth == 1,
+                child: Center(
                   child: Scrollbar(
-                    controller: _horizontalScrollController,
+                    controller: _verticalScrollController,
                     thumbVisibility: true,
-                    notificationPredicate: (notification) => notification.depth == 0,
-                    child: SingleChildScrollView(
+                    notificationPredicate: (notification) => notification.depth == 1,
+                    child: Scrollbar(
                       controller: _horizontalScrollController,
-                      scrollDirection: Axis.horizontal,
+                      thumbVisibility: true,
+                      notificationPredicate: (notification) => notification.depth == 0,
                       child: SingleChildScrollView(
-                        controller: _verticalScrollController,
-                        scrollDirection: Axis.vertical,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.xl),
-                          child: EditorCanvas(
-                            entryId: widget.entryId,
-                            onTextItemDoubleClick: _handleTextItemDoubleClick,
+                        controller: _horizontalScrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          controller: _verticalScrollController,
+                          scrollDirection: Axis.vertical,
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppSpacing.xl),
+                            child: EditorCanvas(
+                              entryId: widget.entryId,
+                              onTextItemDoubleClick: _handleTextItemDoubleClick,
+                            ),
                           ),
                         ),
                       ),
