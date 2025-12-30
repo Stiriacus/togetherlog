@@ -1,0 +1,26 @@
+Bug 3 — Duplicate rendering of a single element (ghost element)
+
+Description:
+A single element is rendered multiple times on the canvas, even though it exists only once.
+
+Observed Behavior:
+
+The same element appears twice on the canvas (see images 3 and 4).
+
+When selecting the “wrong” / additional element:
+
+it can be moved and rotated
+
+but no properties are displayed
+
+When selecting and manipulating the actual (main) element:
+
+the second, incorrect element snaps back to a previous position
+
+Expected Behavior:
+
+Each element should be rendered only once.
+
+Any selectable element should expose its corresponding properties.
+
+Manipulating one element must not affect any non-existent duplicates.

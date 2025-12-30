@@ -26,8 +26,6 @@ class CanvasItemWidget extends ConsumerStatefulWidget {
 
 class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
   BoundingBoxController? _controller;
-  double _previousRotation = 0.0;
-  static const double _rotationSensitivity = 8.0; // Multiplier for rotation
 
   @override
   void initState() {
@@ -43,11 +41,10 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
     if (widget.isSelected && !oldWidget.isSelected) {
       _initController();
     } else if (!widget.isSelected && oldWidget.isSelected) {
-      _controller?.dispose();
-      _controller = null;
-    } else if (widget.isSelected) {
-      // Update controller if item changed
-      _controller?.update(
+      _disposeController();
+    } else if (widget.isSelected && _controller != null) {
+      // Update controller from state changes
+      _controller!.update(
         newPosition: widget.item.position,
         newSize: widget.item.size,
         newRotation: widget.item.rotation * (3.14159265359 / 180),
@@ -57,44 +54,44 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _disposeController();
     super.dispose();
   }
 
   void _initController() {
-    final initialRotationRadians = widget.item.rotation * (3.14159265359 / 180);
-    _previousRotation = initialRotationRadians;
-
     _controller = BoundingBoxController(
       position: widget.item.position,
       size: widget.item.size,
-      rotation: initialRotationRadians,
+      rotation: widget.item.rotation * (3.14159265359 / 180),
       enable: true,
+      enableRotate: false, // Disable rotation handle - use properties panel only
     );
 
-    // Listen for changes
+    // Listen for position and size changes only
     _controller!.addListener(_onControllerChanged);
   }
 
+  void _disposeController() {
+    if (_controller != null) {
+      _controller!.removeListener(_onControllerChanged);
+      // Don't dispose here - BoundingBoxOverlay will dispose it when unmounting
+      _controller = null;
+    }
+  }
+
   void _onControllerChanged() {
-    if (_controller == null) return;
+    // Guard against disposed controller
+    if (_controller == null || !mounted) return;
 
     final position = _controller!.position;
     final size = _controller!.size;
-    final rotation = _controller!.rotation;
 
-    // Apply rotation sensitivity multiplier
-    final rotationDelta = rotation - _previousRotation;
-    final amplifiedRotation = _previousRotation + (rotationDelta * _rotationSensitivity);
-    _previousRotation = rotation;
-
-    // Update in state
-    ref.read(editorStateProvider(widget.entryId).notifier).updateItemPosition(widget.item.id, position);
-    ref.read(editorStateProvider(widget.entryId).notifier).updateItemSize(widget.item.id, size);
-
-    // Convert radians to degrees with amplified rotation
-    final degrees = amplifiedRotation * (180 / 3.14159265359);
-    ref.read(editorStateProvider(widget.entryId).notifier).updateItemRotation(widget.item.id, degrees);
+    // Delay state updates to avoid modifying provider during build phase
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(editorStateProvider(widget.entryId).notifier).updateItemPosition(widget.item.id, position);
+      ref.read(editorStateProvider(widget.entryId).notifier).updateItemSize(widget.item.id, size);
+    });
   }
 
   @override

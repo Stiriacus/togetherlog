@@ -9,8 +9,8 @@ import '../../core/layouts/authenticated_shell.dart';
 import 'models/editor_state.dart';
 import 'providers/editor_state_provider.dart';
 import 'widgets/editor_canvas.dart';
-import 'widgets/editor_toolbar.dart';
-import 'widgets/layers_panel.dart';
+import 'widgets/left_gutter_panel.dart';
+import 'widgets/right_gutter_panel.dart';
 import 'services/test_data_initializer.dart';
 
 /// Interactive page editor screen
@@ -29,22 +29,12 @@ class EditorScreen extends ConsumerStatefulWidget {
 }
 
 class _EditorScreenState extends ConsumerState<EditorScreen> {
-  bool _isLayersPanelExpanded = false; // Collapsed by default
-  late final ScrollController _verticalScrollController;
-  late final ScrollController _horizontalScrollController;
+  bool _isLeftGutterExpanded = true;
+  bool _isRightGutterExpanded = true;
 
   @override
   void initState() {
     super.initState();
-    _verticalScrollController = ScrollController();
-    _horizontalScrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _verticalScrollController.dispose();
-    _horizontalScrollController.dispose();
-    super.dispose();
   }
 
   @override
@@ -64,94 +54,87 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     return AuthenticatedShell(
       currentRoute: '/logs/${widget.logId}/entries/${widget.entryId}/page-editor',
       child: Scaffold(
-        backgroundColor: AppColors.antiqueWhite,
+        backgroundColor: const Color(0xFFF5E6D3),
         appBar: _buildAppBar(context, ref, editorState),
-        body: Row(
+        body: Stack(
           children: [
-            // Main editor area (canvas + toolbar)
-            Expanded(
+            // Full-screen canvas (background layer)
+            Positioned.fill(
               child: Container(
-                color: const Color(0xFFF5E6D3), // Warm tan - between antiqueWhite and softApricot
-                child: Column(
-                  children: [
-                    // Toolbar
-                    Container(
-                      color: AppColors.antiqueWhite,
-                      child: EditorToolbar(
-                        entryId: widget.entryId,
-                        isLayersPanelExpanded: _isLayersPanelExpanded,
-                        onToggleLayers: () {
-                          setState(() {
-                            _isLayersPanelExpanded = !_isLayersPanelExpanded;
-                          });
-                        },
-                      ),
+                color: const Color(0xFFF5E6D3), // Warm tan
+                child: Center(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: EditorCanvas(entryId: widget.entryId),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    // Canvas (scrollable with visible scrollbars)
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          return Scrollbar(
-                            controller: _verticalScrollController,
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
-                              controller: _verticalScrollController,
-                              scrollDirection: Axis.vertical,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: AppSpacing.xl,
-                              ),
-                              child: Scrollbar(
-                                controller: _horizontalScrollController,
-                                thumbVisibility: true,
-                                child: SingleChildScrollView(
-                                  controller: _horizontalScrollController,
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.xl,
-                                  ),
-                                  child: EditorCanvas(entryId: widget.entryId),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            // Collapsible Layers panel (right side)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: _isLayersPanelExpanded ? 320 : 0,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: AppColors.antiqueWhite,
-                border: Border(
-                  left: BorderSide(
-                    color: AppColors.divider,
-                    width: _isLayersPanelExpanded ? 1 : 0,
-                  ),
+
+            // Left Gutter - Floating overlay
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                width: _isLeftGutterExpanded ? 240 : 48,
+                decoration: BoxDecoration(
+                  color: AppColors.antiqueWhite,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(2, 0),
+                    ),
+                  ],
                 ),
-                boxShadow: _isLayersPanelExpanded
-                    ? [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(-2, 0),
-                        ),
-                      ]
-                    : null,
+                child: LeftGutterPanel(
+                  entryId: widget.entryId,
+                  isExpanded: _isLeftGutterExpanded,
+                  onToggle: () {
+                    setState(() {
+                      _isLeftGutterExpanded = !_isLeftGutterExpanded;
+                    });
+                  },
+                ),
               ),
-              child: _isLayersPanelExpanded
-                  ? SizedBox(
-                      width: 320,
-                      child: LayersPanel(entryId: widget.entryId),
-                    )
-                  : const SizedBox.shrink(),
+            ),
+
+            // Right Gutter - Floating overlay
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                width: _isRightGutterExpanded ? 240 : 48,
+                decoration: BoxDecoration(
+                  color: AppColors.antiqueWhite,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(-2, 0),
+                    ),
+                  ],
+                ),
+                child: RightGutterPanel(
+                  entryId: widget.entryId,
+                  isExpanded: _isRightGutterExpanded,
+                  onToggle: () {
+                    setState(() {
+                      _isRightGutterExpanded = !_isRightGutterExpanded;
+                    });
+                  },
+                ),
+              ),
             ),
           ],
         ),

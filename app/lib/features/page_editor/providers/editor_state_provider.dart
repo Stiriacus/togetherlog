@@ -63,9 +63,8 @@ class EditorStateNotifier extends StateNotifier<EditorState> {
   /// Update item rotation (for rotating)
   void updateItemRotation(String itemId, double newRotation) {
     final item = state.items.firstWhere((item) => item.id == itemId);
-    // Normalize rotation to 0-360
-    final normalizedRotation = newRotation % 360;
-    updateItem(itemId, item.copyWith(rotation: normalizedRotation));
+    // Keep rotation in -180 to +180 range
+    updateItem(itemId, item.copyWith(rotation: newRotation.clamp(-180.0, 180.0)));
   }
 
   /// Update item z-index

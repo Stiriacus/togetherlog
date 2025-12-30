@@ -1,0 +1,28 @@
+Bug 2 — Frozen elements and non-interactive “ghost” copies
+
+Description:
+After the error described above occurs, other elements start behaving incorrectly.
+
+Observed Behavior:
+
+Other elements appear to be “frozen”.
+
+An element can be selected and moved once.
+
+After moving it, a visual copy (“shadow” / duplicate) remains at the previous position.
+
+This copy:
+
+cannot be selected
+
+cannot be moved
+
+has no interaction behavior
+
+The element appears to exist twice visually (see image 2).
+
+Expected Behavior:
+
+Moving an element should not leave any visual copies behind.
+
+Only one interactive instance of an element should be visible.
