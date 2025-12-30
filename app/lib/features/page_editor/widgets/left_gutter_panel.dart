@@ -27,7 +27,7 @@ class _LeftGutterPanelState extends ConsumerState<LeftGutterPanel> {
   bool _isPhotosExpanded = false;
   bool _isDecorationsExpanded = false;
   bool _isBackgroundExpanded = false;
-  bool _isLayersExpanded = true; // Layers expanded by default
+  bool _isLayersExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +46,18 @@ class _LeftGutterPanelState extends ConsumerState<LeftGutterPanel> {
           Expanded(
             child: Column(
               children: [
-                _buildCollapsedIcon(Icons.photo_library, 'Photos'),
-                _buildCollapsedIcon(Icons.image, 'Decorations'),
-                _buildCollapsedIcon(Icons.palette, 'Background'),
-                _buildCollapsedIcon(Icons.layers, 'Layers'),
+                _buildCollapsedIcon(Icons.photo_library, 'Photos', () {
+                  setState(() => _isPhotosExpanded = true);
+                }),
+                _buildCollapsedIcon(Icons.image, 'Decorations', () {
+                  setState(() => _isDecorationsExpanded = true);
+                }),
+                _buildCollapsedIcon(Icons.palette, 'Background', () {
+                  setState(() => _isBackgroundExpanded = true);
+                }),
+                _buildCollapsedIcon(Icons.layers, 'Layers', () {
+                  setState(() => _isLayersExpanded = true);
+                }),
               ],
             ),
           ),
@@ -157,13 +165,14 @@ class _LeftGutterPanelState extends ConsumerState<LeftGutterPanel> {
     );
   }
 
-  Widget _buildCollapsedIcon(IconData icon, String tooltip) {
+  Widget _buildCollapsedIcon(IconData icon, String tooltip, VoidCallback onExpand) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: IconButton(
         icon: Icon(icon, color: AppColors.darkWalnut, size: 24),
         onPressed: () {
-          // TODO: Could expand panel and open that section
+          widget.onToggle(); // Expand the gutter
+          onExpand(); // Open the specific section
         },
         tooltip: tooltip,
       ),

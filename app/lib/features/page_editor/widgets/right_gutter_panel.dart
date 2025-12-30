@@ -26,8 +26,8 @@ class RightGutterPanel extends ConsumerStatefulWidget {
 }
 
 class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
-  bool _isContentExpanded = true;
-  bool _isRotationExpanded = true;
+  bool _isContentExpanded = false;
+  bool _isRotationExpanded = false;
   bool _isSizeExpanded = false;
   bool _isPositionExpanded = false;
   bool _isAppearanceExpanded = false;
@@ -64,11 +64,21 @@ class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
           if (hasSelection) ...[
             // Show Content icon for text items
             if (editorState.items.firstWhere((item) => item.id == editorState.selectedItemId).type == CanvasItemType.text)
-              _buildCollapsedIcon(Icons.edit, 'Content'),
-            _buildCollapsedIcon(Icons.rotate_right, 'Rotation'),
-            _buildCollapsedIcon(Icons.aspect_ratio, 'Size'),
-            _buildCollapsedIcon(Icons.open_with, 'Position'),
-            _buildCollapsedIcon(Icons.opacity, 'Appearance'),
+              _buildCollapsedIcon(Icons.edit, 'Content', () {
+                setState(() => _isContentExpanded = true);
+              }),
+            _buildCollapsedIcon(Icons.rotate_right, 'Rotation', () {
+              setState(() => _isRotationExpanded = true);
+            }),
+            _buildCollapsedIcon(Icons.aspect_ratio, 'Size', () {
+              setState(() => _isSizeExpanded = true);
+            }),
+            _buildCollapsedIcon(Icons.open_with, 'Position', () {
+              setState(() => _isPositionExpanded = true);
+            }),
+            _buildCollapsedIcon(Icons.opacity, 'Appearance', () {
+              setState(() => _isAppearanceExpanded = true);
+            }),
           ],
         ],
       );
@@ -114,13 +124,14 @@ class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
     );
   }
 
-  Widget _buildCollapsedIcon(IconData icon, String tooltip) {
+  Widget _buildCollapsedIcon(IconData icon, String tooltip, VoidCallback onExpand) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: IconButton(
         icon: Icon(icon, color: AppColors.darkWalnut, size: 24),
         onPressed: () {
-          // TODO: Could expand panel and open that section
+          widget.onToggle(); // Expand the gutter
+          onExpand(); // Open the specific section
         },
         tooltip: tooltip,
       ),
@@ -255,10 +266,33 @@ class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  ref
-                      .read(editorStateProvider(widget.entryId).notifier)
-                      .removeItem(editorState.selectedItemId as String);
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Delete Item'),
+                      content: const Text('Are you sure you want to delete this item? This action cannot be undone.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirmed == true) {
+                    ref
+                        .read(editorStateProvider(widget.entryId).notifier)
+                        .removeItem(editorState.selectedItemId as String);
+                  }
                 },
                 icon: const Icon(Icons.delete, color: Colors.red),
                 label: const Text(
@@ -267,6 +301,7 @@ class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.red),
+                  overlayColor: Colors.red.withValues(alpha: 0.15),
                 ),
               ),
             ),

@@ -29,8 +29,8 @@ class EditorScreen extends ConsumerStatefulWidget {
 }
 
 class _EditorScreenState extends ConsumerState<EditorScreen> {
-  bool _isLeftGutterExpanded = true;
-  bool _isRightGutterExpanded = true;
+  bool _isLeftGutterExpanded = false;
+  bool _isRightGutterExpanded = false;
   final GlobalKey<RightGutterPanelState> _rightGutterKey = GlobalKey();
 
   @override
