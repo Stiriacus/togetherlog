@@ -32,10 +32,21 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   bool _isLeftGutterExpanded = false;
   bool _isRightGutterExpanded = false;
   final GlobalKey<RightGutterPanelState> _rightGutterKey = GlobalKey();
+  late ScrollController _horizontalScrollController;
+  late ScrollController _verticalScrollController;
 
   @override
   void initState() {
     super.initState();
+    _horizontalScrollController = ScrollController();
+    _verticalScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    _verticalScrollController.dispose();
+    super.dispose();
   }
 
   /// Handle double-click on text items - expand right gutter and content section
@@ -68,21 +79,45 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF5E6D3),
         appBar: _buildAppBar(context, ref, editorState),
-        body: Stack(
+        body: ScrollbarTheme(
+          data: ScrollbarThemeData(
+            thumbColor: WidgetStateProperty.all(AppColors.darkWalnut.withValues(alpha: 0.7)),
+            trackColor: WidgetStateProperty.all(AppColors.oliveWood.withValues(alpha: 0.2)),
+            trackBorderColor: WidgetStateProperty.all(AppColors.oliveWood.withValues(alpha: 0.3)),
+            thickness: WidgetStateProperty.all(12),
+            radius: const Radius.circular(6),
+          ),
+          child: Stack(
           children: [
             // Full-screen canvas (background layer)
-            Positioned.fill(
+            Positioned(
+              left: _isLeftGutterExpanded ? 240 : 48,
+              right: _isRightGutterExpanded ? 240 : 48,
+              top: 0,
+              bottom: 0,
               child: Container(
                 color: const Color(0xFFF5E6D3), // Warm tan
-                child: Center(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                child: Scrollbar(
+                  controller: _verticalScrollController,
+                  thumbVisibility: true,
+                  notificationPredicate: (notification) => notification.depth == 1,
+                  child: Scrollbar(
+                    controller: _horizontalScrollController,
+                    thumbVisibility: true,
+                    notificationPredicate: (notification) => notification.depth == 0,
                     child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: EditorCanvas(
-                        entryId: widget.entryId,
-                        onTextItemDoubleClick: _handleTextItemDoubleClick,
+                      controller: _horizontalScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        controller: _verticalScrollController,
+                        scrollDirection: Axis.vertical,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xl),
+                          child: EditorCanvas(
+                            entryId: widget.entryId,
+                            onTextItemDoubleClick: _handleTextItemDoubleClick,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -153,6 +188,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
