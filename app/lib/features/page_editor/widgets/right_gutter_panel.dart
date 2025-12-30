@@ -258,27 +258,33 @@ class _RightGutterPanelState extends ConsumerState<RightGutterPanel> {
                 vertical: AppSpacing.sm,
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     icon,
                     color: AppColors.darkWalnut,
-                    size: 20,
+                    size: 16,
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: AppColors.carbonBlack,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: AppColors.carbonBlack,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
+                        softWrap: false,
                       ),
                     ),
                   ),
                   Icon(
                     isExpanded ? Icons.expand_more : Icons.chevron_right,
                     color: AppColors.darkWalnut,
-                    size: 20,
+                    size: 16,
                   ),
                 ],
               ),

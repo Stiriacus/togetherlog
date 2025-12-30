@@ -76,7 +76,13 @@ class EditorStateNotifier extends StateNotifier<EditorState> {
   /// Toggle item visibility
   void toggleItemVisibility(String itemId) {
     final item = state.items.firstWhere((item) => item.id == itemId);
-    updateItem(itemId, item.copyWith(isVisible: !item.isVisible));
+    final newVisibility = !item.isVisible;
+    updateItem(itemId, item.copyWith(isVisible: newVisibility));
+
+    // Deselect item if it's being hidden and is currently selected
+    if (!newVisibility && state.selectedItemId == itemId) {
+      deselectItem();
+    }
   }
 
   /// Update item text (for text items)
