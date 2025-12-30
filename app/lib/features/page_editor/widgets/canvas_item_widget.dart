@@ -12,12 +12,14 @@ class CanvasItemWidget extends ConsumerStatefulWidget {
   final CanvasItem item;
   final String entryId;
   final bool isSelected;
+  final VoidCallback? onTextItemDoubleClick;
 
   const CanvasItemWidget({
     super.key,
     required this.item,
     required this.entryId,
     required this.isSelected,
+    this.onTextItemDoubleClick,
   });
 
   @override
@@ -109,6 +111,13 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
           onTap: () {
             ref.read(editorStateProvider(widget.entryId).notifier).selectItem(widget.item.id);
           },
+          onDoubleTap: widget.item.type == CanvasItemType.text
+              ? () {
+                  // Select item and trigger callback to open properties
+                  ref.read(editorStateProvider(widget.entryId).notifier).selectItem(widget.item.id);
+                  widget.onTextItemDoubleClick?.call();
+                }
+              : null,
           child: Transform.rotate(
             angle: widget.item.rotation * (3.14159265359 / 180),
             child: _buildItemContent(),
@@ -121,7 +130,17 @@ class _CanvasItemWidgetState extends ConsumerState<CanvasItemWidget> {
     return BoundingBoxOverlay(
       controller: _controller!,
       builder: (size, position, rotation) {
-        return _buildItemContent();
+        final content = _buildItemContent();
+        // Add double-tap handler for text items
+        if (widget.item.type == CanvasItemType.text) {
+          return GestureDetector(
+            onDoubleTap: () {
+              widget.onTextItemDoubleClick?.call();
+            },
+            child: content,
+          );
+        }
+        return content;
       },
     );
   }

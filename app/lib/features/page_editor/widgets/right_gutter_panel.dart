@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../models/canvas_item.dart';
 import '../providers/editor_state_provider.dart';
 
 /// Right gutter panel for item properties
@@ -21,14 +22,27 @@ class RightGutterPanel extends ConsumerStatefulWidget {
   final VoidCallback onToggle;
 
   @override
-  ConsumerState<RightGutterPanel> createState() => _RightGutterPanelState();
+  ConsumerState<RightGutterPanel> createState() => RightGutterPanelState();
 }
 
-class _RightGutterPanelState extends ConsumerState<RightGutterPanel> {
+class RightGutterPanelState extends ConsumerState<RightGutterPanel> {
+  bool _isContentExpanded = true;
   bool _isRotationExpanded = true;
   bool _isSizeExpanded = false;
   bool _isPositionExpanded = false;
   bool _isAppearanceExpanded = false;
+  final GlobalKey<_TextContentControlsState> _contentControlsKey = GlobalKey();
+
+  /// Expand content section and focus text field (called on text item double-click)
+  void expandContentSectionAndFocus() {
+    setState(() {
+      _isContentExpanded = true;
+    });
+    // Focus text field after expanding
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _contentControlsKey.currentState?.focusTextField();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +62,9 @@ class _RightGutterPanelState extends ConsumerState<RightGutterPanel> {
           Divider(color: AppColors.divider, height: 1),
           // Vertical icons
           if (hasSelection) ...[
+            // Show Content icon for text items
+            if (editorState.items.firstWhere((item) => item.id == editorState.selectedItemId).type == CanvasItemType.text)
+              _buildCollapsedIcon(Icons.edit, 'Content'),
             _buildCollapsedIcon(Icons.rotate_right, 'Rotation'),
             _buildCollapsedIcon(Icons.aspect_ratio, 'Size'),
             _buildCollapsedIcon(Icons.open_with, 'Position'),
@@ -134,6 +151,27 @@ class _RightGutterPanelState extends ConsumerState<RightGutterPanel> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          // Content Section (text items only)
+          if (selectedItem.type == CanvasItemType.text) ...[
+            _buildCollapsibleSection(
+              title: 'Content',
+              icon: Icons.edit,
+              isExpanded: _isContentExpanded,
+              onToggle: () {
+                setState(() {
+                  _isContentExpanded = !_isContentExpanded;
+                });
+              },
+              child: _TextContentControls(
+                key: _contentControlsKey,
+                entryId: widget.entryId,
+                itemId: editorState.selectedItemId as String,
+                currentText: selectedItem.text as String? ?? '',
+              ),
+            ),
+            Divider(color: AppColors.divider, height: 1),
+          ],
+
           // Rotation Section
           _buildCollapsibleSection(
             title: 'Rotation',
@@ -258,33 +296,27 @@ class _RightGutterPanelState extends ConsumerState<RightGutterPanel> {
                 vertical: AppSpacing.sm,
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     icon,
                     color: AppColors.darkWalnut,
-                    size: 16,
+                    size: 20,
                   ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          color: AppColors.carbonBlack,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                        softWrap: false,
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppColors.carbonBlack,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   Icon(
                     isExpanded ? Icons.expand_more : Icons.chevron_right,
                     color: AppColors.darkWalnut,
-                    size: 16,
+                    size: 20,
                   ),
                 ],
               ),
@@ -648,6 +680,108 @@ class _AppearanceControls extends ConsumerWidget {
           Text(
             'Opacity controls coming soon',
             style: TextStyle(fontSize: 12, color: AppColors.hintText),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Text content controls widget
+class _TextContentControls extends ConsumerStatefulWidget {
+  const _TextContentControls({
+    super.key,
+    required this.entryId,
+    required this.itemId,
+    required this.currentText,
+  });
+
+  final String entryId;
+  final String itemId;
+  final String currentText;
+
+  @override
+  ConsumerState<_TextContentControls> createState() => _TextContentControlsState();
+}
+
+class _TextContentControlsState extends ConsumerState<_TextContentControls> {
+  late TextEditingController _textController;
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController(text: widget.currentText);
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(_TextContentControls oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentText != oldWidget.currentText) {
+      _textController.text = widget.currentText;
+    }
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _updateText() {
+    final newText = _textController.text;
+    if (newText != widget.currentText) {
+      ref
+          .read(editorStateProvider(widget.entryId).notifier)
+          .updateItemText(widget.itemId, newText);
+    }
+  }
+
+  /// Focus the text field (called from parent when double-clicking text item)
+  void focusTextField() {
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Text Content',
+            style: TextStyle(fontSize: 13, color: AppColors.carbonBlack, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _textController,
+            focusNode: _focusNode,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: 'Enter text...',
+              hintStyle: TextStyle(color: AppColors.hintText),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
+                borderSide: BorderSide(color: AppColors.divider),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.rSm),
+                borderSide: const BorderSide(color: AppColors.darkWalnut, width: 2),
+              ),
+              contentPadding: const EdgeInsets.all(AppSpacing.sm),
+              filled: true,
+              fillColor: AppColors.antiqueWhite,
+            ),
+            style: const TextStyle(fontSize: 13, color: AppColors.carbonBlack),
+            onChanged: (_) => _updateText(),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Text updates in real-time',
+            style: TextStyle(fontSize: 11, color: AppColors.hintText, fontStyle: FontStyle.italic),
           ),
         ],
       ),

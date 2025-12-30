@@ -22,10 +22,12 @@ const double kContentHeight = kCanvasHeight - (kContentPaddingVertical * 2); // 
 /// Editor canvas widget
 class EditorCanvas extends ConsumerWidget {
   final String entryId;
+  final VoidCallback? onTextItemDoubleClick;
 
   const EditorCanvas({
     super.key,
     required this.entryId,
+    this.onTextItemDoubleClick,
   });
 
   @override
@@ -88,6 +90,7 @@ class EditorCanvas extends ConsumerWidget {
                         item: item,
                         entryId: entryId,
                         isSelected: item.id == editorState.selectedItemId,
+                        onTextItemDoubleClick: onTextItemDoubleClick,
                       );
                     }),
                   ],

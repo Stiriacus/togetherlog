@@ -31,10 +31,22 @@ class EditorScreen extends ConsumerStatefulWidget {
 class _EditorScreenState extends ConsumerState<EditorScreen> {
   bool _isLeftGutterExpanded = true;
   bool _isRightGutterExpanded = true;
+  final GlobalKey<RightGutterPanelState> _rightGutterKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+  }
+
+  /// Handle double-click on text items - expand right gutter and content section
+  void _handleTextItemDoubleClick() {
+    setState(() {
+      _isRightGutterExpanded = true;
+    });
+    // Use post-frame callback to ensure gutter is expanded before accessing its state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _rightGutterKey.currentState?.expandContentSectionAndFocus();
+    });
   }
 
   @override
@@ -68,7 +80,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: EditorCanvas(entryId: widget.entryId),
+                      child: EditorCanvas(
+                        entryId: widget.entryId,
+                        onTextItemDoubleClick: _handleTextItemDoubleClick,
+                      ),
                     ),
                   ),
                 ),
@@ -126,6 +141,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   ],
                 ),
                 child: RightGutterPanel(
+                  key: _rightGutterKey,
                   entryId: widget.entryId,
                   isExpanded: _isRightGutterExpanded,
                   onToggle: () {
